@@ -160,11 +160,11 @@ public abstract class Draft {
                 .getFieldValue("Connection").toLowerCase(Locale.ENGLISH).contains("upgrade");
     }
 
-    public abstract ByteBuffer createBinaryFrame(FrameData framedata);
+    public abstract ByteBuffer createBinaryFrame(Frame framedata);
 
-    public abstract List<FrameData> createFrames(ByteBuffer binary, boolean mask);
+    public abstract List<Frame> createFrames(ByteBuffer binary, boolean mask);
 
-    public abstract List<FrameData> createFrames(String text, boolean mask);
+    public abstract List<Frame> createFrames(String text, boolean mask);
 
     /**
      * Handle the frame specific to the draft
@@ -173,11 +173,11 @@ public abstract class Draft {
      * @param frame         the frame which is supposed to be handled
      * @throws InvalidDataException will be thrown on invalid data
      */
-    public abstract void processFrame(WebSocketImpl webSocketImpl, FrameData frame)
+    public abstract void processFrame(WebSocketImpl webSocketImpl, Frame frame)
             throws InvalidDataException;
 
 
-    public List<FrameData> continuousFrame(Opcode op, ByteBuffer buffer, boolean fin) {
+    public List<Frame> continuousFrame(Opcode op, ByteBuffer buffer, boolean fin) {
         if (op != Opcode.BINARY && op != Opcode.TEXT) {
             throw new IllegalArgumentException("Only Opcode.BINARY or  Opcode.TEXT are allowed");
         }
@@ -205,7 +205,7 @@ public abstract class Draft {
         } else {
             continuousFrameType = op;
         }
-        return Collections.singletonList((FrameData) dataFrame);
+        return Collections.singletonList((Frame) dataFrame);
     }
 
     public abstract void reset();
@@ -254,7 +254,7 @@ public abstract class Draft {
     public abstract HandshakeBuilder postProcessHandshakeResponseAsServer(ClientHandshake request,
                                                                           ServerHandshakeBuilder response) throws InvalidHandshakeException;
 
-    public abstract List<FrameData> translateFrame(ByteBuffer buffer) throws InvalidDataException;
+    public abstract List<Frame> translateFrame(ByteBuffer buffer) throws InvalidDataException;
 
     public abstract CloseHandshakeType getCloseHandshakeType();
 

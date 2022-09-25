@@ -119,7 +119,7 @@ public class PerMessageDeflateExtension extends CompressExtension{
         See, https://tools.ietf.org/html/rfc7692#section-7.2.2
      */
     @Override
-    public void decodeFrame(FrameData inputFrame) throws InvalidDataException {
+    public void decodeFrame(Frame inputFrame) throws InvalidDataException {
         // Only DataFrames can be decompressed.
         if (!(inputFrame instanceof DataFrame)) {
             return;
@@ -165,7 +165,7 @@ public class PerMessageDeflateExtension extends CompressExtension{
         }
 
         // Set frames payload to the new decompressed data.
-        ((AbstractFrameDataImpl) inputFrame)
+        ((AbstractFrameImpl) inputFrame)
                 .setPayload(ByteBuffer.wrap(output.toByteArray(), 0, output.size()));
     }
 
@@ -186,7 +186,7 @@ public class PerMessageDeflateExtension extends CompressExtension{
     }
 
     @Override
-    public void encodeFrame(FrameData inputFrame) {
+    public void encodeFrame(Frame inputFrame) {
         // Only DataFrames can be decompressed.
         if (!(inputFrame instanceof DataFrame)) {
             return;
@@ -233,7 +233,7 @@ public class PerMessageDeflateExtension extends CompressExtension{
         }
 
         // Set frames payload to the new compressed data.
-        ((AbstractFrameDataImpl) inputFrame).setPayload(ByteBuffer.wrap(outputBytes, 0, outputLength));
+        ((AbstractFrameImpl) inputFrame).setPayload(ByteBuffer.wrap(outputBytes, 0, outputLength));
     }
 
     /**
@@ -321,7 +321,7 @@ public class PerMessageDeflateExtension extends CompressExtension{
      * is CONTINUOUS, RSV1 bit must be unset.
      */
     @Override
-    public void isFrameValid(FrameData inputFrame) throws InvalidDataException {
+    public void isFrameValid(Frame inputFrame) throws InvalidDataException {
         if ((inputFrame instanceof ContinuousFrame) && (inputFrame.isRSV1() || inputFrame.isRSV2()
                 || inputFrame.isRSV3())) {
             throw new InvalidFrameException(

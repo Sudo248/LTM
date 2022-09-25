@@ -6,7 +6,7 @@ import org.sudo248.exceptions.InvalidDataException;
 /**
  * Abstract class to represent data frames
  */
-public abstract class DataFrame extends AbstractFrameDataImpl {
+public abstract class DataFrame extends AbstractFrameImpl {
 
     /**
      * Class to represent a data frame

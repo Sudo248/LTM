@@ -6,7 +6,7 @@ import org.sudo248.common.*;
 import org.sudo248.drafts.Draft;
 import org.sudo248.drafts.Draft_6455;
 import org.sudo248.frames.CloseFrame;
-import org.sudo248.frames.FrameData;
+import org.sudo248.frames.Frame;
 import org.sudo248.ssl.SSLChannel;
 import org.sudo248.utils.CharsetFunctions;
 import org.sudo248.exceptions.*;
@@ -369,10 +369,10 @@ public class WebSocketImpl implements WebSocket {
      * @param socketBuffer
      */
     private void decodeFrames(ByteBuffer socketBuffer) {
-        List<FrameData> frames;
+        List<Frame> frames;
         try {
             frames = draft.translateFrame(socketBuffer);
-            for (FrameData f : frames) {
+            for (Frame f : frames) {
                 log.trace("matched frame: {}", f);
                 draft.processFrame(this, f);
             }
@@ -630,7 +630,7 @@ public class WebSocketImpl implements WebSocket {
         }
     }
 
-    private void send(Collection<FrameData> frames) {
+    private void send(Collection<Frame> frames) {
         if (!isOpen()) {
             throw new WebsocketNotConnectedException();
         }
@@ -638,9 +638,9 @@ public class WebSocketImpl implements WebSocket {
             throw new IllegalArgumentException();
         }
         ArrayList<ByteBuffer> outgoingFrames = new ArrayList<>();
-        for (FrameData frameData : frames) {
-            log.trace("send frame: {}", frameData);
-            outgoingFrames.add(draft.createBinaryFrame(frameData));
+        for (Frame frame : frames) {
+            log.trace("send frame: {}", frame);
+            outgoingFrames.add(draft.createBinaryFrame(frame));
         }
         write(outgoingFrames);
     }
@@ -767,12 +767,12 @@ public class WebSocketImpl implements WebSocket {
     }
 
     @Override
-    public void sendFrame(FrameData frameData) {
-        send(Collections.singletonList(frameData));
+    public void sendFrame(Frame frame) {
+        send(Collections.singletonList(frame));
     }
 
     @Override
-    public void sendFrame(Collection<FrameData> frames) {
+    public void sendFrame(Collection<Frame> frames) {
         send(frames);
     }
 

@@ -1,7 +1,7 @@
 package org.sudo248.extensions;
 
 import org.sudo248.exceptions.InvalidDataException;
-import org.sudo248.frames.FrameData;
+import org.sudo248.frames.Frame;
 
 /**
  * Interface which specifies all required methods to develop a websocket extension.
@@ -18,7 +18,7 @@ public interface Extension {
      *                              implemented by the other endpoint or there are other protocol
      *                              errors/decoding errors
      */
-    void decodeFrame(FrameData inputFrame) throws InvalidDataException;
+    void decodeFrame(Frame inputFrame) throws InvalidDataException;
 
     /**
      * Encode a frame with a extension specific algorithm. The algorithm is subject to be implemented
@@ -26,7 +26,7 @@ public interface Extension {
      *
      * @param inputFrame the frame, which has do be encoded to be used on the other endpoint
      */
-    void encodeFrame(FrameData inputFrame);
+    void encodeFrame(Frame inputFrame);
 
     /**
      * Check if the received Sec-WebSocket-Extensions header field contains a offer for the specific
@@ -56,7 +56,7 @@ public interface Extension {
      * @throws InvalidDataException Throw InvalidDataException if the received frame is not correctly
      *                              implementing the specification for the specific extension
      */
-    void isFrameValid(FrameData inputFrame) throws InvalidDataException;
+    void isFrameValid(Frame inputFrame) throws InvalidDataException;
 
     /**
      * Return the specific Sec-WebSocket-Extensions header offer for this extension if the endpoint is

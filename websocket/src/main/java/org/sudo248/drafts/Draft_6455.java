@@ -102,7 +102,7 @@ public class Draft_6455 extends Draft {
     /**
      * Attribute for the current continuous frame
      */
-    private FrameData currentContinuousFrame;
+    private Frame currentContinuousFrame;
 
     /**
      * Attribute for the payload of the current continuous frame
@@ -447,7 +447,7 @@ public class Draft_6455 extends Draft {
         return mask ? (byte) -128 : 0;
     }
 
-    private ByteBuffer createByteBufferFromFrameData(FrameData framedata) {
+    private ByteBuffer createByteBufferFromFrameData(Frame framedata) {
         ByteBuffer mes = framedata.getPayloadData();
         boolean mask = role == Role.CLIENT;
         int sizeBytes = getSizeBytes(mes);
@@ -576,7 +576,7 @@ public class Draft_6455 extends Draft {
         return new TranslatedPayloadMetaData(payloadLength, realPacketSize);
     }
 
-    private FrameData translateSingleFrame(ByteBuffer buffer)
+    private Frame translateSingleFrame(ByteBuffer buffer)
             throws IncompleteException, InvalidDataException {
         if (buffer == null) {
             throw new IllegalArgumentException();
@@ -617,7 +617,7 @@ public class Draft_6455 extends Draft {
             buffer.position(buffer.position() + payload.limit());
         }
 
-        AbstractFrameDataImpl frame = AbstractFrameDataImpl.get(optCode);
+        AbstractFrameImpl frame = AbstractFrameImpl.get(optCode);
         frame.setFin(fin);
         frame.setRSV1(rsv1);
         frame.setRSV2(rsv2);
@@ -653,7 +653,7 @@ public class Draft_6455 extends Draft {
      * @param webSocketImpl the websocket impl
      * @param frame         the frame
      */
-    private void processFrameClosing(WebSocketImpl webSocketImpl, FrameData frame) {
+    private void processFrameClosing(WebSocketImpl webSocketImpl, Frame frame) {
         int code = CloseFrame.NO_CODE;
         String reason = "";
         if (frame instanceof CloseFrame) {
@@ -730,7 +730,7 @@ public class Draft_6455 extends Draft {
      * @param frame the frame
      * @throws InvalidDataException if there is a protocol error
      */
-    private void processFrameIsNotFin(FrameData frame) throws InvalidDataException {
+    private void processFrameIsNotFin(Frame frame) throws InvalidDataException {
         if (currentContinuousFrame != null) {
             log.trace("Protocol error: Previous continuous frame sequence not completed.");
             throw new InvalidDataException(CloseFrame.PROTOCOL_ERROR,
@@ -783,7 +783,7 @@ public class Draft_6455 extends Draft {
      * @param frame         the frame
      * @throws InvalidDataException if there is a protocol error
      */
-    private void processFrameIsFin(WebSocketImpl webSocketImpl, FrameData frame)
+    private void processFrameIsFin(WebSocketImpl webSocketImpl, Frame frame)
             throws InvalidDataException {
         if (currentContinuousFrame == null) {
             log.trace("Protocol error: Previous continuous frame sequence not completed.");
@@ -793,8 +793,8 @@ public class Draft_6455 extends Draft {
         addToBufferList(frame.getPayloadData());
         checkBufferLimit();
         if (currentContinuousFrame.getOpcode() == Opcode.TEXT) {
-            ((AbstractFrameDataImpl) currentContinuousFrame).setPayload(getPayloadFromByteBufferList());
-            ((AbstractFrameDataImpl) currentContinuousFrame).isValid();
+            ((AbstractFrameImpl) currentContinuousFrame).setPayload(getPayloadFromByteBufferList());
+            ((AbstractFrameImpl) currentContinuousFrame).isValid();
             try {
                 webSocketImpl.getWebSocketListener().onWebSocketMessage(webSocketImpl,
                         CharsetFunctions.stringUtf8(currentContinuousFrame.getPayloadData()));
@@ -802,8 +802,8 @@ public class Draft_6455 extends Draft {
                 logRuntimeException(webSocketImpl, e);
             }
         } else if (currentContinuousFrame.getOpcode() == Opcode.BINARY) {
-            ((AbstractFrameDataImpl) currentContinuousFrame).setPayload(getPayloadFromByteBufferList());
-            ((AbstractFrameDataImpl) currentContinuousFrame).isValid();
+            ((AbstractFrameImpl) currentContinuousFrame).setPayload(getPayloadFromByteBufferList());
+            ((AbstractFrameImpl) currentContinuousFrame).isValid();
             try {
                 webSocketImpl.getWebSocketListener()
                         .onWebSocketMessage(webSocketImpl, currentContinuousFrame.getPayloadData());
@@ -823,7 +823,7 @@ public class Draft_6455 extends Draft {
      * @param currentOpcode the current Opcode
      * @throws InvalidDataException if there is a protocol error
      */
-    private void processFrameContinuousAndNonFin(WebSocketImpl webSocketImpl, FrameData frame,
+    private void processFrameContinuousAndNonFin(WebSocketImpl webSocketImpl, Frame frame,
                                                  Opcode currentOpcode) throws InvalidDataException {
         if (currentOpcode != Opcode.CONTINUOUS) {
             processFrameIsNotFin(frame);
@@ -851,7 +851,7 @@ public class Draft_6455 extends Draft {
      * @param webSocketImpl the websocket impl
      * @param frame         the frame
      */
-    private void processFrameText(WebSocketImpl webSocketImpl, FrameData frame)
+    private void processFrameText(WebSocketImpl webSocketImpl, Frame frame)
             throws InvalidDataException {
         try {
             webSocketImpl.getWebSocketListener()
@@ -867,7 +867,7 @@ public class Draft_6455 extends Draft {
      * @param webSocketImpl the websocket impl
      * @param frame         the frame
      */
-    private void processFrameBinary(WebSocketImpl webSocketImpl, FrameData frame) {
+    private void processFrameBinary(WebSocketImpl webSocketImpl, Frame frame) {
         try {
             webSocketImpl.getWebSocketListener()
                     .onWebSocketMessage(webSocketImpl, frame.getPayloadData());
@@ -877,7 +877,7 @@ public class Draft_6455 extends Draft {
     }
 
     @Override
-    public ByteBuffer createBinaryFrame(FrameData framedata) {
+    public ByteBuffer createBinaryFrame(Frame framedata) {
         getExtension().encodeFrame(framedata);
         if (log.isTraceEnabled()) {
             log.trace("afterEnconding({}): {}", framedata.getPayloadData().remaining(),
@@ -888,7 +888,7 @@ public class Draft_6455 extends Draft {
     }
 
     @Override
-    public List<FrameData> createFrames(ByteBuffer binary, boolean mask) {
+    public List<Frame> createFrames(ByteBuffer binary, boolean mask) {
         BinaryFrame currentFrame = new BinaryFrame();
         currentFrame.setPayload(binary);
         currentFrame.setTransferenceMasked(mask);
@@ -901,7 +901,7 @@ public class Draft_6455 extends Draft {
     }
 
     @Override
-    public List<FrameData> createFrames(String text, boolean mask) {
+    public List<Frame> createFrames(String text, boolean mask) {
         TextFrame currentFrame = new TextFrame();
         currentFrame.setPayload(ByteBuffer.wrap(CharsetFunctions.utf8Bytes(text)));
         currentFrame.setTransferenceMasked(mask);
@@ -914,7 +914,7 @@ public class Draft_6455 extends Draft {
     }
 
     @Override
-    public void processFrame(WebSocketImpl webSocketImpl, FrameData frame) throws InvalidDataException {
+    public void processFrame(WebSocketImpl webSocketImpl, Frame frame) throws InvalidDataException {
         Opcode currentOpcode = frame.getOpcode();
         if (currentOpcode == Opcode.CLOSING) {
             processFrameClosing(webSocketImpl, frame);
@@ -1009,10 +1009,10 @@ public class Draft_6455 extends Draft {
     }
 
     @Override
-    public List<FrameData> translateFrame(ByteBuffer buffer) throws InvalidDataException {
+    public List<Frame> translateFrame(ByteBuffer buffer) throws InvalidDataException {
         while (true) {
-            List<FrameData> frames = new LinkedList<>();
-            FrameData current;
+            List<Frame> frames = new LinkedList<>();
+            Frame current;
             if (incompleteFrame != null) {
                 // complete an incomplete frame
                 try {

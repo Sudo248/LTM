@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.sudo248.*;
 import org.sudo248.drafts.Draft;
 import org.sudo248.frames.CloseFrame;
-import org.sudo248.frames.FrameData;
+import org.sudo248.frames.Frame;
 import org.sudo248.handshake.Handshake;
 import org.sudo248.handshake.client.ClientHandshake;
 import org.sudo248.exceptions.WebsocketNotConnectedException;
@@ -822,7 +822,7 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
         if (strData == null && byteData == null) {
             return;
         }
-        Map<Draft, List<FrameData>> draftFrames = new HashMap<>();
+        Map<Draft, List<Frame>> draftFrames = new HashMap<>();
         List<WebSocket> clientCopy;
         synchronized (clients) {
             clientCopy = new ArrayList<>(clients);
@@ -848,10 +848,10 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
      * @param strData       the string data, can be null
      * @param byteData       the byte buffer data, can be null
      */
-    private void fillFrames(Draft draft, Map<Draft, List<FrameData>> draftFrames, String strData,
+    private void fillFrames(Draft draft, Map<Draft, List<Frame>> draftFrames, String strData,
                             ByteBuffer byteData) {
         if (!draftFrames.containsKey(draft)) {
-            List<FrameData> frames = null;
+            List<Frame> frames = null;
             if (strData != null) {
                 frames = draft.createFrames(strData, false);
             }

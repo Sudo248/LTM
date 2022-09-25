@@ -9,7 +9,7 @@ import org.sudo248.drafts.Draft;
 import org.sudo248.drafts.Draft_6455;
 import org.sudo248.exceptions.InvalidHandshakeException;
 import org.sudo248.frames.CloseFrame;
-import org.sudo248.frames.FrameData;
+import org.sudo248.frames.Frame;
 import org.sudo248.handshake.Handshake;
 import org.sudo248.handshake.client.ClientHandshakeBuilderImpl;
 import org.sudo248.handshake.server.ServerHandshake;
@@ -768,12 +768,12 @@ public abstract class WebSocketClient extends AbstractWebSocket implements Runna
     }
 
     @Override
-    public void sendFrame(FrameData frameData) {
-        engine.sendFrame(frameData);
+    public void sendFrame(Frame frame) {
+        engine.sendFrame(frame);
     }
 
     @Override
-    public void sendFrame(Collection<FrameData> frames) {
+    public void sendFrame(Collection<Frame> frames) {
         engine.sendFrame(frames);
     }
 

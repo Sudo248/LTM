@@ -2,7 +2,7 @@ package org.sudo248;
 
 import org.sudo248.drafts.Draft;
 import org.sudo248.exceptions.InvalidDataException;
-import org.sudo248.frames.FrameData;
+import org.sudo248.frames.Frame;
 import org.sudo248.frames.PingFrame;
 import org.sudo248.frames.PongFrame;
 import org.sudo248.handshake.client.ClientHandshake;
@@ -55,20 +55,20 @@ public abstract class AbstractWebSocketListenerImpl implements WebSocketListener
      * This default implementation will send a pong in response to the received ping. The pong frame
      * will have the same payload as the ping frame.
      *
-     * @see WebSocketListener#onWebSocketPing(WebSocket, FrameData)
+     * @see WebSocketListener#onWebSocketPing(WebSocket, Frame)
      */
     @Override
-    public void onWebSocketPing(WebSocket ws, FrameData frameData) {
-        ws.sendFrame(new PongFrame((PingFrame) frameData));
+    public void onWebSocketPing(WebSocket ws, Frame frame) {
+        ws.sendFrame(new PongFrame((PingFrame) frame));
     }
 
     /**
      * This default implementation does not do anything. Go ahead and overwrite it.
      *
-     * @see WebSocketListener#onWebSocketPong(WebSocket, FrameData)
+     * @see WebSocketListener#onWebSocketPong(WebSocket, Frame)
      */
     @Override
-    public void onWebSocketPong(WebSocket ws, FrameData frameData) {
+    public void onWebSocketPong(WebSocket ws, Frame frame) {
         // default onWebSocketPong
     }
 

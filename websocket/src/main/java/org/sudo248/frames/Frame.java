@@ -4,7 +4,7 @@ import org.sudo248.common.Opcode;
 
 import java.nio.ByteBuffer;
 
-public interface FrameData {
+public interface Frame {
     boolean isFin();
     boolean isRSV1();
     boolean isRSV2();
@@ -12,5 +12,5 @@ public interface FrameData {
     boolean getTransferenceMasked();
     Opcode getOpcode();
     ByteBuffer getPayloadData();
-    void append(FrameData nextFrame);
+    void append(Frame nextFrame);
 }

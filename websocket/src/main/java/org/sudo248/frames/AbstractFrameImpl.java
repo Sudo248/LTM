@@ -10,7 +10,7 @@ import java.util.Objects;
 /**
  * Abstract implementation of a frame
  */
-public abstract class AbstractFrameDataImpl implements FrameData{
+public abstract class AbstractFrameImpl implements Frame {
 
     /**
      * Indicates that this is the final fragment in a message.
@@ -60,7 +60,7 @@ public abstract class AbstractFrameDataImpl implements FrameData{
      *
      * @param opcode the opcode to use
      */
-    public AbstractFrameDataImpl(Opcode opcode) {
+    public AbstractFrameImpl(Opcode opcode) {
         this.opcode = opcode;
         unmaskedPayload = ByteBufferUtils.getEmptyByteBuffer();
         fin = true;
@@ -106,7 +106,7 @@ public abstract class AbstractFrameDataImpl implements FrameData{
     }
 
     @Override
-    public void append(FrameData nextFrame) {
+    public void append(Frame nextFrame) {
         ByteBuffer byteBuffer = nextFrame.getPayloadData();
         if (unmaskedPayload == null) {
             unmaskedPayload = ByteBuffer.allocate(byteBuffer.remaining());
@@ -188,7 +188,7 @@ public abstract class AbstractFrameDataImpl implements FrameData{
         this.rsv3 = rsv3;
     }
 
-    public static AbstractFrameDataImpl getInstance(Opcode opcode) {
+    public static AbstractFrameImpl getInstance(Opcode opcode) {
         return get(opcode);
     }
 
@@ -198,7 +198,7 @@ public abstract class AbstractFrameDataImpl implements FrameData{
      * @param opCode the opcode representing the frame
      * @return the frame with a specific opcode
      */
-    public static AbstractFrameDataImpl get(Opcode opCode) {
+    public static AbstractFrameImpl get(Opcode opCode) {
         if (opCode == null) {
             throw new IllegalArgumentException("Supplied opcode cannot be null");
         }
@@ -229,7 +229,7 @@ public abstract class AbstractFrameDataImpl implements FrameData{
             return false;
         }
 
-        AbstractFrameDataImpl that = (AbstractFrameDataImpl) obj;
+        AbstractFrameImpl that = (AbstractFrameImpl) obj;
 
         if (fin != that.fin) {
             return false;

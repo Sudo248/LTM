@@ -4,7 +4,7 @@ import org.sudo248.common.Opcode;
 import org.sudo248.exceptions.InvalidDataException;
 import org.sudo248.exceptions.InvalidFrameException;
 
-public abstract class ControlFrame extends AbstractFrameDataImpl {
+public abstract class ControlFrame extends AbstractFrameImpl {
 
     public ControlFrame(Opcode opcode) {
         super(opcode);

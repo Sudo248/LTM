@@ -3,7 +3,7 @@ package org.sudo248;
 import org.sudo248.drafts.Draft;
 import org.sudo248.exceptions.InvalidDataException;
 import org.sudo248.frames.CloseFrame;
-import org.sudo248.frames.FrameData;
+import org.sudo248.frames.Frame;
 import org.sudo248.frames.PingFrame;
 import org.sudo248.handshake.Handshake;
 import org.sudo248.handshake.client.ClientHandshake;
@@ -130,9 +130,9 @@ public interface WebSocketListener {
      * Called a ping frame has been received. This method must send a corresponding pong by itself.
      *
      * @param ws        The <tt>WebSocket</tt> instance this event is occurring on.
-     * @param frameData The ping frame. Control frames may contain payload.
+     * @param frame The ping frame. Control frames may contain payload.
      */
-    void onWebSocketPing(WebSocket ws, FrameData frameData);
+    void onWebSocketPing(WebSocket ws, Frame frame);
 
     /**
      * Called just before a ping frame is sent, in order to allow users to customize their ping frame
@@ -147,9 +147,9 @@ public interface WebSocketListener {
      * Called when a pong frame is received.
      *
      * @param ws        The <tt>WebSocket</tt> instance this event is occurring on.
-     * @param frameData The pong frame. Control frames may contain payload.
+     * @param frame The pong frame. Control frames may contain payload.
      **/
-    void onWebSocketPong(WebSocket ws, FrameData frameData);
+    void onWebSocketPong(WebSocket ws, Frame frame);
 
     /**
      * This method is used to inform the selector thread that there is data queued to be written to
