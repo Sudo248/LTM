@@ -3,7 +3,7 @@ package org.sudo248.utils;
 import java.io.*;
 import java.util.zip.GZIPOutputStream;
 
-public class Base64 {
+public class Base64Utils {
     public static final byte NO_OPTIONS = 0;
     public static final byte ENCODE = 1;
     public static final byte GZIP = 2;
@@ -187,7 +187,7 @@ public class Base64 {
         }
     }  // end getAlphabet
 
-    private Base64() {}
+    private Base64Utils() {}
 
     /*      E N C O D I N G   M E T H O D S          */
 

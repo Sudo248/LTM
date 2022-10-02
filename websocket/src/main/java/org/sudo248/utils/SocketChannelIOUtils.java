@@ -51,6 +51,7 @@ public class SocketChannelIOUtils {
 
     /**
      * Returns whether the whole outQueue has been flushed
+     * write buffer to socket channel
      *
      * @param ws          The WebSocketImpl associated with the channels
      * @param sockChannel The channel to write to

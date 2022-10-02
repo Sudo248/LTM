@@ -76,6 +76,14 @@ public interface WebSocketListener {
     void onWebSocketMessage(WebSocket ws, ByteBuffer blob);
 
     /**
+     * Called when an entire object frame has been received. Do whatever you want here...
+     *
+     * @param ws   The <tt>WebSocket</tt> instance this event is occurring on.
+     * @param object The binary message that was received.
+     */
+    void onWebSocketMessage(WebSocket ws, Object object);
+
+    /**
      * Called after <var>onHandshakeReceived</var> returns <var>true</var>. Indicates that a complete
      * WebSocket connection has been established, and we are ready to send/receive data.
      *

@@ -8,6 +8,7 @@ import org.sudo248.exceptions.WebsocketNotConnectedException;
 import org.sudo248.protocols.Protocol;
 
 import javax.net.ssl.SSLSession;
+import java.io.Serializable;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.util.Collection;
@@ -73,6 +74,16 @@ public interface WebSocket {
      * @throws WebsocketNotConnectedException websocket is not yet connected
      */
     void send(byte[] bytes);
+
+    /**
+     * send an object that is a Serializable to the other end.
+     *
+     * @param object is a Serializable
+     * @throws IllegalArgumentException       the data is null
+     * @throws WebsocketNotConnectedException websocket is not yet connected
+     */
+
+    void send(Object object);
 
     /**
      * Send a frame to the other end

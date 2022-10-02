@@ -103,7 +103,7 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
      * @see #WebSocketServer(InetSocketAddress, int, List, Collection) more details here
      */
     public WebSocketServer() {
-        this(new InetSocketAddress(WebSocketImpl.DEFAULT_PORT), AVAILABLE_PROCESSORS, null);
+        this(new InetSocketAddress(WebSocketImpl.DEFAULT_WSS_PORT), AVAILABLE_PROCESSORS, null);
     }
 
     /**
@@ -393,7 +393,6 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
         ByteBuffer buf = takeBuffer();
         if (ws.getChannel() == null) {
             key.cancel();
-
             handleIOException(key, ws, new IOException());
             return false;
         }
@@ -458,8 +457,9 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
                 ex.start();
             }
             onStart();
+            log.info("WebSocket running on: ws://" + address.getHostString() + ":" + address.getPort());
         } catch (IOException ex) {
-            handleFatal(null, ex);
+            handleInterrupt(null, ex);
             return false;
         }
         return true;
@@ -510,8 +510,8 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
             }
         }
     }
-    
-    protected void allocateBuffers(WebSocket c) throws InterruptedException {
+
+    protected void allocateBuffers(WebSocket ws) throws InterruptedException {
         if (queueSize.get() >= 2 * decoders.size() + 1) {
             return;
         }
@@ -567,7 +567,7 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
         }
     }
 
-    private void handleFatal(WebSocket ws, Exception e) {
+    private void handleInterrupt(WebSocket ws, Exception e) {
         log.error("Shutdown due to fatal error", e);
         onError(ws, e);
 
@@ -708,6 +708,15 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
      * @see #onMessage(WebSocket, ByteBuffer)
      **/
     public abstract void onMessage(WebSocket ws, String message);
+
+    /**
+     * Callback for object received from the remote host
+     *
+     * @param ws    The <tt>WebSocket</tt> instance this event is occurring on.
+     * @param object The Object decoded message that was received.
+     * @see #onMessage(WebSocket, Object)
+     **/
+    public abstract void onMessage(WebSocket ws, Object object);
 
     /**
      * Called when errors occurs. If an error causes the websocket connection to fail {@link
@@ -863,7 +872,7 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
             }
         }
     }
-    
+
     @Override
     public final void onWebSocketMessage(WebSocket ws, String message) {
         onMessage(ws, message);
@@ -872,6 +881,11 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
     @Override
     public final void onWebSocketMessage(WebSocket ws, ByteBuffer blob) {
         onMessage(ws, blob);
+    }
+
+    @Override
+    public void onWebSocketMessage(WebSocket ws, Object object) {
+        onMessage(ws, object);
     }
 
     @Override
@@ -936,8 +950,6 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
         return (InetSocketAddress) getSocket(ws).getRemoteSocketAddress();
     }
 
-   
-
     @Override
     public void run() {
         if (!doEnsureSingleThread()) {
@@ -998,7 +1010,7 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
             }
         } catch (RuntimeException e) {
             // should hopefully never occur
-            handleFatal(null, e);
+            handleInterrupt(null, e);
         } finally {
             doServerShutdown();
         }
@@ -1023,10 +1035,10 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
      */
     public class WebSocketServerWorker extends Thread {
 
-        private final BlockingQueue<WebSocketImpl> wsQueue;
+        private final BlockingQueue<WebSocketImpl> wsBLockingQueue;
 
         public WebSocketServerWorker() {
-            wsQueue = new LinkedBlockingQueue<>();
+            wsBLockingQueue = new LinkedBlockingQueue<>();
             setName("WebSocketWorker-" + getId());
             setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
                 @Override
@@ -1037,7 +1049,7 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
         }
 
         public void put(WebSocketImpl ws) throws InterruptedException {
-            wsQueue.put(ws);
+            wsBLockingQueue.put(ws);
         }
 
         @Override
@@ -1046,7 +1058,7 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
             try {
                 while (true) {
                     ByteBuffer buf;
-                    ws = wsQueue.take();
+                    ws = wsBLockingQueue.take();
                     buf = ws.inQueue.poll();
                     assert (buf != null);
                     doDecode(ws, buf);
@@ -1057,7 +1069,7 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
             } catch (VirtualMachineError | ThreadDeath | LinkageError e) {
                 log.error("Got fatal error in worker thread {}", getName());
                 Exception exception = new Exception(e);
-                handleFatal(ws, exception);
+                handleInterrupt(ws, exception);
             } catch (Throwable e) {
                 log.error("Uncaught exception in thread {}: {}", getName(), e);
                 if (ws != null) {
@@ -1084,5 +1096,5 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
                 pushBuffer(buf);
             }
         }
-    }    
+    }
 }

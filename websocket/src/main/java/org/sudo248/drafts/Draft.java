@@ -8,7 +8,7 @@ import org.sudo248.common.Opcode;
 import org.sudo248.exceptions.IncompleteHandshakeException;
 import org.sudo248.exceptions.InvalidDataException;
 import org.sudo248.exceptions.InvalidHandshakeException;
-import org.sudo248.utils.CharsetFunctions;
+import org.sudo248.utils.CharsetUtils;
 import org.sudo248.WebSocketImpl;
 import org.sudo248.common.Role;
 import org.sudo248.frames.*;
@@ -21,6 +21,8 @@ import org.sudo248.handshake.server.ServerHandshake;
 import org.sudo248.handshake.server.ServerHandshakeBuilder;
 import org.sudo248.handshake.server.ServerHandshakeBuilderImpl;
 
+import java.io.NotSerializableException;
+import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.util.Collections;
 import java.util.Iterator;
@@ -60,7 +62,7 @@ public abstract class Draft {
 
     public static @Nullable String readStringLine(ByteBuffer buffer) {
         ByteBuffer b = readLine(buffer);
-        return b == null ? null : CharsetFunctions.stringAscii(b.array(), 0, b.limit());
+        return b == null ? null : CharsetUtils.stringAscii(b.array(), 0, b.limit());
     }
 
     public static HandshakeBuilder translateHandshakeHttp(ByteBuffer buf, Role role)
@@ -160,11 +162,41 @@ public abstract class Draft {
                 .getFieldValue("Connection").toLowerCase(Locale.ENGLISH).contains("upgrade");
     }
 
-    public abstract ByteBuffer createBinaryFrame(Frame framedata);
+    /**
+     * create ByteBuffer from the specify frame
+     *
+     * @param frame
+     * @return ByteBuffer
+     */
+    public abstract ByteBuffer createByteBufferFromFrame(Frame frame);
 
+    /**
+     * create list frame from a ByteBuffer
+     *
+     * @param binary ByteBuffer
+     * @param mask boolean
+     * @return
+     */
     public abstract List<Frame> createFrames(ByteBuffer binary, boolean mask);
 
+    /**
+     * create list frame from String
+     *
+     * @param text String
+     * @param mask boolean
+     * @return
+     */
     public abstract List<Frame> createFrames(String text, boolean mask);
+
+    /**
+     * create list frame from object Serializable
+     *
+     * @param object Serializable
+     * @param mask boolean
+     * @return List<Frame>
+     * @throws NotSerializableException
+     */
+    public abstract List<Frame> createFrames(Object object, boolean mask);
 
     /**
      * Handle the frame specific to the draft
@@ -179,7 +211,7 @@ public abstract class Draft {
 
     public List<Frame> continuousFrame(Opcode op, ByteBuffer buffer, boolean fin) {
         if (op != Opcode.BINARY && op != Opcode.TEXT) {
-            throw new IllegalArgumentException("Only Opcode.BINARY or  Opcode.TEXT are allowed");
+            throw new IllegalArgumentException("Only Opcode.BINARY or Opcode.TEXT are allowed");
         }
         DataFrame dataFrame = null;
         if (continuousFrameType != null) {
@@ -190,6 +222,8 @@ public abstract class Draft {
                 dataFrame = new BinaryFrame();
             } else if (op == Opcode.TEXT) {
                 dataFrame = new TextFrame();
+            } else if (op == Opcode.OBJECT) {
+                dataFrame = new ObjectFrame();
             }
         }
         dataFrame.setPayload(buffer);
@@ -205,7 +239,7 @@ public abstract class Draft {
         } else {
             continuousFrameType = op;
         }
-        return Collections.singletonList((Frame) dataFrame);
+        return Collections.singletonList(dataFrame);
     }
 
     public abstract void reset();
@@ -235,7 +269,7 @@ public abstract class Draft {
             bui.append("\r\n");
         }
         bui.append("\r\n");
-        byte[] httpHeader = CharsetFunctions.asciiBytes(bui.toString());
+        byte[] httpHeader = CharsetUtils.asciiBytes(bui.toString());
 
         byte[] content = withContent ? handshake.getContent() : null;
         ByteBuffer bytebuffer = ByteBuffer

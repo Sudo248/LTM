@@ -1,6 +1,6 @@
 package org.sudo248.frames;
 
-import org.sudo248.utils.CharsetFunctions;
+import org.sudo248.utils.CharsetUtils;
 import org.sudo248.common.Opcode;
 import org.sudo248.exceptions.InvalidDataException;
 import org.sudo248.exceptions.InvalidFrameException;
@@ -120,6 +120,12 @@ public class CloseFrame extends ControlFrame {
      * can't be verified).
      **/
     public static final int TLS_ERROR = 1015;
+
+    /**
+     * 1016 indicates that an endpoint is terminating the connection because it has received data
+     * within a serializable that was not consistent with the type of the Object
+     */
+    public static final int NOT_SERIALIZABLE = 1016;
 
     /**
      * The connection had never been established
@@ -270,7 +276,7 @@ public class CloseFrame extends ControlFrame {
     private void validateUtf8(ByteBuffer payload, int mark) throws InvalidDataException {
         try {
             payload.position(payload.position() + 2);
-            reason = CharsetFunctions.stringUtf8(payload);
+            reason = CharsetUtils.stringUtf8(payload);
         } catch (IllegalArgumentException e) {
             throw new InvalidDataException(CloseFrame.NO_UTF8);
         } finally {
@@ -282,7 +288,7 @@ public class CloseFrame extends ControlFrame {
      * Update the payload to represent the close code and the reason
      */
     private void updatePayload() {
-        byte[] by = CharsetFunctions.utf8Bytes(reason);
+        byte[] by = CharsetUtils.utf8Bytes(reason);
         ByteBuffer buf = ByteBuffer.allocate(4);
         buf.putInt(code);
         buf.position(2);
