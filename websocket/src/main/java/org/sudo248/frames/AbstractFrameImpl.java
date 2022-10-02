@@ -215,6 +215,8 @@ public abstract class AbstractFrameImpl implements Frame {
                 return new CloseFrame();
             case CONTINUOUS:
                 return new ContinuousFrame();
+            case OBJECT:
+                return new ObjectFrame();
             default:
                 throw new IllegalArgumentException("Supplied opcode is invalid");
         }

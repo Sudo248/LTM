@@ -507,6 +507,14 @@ public abstract class WebSocketClient extends AbstractWebSocket implements Runna
     public abstract void onMessage(String message);
 
     /**
+     * Callback for binary messages received from the remote host
+     *
+     * @param object The binary message that was received.
+     * @see #onMessage(String)
+     **/
+    public abstract void onMessage(Object object);
+
+    /**
      * Called after the websocket connection has been closed.
      *
      * @param code   The codes can be looked up here: {@link CloseFrame}
@@ -593,6 +601,11 @@ public abstract class WebSocketClient extends AbstractWebSocket implements Runna
     }
 
     @Override
+    public void send(Object object) {
+        engine.send(object);
+    }
+
+    @Override
     public <T> T getAttachment() {
         return engine.getAttachment();
     }
@@ -630,6 +643,11 @@ public abstract class WebSocketClient extends AbstractWebSocket implements Runna
     @Override
     public final void onWebSocketMessage(WebSocket ws, ByteBuffer blob) {
         onMessage(blob);
+    }
+
+    @Override
+    public void onWebSocketMessage(WebSocket ws, Object object) {
+        onMessage(object);
     }
 
     /**

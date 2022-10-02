@@ -8,7 +8,7 @@ import org.sudo248.drafts.Draft_6455;
 import org.sudo248.frames.CloseFrame;
 import org.sudo248.frames.Frame;
 import org.sudo248.ssl.SSLChannel;
-import org.sudo248.utils.CharsetFunctions;
+import org.sudo248.utils.CharsetUtils;
 import org.sudo248.exceptions.*;
 import org.sudo248.frames.PingFrame;
 import org.sudo248.handshake.Handshake;
@@ -21,6 +21,7 @@ import org.sudo248.server.WebSocketServer.WebSocketServerWorker;
 
 import javax.net.ssl.SSLSession;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.ByteChannel;
@@ -579,21 +580,21 @@ public class WebSocketImpl implements WebSocket {
     /**
      * Write a list of bytebuffer (frames in binary form) into the outgoing queue
      *
-     * @param bufs the list of bytebuffer
+     * @param buffers the list of bytebuffer
      */
-    private void write(List<ByteBuffer> bufs) {
+    private void write(List<ByteBuffer> buffers) {
         synchronized (lockWriteObject) {
-            for (ByteBuffer b : bufs) {
-                write(b);
+            for (ByteBuffer buffer : buffers) {
+                write(buffer);
             }
         }
     }
 
-    private void write(ByteBuffer buf) {
-        log.trace("write({}): {}", buf.remaining(),
-                buf.remaining() > 1000 ? "too big to display" : new String(buf.array()));
+    private void write(ByteBuffer buffer) {
+        log.trace("write({}): {}", buffer.remaining(),
+                buffer.remaining() > 1000 ? "too big to display" : new String(buffer.array()));
 
-        outQueue.add(buf);
+        outQueue.add(buffer);
         webSocketListener.onWriteDemand(this);
     }
 
@@ -613,7 +614,7 @@ public class WebSocketImpl implements WebSocket {
             default:
                 errorCodeDescription = "500 Internal Server Error";
         }
-        return ByteBuffer.wrap(CharsetFunctions.asciiBytes("HTTP/1.1 " + errorCodeDescription
+        return ByteBuffer.wrap(CharsetUtils.asciiBytes("HTTP/1.1 " + errorCodeDescription
                 + "\r\nContent-Type: text/html\r\nServer: TooTallNate Module-WebSocket\r\nContent-Length: "
                 + (48 + errorCodeDescription.length()) + "\r\n\r\n<html><head></head><body><h1>"
                 + errorCodeDescription + "</h1></body></html>"));
@@ -640,7 +641,7 @@ public class WebSocketImpl implements WebSocket {
         ArrayList<ByteBuffer> outgoingFrames = new ArrayList<>();
         for (Frame frame : frames) {
             log.trace("send frame: {}", frame);
-            outgoingFrames.add(draft.createBinaryFrame(frame));
+            outgoingFrames.add( draft.createByteBufferFromFrame(frame) );
         }
         write(outgoingFrames);
     }
@@ -649,7 +650,6 @@ public class WebSocketImpl implements WebSocket {
             throws InvalidHandshakeException {
         // Store the Handshake Request we are about to send
         this.handshakeRequest = draft.postProcessHandshakeRequestAsClient(clientHandshake);
-
         resourceDescriptor = clientHandshake.getResourceDescriptor();
         assert (resourceDescriptor != null);
 
@@ -664,8 +664,7 @@ public class WebSocketImpl implements WebSocket {
             webSocketListener.onWebSocketError(this, e);
             throw new InvalidHandshakeException("rejected because of " + e);
         }
-
-        // Send
+        // Send Handshake
         write(draft.createHandshake(this.handshakeRequest));
     }
 
@@ -764,6 +763,21 @@ public class WebSocketImpl implements WebSocket {
     @Override
     public void send(byte[] bytes) {
         send(ByteBuffer.wrap(bytes));
+    }
+
+    /**
+     * send an object that is a Serializable to the other end.
+     *
+     * @param object is a Serializable
+     * @throws IllegalArgumentException       the data is null
+     * @throws WebsocketNotConnectedException websocket is not yet connected
+     */
+    @Override
+    public void send(Object object) {
+        if (object == null) {
+            throw new IllegalArgumentException("Cannot send 'null' data to a WebSocketImpl.");
+        }
+        send(draft.createFrames(object, role == Role.CLIENT));
     }
 
     @Override

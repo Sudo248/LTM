@@ -3,7 +3,7 @@ package org.sudo248.exceptions;
 /**
  * exception which indicates that a invalid data was received
  */
-public class InvalidDataException extends Exception{
+public class InvalidDataException extends Exception {
 
     private static final long serialVersionUID = 3731842424390998726L;
 

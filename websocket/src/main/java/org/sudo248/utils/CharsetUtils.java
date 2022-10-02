@@ -9,9 +9,9 @@ import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
 
-public class CharsetFunctions {
+public class CharsetUtils {
 
-    private CharsetFunctions(){}
+    private CharsetUtils(){}
 
     private static final CodingErrorAction codingErrorAction = CodingErrorAction.REPORT;
 

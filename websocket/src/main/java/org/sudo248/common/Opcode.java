@@ -10,5 +10,6 @@ public enum Opcode {
     BINARY,
     PING,
     PONG,
-    CLOSING
+    CLOSING,
+    OBJECT
 }
