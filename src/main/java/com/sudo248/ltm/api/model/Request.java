@@ -1,6 +1,4 @@
-package com.sudo248.ltm.model;
-
-import com.sudo248.ltm.utils.GsonUtils;
+package com.sudo248.ltm.api.model;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -9,7 +7,7 @@ public class Request<T extends Serializable> implements Serializable {
 
     private static final long serialVersionUID = 3489076719896769175L;
     protected String path;
-    protected Method method;
+    protected RequestMethod method;
     protected Map<String, String> params;
     protected Map<String, String> queries;
     protected T payload;
@@ -17,14 +15,14 @@ public class Request<T extends Serializable> implements Serializable {
     public Request() {
     }
 
-    public Request(String path, Method method, Map<String, String> params, Map<String, String> queries) {
+    public Request(String path, RequestMethod method, Map<String, String> params, Map<String, String> queries) {
         this.path = path;
         this.method = method;
         this.params = params;
         this.queries = queries;
     }
 
-    public Request(String path, Method method, Map<String, String> params, Map<String, String> queries, T payload) {
+    public Request(String path, RequestMethod method, Map<String, String> params, Map<String, String> queries, T payload) {
         this.path = path;
         this.method = method;
         this.params = params;
@@ -40,12 +38,12 @@ public class Request<T extends Serializable> implements Serializable {
         this.path = path;
     }
 
-    public Method getMethod() {
+    public RequestMethod getMethod() {
         return method;
     }
 
-    public void setMethod(Method method) {
-        this.method = method;
+    public void setMethod(RequestMethod requestMethod) {
+        this.method = requestMethod;
     }
 
     public Map<String, String> getParams() {

@@ -1,6 +1,6 @@
-package com.sudo248.ltm.model.entity.user;
+package com.sudo248.ltm.api.model.entity.user;
 
-import com.sudo248.ltm.utils.GsonUtils;
+import com.sudo248.ltm.api.utils.GsonUtils;
 
 public class UserResponse {
     private Integer code;

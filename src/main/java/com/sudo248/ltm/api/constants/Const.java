@@ -1,4 +1,4 @@
-package com.sudo248.ltm.constants;
+package com.sudo248.ltm.api.constants;
 
 public class Const {
     public static final String WS_HOST = "localhost";
