@@ -1,4 +1,4 @@
-package com.sudo248.ltm.utils;
+package com.sudo248.ltm.api.utils;
 
 import com.google.gson.Gson;
 

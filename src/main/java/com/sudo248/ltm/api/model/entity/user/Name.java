@@ -1,4 +1,4 @@
-package com.sudo248.ltm.model.entity.user;
+package com.sudo248.ltm.api.model.entity.user;
 
 public class Name {
     private String firstName;
