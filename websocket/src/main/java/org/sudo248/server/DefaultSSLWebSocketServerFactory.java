@@ -3,6 +3,7 @@ package org.sudo248.server;
 import org.sudo248.AbstractWebSocketListenerImpl;
 import org.sudo248.WebSocketImpl;
 import org.sudo248.drafts.Draft;
+import org.sudo248.mqtt.MqttListener;
 import org.sudo248.ssl.SSLChannelImpl;
 
 import javax.net.ssl.SSLContext;
@@ -45,7 +46,7 @@ public class DefaultSSLWebSocketServerFactory implements WebSocketServerFactory{
     }
 
     @Override
-    public WebSocketImpl createWebSocket(AbstractWebSocketListenerImpl webSocketListener, List<Draft> drafts) {
+    public WebSocketImpl createWebSocket(AbstractWebSocketListenerImpl webSocketListener , List<Draft> drafts) {
         return new WebSocketImpl(webSocketListener, drafts);
     }
 

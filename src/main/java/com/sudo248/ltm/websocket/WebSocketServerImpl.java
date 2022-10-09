@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sudo248.WebSocket;
 import org.sudo248.handshake.client.ClientHandshake;
+import org.sudo248.mqtt.model.MqttMessage;
 import org.sudo248.server.WebSocketServer;
 
 import java.net.InetSocketAddress;
@@ -46,7 +47,7 @@ public class WebSocketServerImpl extends WebSocketServer {
 
     @Override
     public void onError(WebSocket ws, Exception ex) {
-        log.error("onError -> ex: " + ex);
+        log.error("onMqttError -> ex: " + ex);
     }
 
     @Override
@@ -77,5 +78,10 @@ public class WebSocketServerImpl extends WebSocketServer {
             default:
         }
         ws.send(response);
+    }
+
+    @Override
+    public void onMqttPublish(MqttMessage message) {
+
     }
 }

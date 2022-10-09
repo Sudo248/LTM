@@ -7,6 +7,7 @@ import org.sudo248.drafts.Draft;
 import org.sudo248.drafts.Draft_6455;
 import org.sudo248.frames.CloseFrame;
 import org.sudo248.frames.Frame;
+import org.sudo248.mqtt.MqttListener;
 import org.sudo248.ssl.SSLChannel;
 import org.sudo248.utils.CharsetUtils;
 import org.sudo248.exceptions.*;
@@ -160,8 +161,8 @@ public class WebSocketImpl implements WebSocket {
      * @param listener The listener for this instance
      * @param drafts   The drafts which should be used
      */
-    public WebSocketImpl(WebSocketListener listener, List<Draft> drafts) {
-        this(listener,(Draft) null);
+    public WebSocketImpl(WebSocketListener listener , List<Draft> drafts) {
+        this(listener, (Draft) null);
         this.role = Role.SERVER;
         // draft.copyInstance will be called when the draft is first needed
         if (drafts == null || drafts.isEmpty()) {

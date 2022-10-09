@@ -3,6 +3,7 @@ package org.sudo248.server;
 import org.sudo248.AbstractWebSocketListenerImpl;
 import org.sudo248.WebSocketImpl;
 import org.sudo248.drafts.Draft;
+import org.sudo248.mqtt.MqttListener;
 
 import java.nio.channels.ByteChannel;
 import java.nio.channels.SelectionKey;

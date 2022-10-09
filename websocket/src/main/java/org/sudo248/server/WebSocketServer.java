@@ -10,6 +10,14 @@ import org.sudo248.handshake.Handshake;
 import org.sudo248.handshake.client.ClientHandshake;
 import org.sudo248.exceptions.WebsocketNotConnectedException;
 import org.sudo248.exceptions.WrappedIOException;
+import org.sudo248.mqtt.MqttConnection;
+import org.sudo248.mqtt.MqttListener;
+import org.sudo248.mqtt.MqttManager;
+import org.sudo248.mqtt.database.H2Builder;
+import org.sudo248.mqtt.model.MqttMessage;
+import org.sudo248.mqtt.model.MqttMessageType;
+import org.sudo248.mqtt.model.Subscription;
+import org.sudo248.mqtt.repository.SubscriptionRepository;
 import org.sudo248.utils.SocketChannelIOUtils;
 
 
@@ -20,10 +28,9 @@ import java.net.Socket;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
+import java.sql.SQLException;
 import java.util.*;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -32,12 +39,14 @@ import java.util.concurrent.atomic.AtomicInteger;
  * HTTP handshake portion of WebSockets. It's up to a subclass to add functionality/purpose to the
  * server.
  */
-public abstract class WebSocketServer extends AbstractWebSocket implements Runnable {
+public abstract class WebSocketServer extends AbstractWebSocket implements Runnable, MqttListener {
 
     /**
      * Number of current available process
      */
     private static final int AVAILABLE_PROCESSORS = Runtime.getRuntime().availableProcessors();
+
+    private static final String pathStore = "websocket/H2DB/Mqtt-database.db";
 
     /**
      * Logger instance
@@ -63,6 +72,21 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
     private ServerSocketChannel server;
 
     /**
+     * Mqtt connection
+     */
+    private MqttConnection mqttConnection;
+
+    /**
+     * MqttManager
+     */
+    private MqttManager mqttManager;
+
+    /**
+     * H2Builder
+     */
+    private H2Builder h2Builder;
+
+    /**
      * The 'Selector' used to get event keys from the underlying socket.
      */
     private Selector selector;
@@ -70,7 +94,7 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
     /**
      * The Draft of the WebSocket protocol the Server is adhering to.
      */
-    private List<Draft> drafts;
+    private final List<Draft> drafts;
 
     private Thread selectorThread;
 
@@ -145,7 +169,7 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
      * @see #WebSocketServer(InetSocketAddress, int, List, Collection) more details here
      */
     public WebSocketServer(InetSocketAddress address, int decoderCount, List<Draft> drafts) {
-        this(address, decoderCount, drafts, new HashSet<WebSocket>());
+        this(address, decoderCount, drafts, new HashSet<>());
     }
 
     /**
@@ -183,7 +207,6 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
         } else {
             this.drafts = drafts;
         }
-
         this.address = address;
         this.connections = connectionsContainer;
         setIsTcpNoDelay(false);
@@ -465,6 +488,16 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
         return true;
     }
 
+    private boolean doSetupMqttConnection() {
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+        h2Builder = new H2Builder(pathStore, scheduler).initStore();
+        SubscriptionRepository subscriptionRepository = h2Builder.subscriptionRepository();
+        mqttManager = new MqttManager(subscriptionRepository);
+        mqttManager.getSubscriptionFromDb();
+        mqttConnection = new MqttConnection(mqttManager.getPublishers(), this);
+        return true;
+    }
+
     /**
      * The websocket server can only be started once
      *
@@ -509,6 +542,7 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
                 onError(null, e);
             }
         }
+        h2Builder.closeStore();
     }
 
     protected void allocateBuffers(WebSocket ws) throws InterruptedException {
@@ -679,6 +713,17 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
         WebSocketImpl impl = (WebSocketImpl) ws;
         return ((SocketChannel) impl.getSelectionKey().channel()).socket();
     }
+
+    /**
+     * precess when mess is MqttMessage
+     * @param message
+     * @param ws
+     */
+
+    private void onMqttMessage(MqttMessage message, WebSocket ws) {
+        mqttConnection.handleMessage(message, ws);
+    }
+
     /**
      * Cal
      * led after an opening handshake has been performed and the given websocket is ready to be
@@ -733,7 +778,7 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
     /**
      * Called when the server started up successfully.
      * <p>
-     * If any error occurred, onError is called instead.
+     * If any error occurred, onMqttError is called instead.
      */
     public abstract void onStart();
 
@@ -885,7 +930,11 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
 
     @Override
     public void onWebSocketMessage(WebSocket ws, Object object) {
-        onMessage(ws, object);
+        if (object instanceof MqttMessage) {
+            onMqttMessage((MqttMessage) object, ws);
+        } else {
+            onMessage(ws, object);
+        }
     }
 
     @Override
@@ -958,6 +1007,9 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
         if (!doSetupSelectorAndServerThread()) {
             return;
         }
+        if (!doSetupMqttConnection()) {
+            return;
+        }
         try {
             int shutdownCount = 5;
             int selectTimeout = 0;
@@ -1028,6 +1080,46 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
         synchronized (connections) {
             return Collections.unmodifiableCollection(new ArrayList<>(connections));
         }
+    }
+
+    @Override
+    public void onMqttConnect(MqttMessage message) {
+
+    }
+
+    @Override
+    public void onMqttSubscribe(MqttMessage message) {
+        log.info("onMqttSubscribe: message" + message);
+        Subscription subscription = new Subscription(
+                message.getClientId(),
+                message.getTopic()
+        );
+        mqttManager.addSubscription(subscription);
+        publish(message);
+    }
+
+    @Override
+    public void onMqttUnSubscribe(MqttMessage message) {
+        Subscription subscription = new Subscription(
+                message.getClientId(),
+                message.getTopic()
+        );
+        mqttManager.removeSubscription(subscription);
+        publish(message);
+    }
+
+    @Override
+    public void onMqttDisconnect(MqttMessage message) {
+
+    }
+
+    @Override
+    public void onMqttError(MqttMessage message, String reason) {
+
+    }
+
+    public void publish(MqttMessage message) {
+        mqttConnection.publish(message.getTopic(), message);
     }
 
     /**
