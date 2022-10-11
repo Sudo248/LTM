@@ -15,7 +15,6 @@ import org.sudo248.mqtt.MqttListener;
 import org.sudo248.mqtt.MqttManager;
 import org.sudo248.mqtt.database.H2Builder;
 import org.sudo248.mqtt.model.MqttMessage;
-import org.sudo248.mqtt.model.MqttMessageType;
 import org.sudo248.mqtt.model.Subscription;
 import org.sudo248.mqtt.repository.SubscriptionRepository;
 import org.sudo248.utils.SocketChannelIOUtils;
@@ -28,7 +27,6 @@ import java.net.Socket;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
-import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -494,7 +492,7 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
         SubscriptionRepository subscriptionRepository = h2Builder.subscriptionRepository();
         mqttManager = new MqttManager(subscriptionRepository);
         mqttManager.getSubscriptionFromDb();
-        mqttConnection = new MqttConnection(mqttManager.getPublishers(), this);
+        mqttConnection = new MqttConnection(mqttManager.getPublishers(), this, mqttManager.getSubscriberTopic());
         return true;
     }
 
@@ -958,7 +956,6 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
                 Thread.currentThread().interrupt();
             }
         }
-
     }
 
     @Override

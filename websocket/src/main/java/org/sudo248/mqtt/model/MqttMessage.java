@@ -32,6 +32,15 @@ public class MqttMessage implements Serializable {
         return type;
     }
 
+    public MqttMessage copy(Object payload) {
+        return new MqttMessage(
+                clientId,
+                topic,
+                type,
+                payload
+        );
+    }
+
     @Override
     public String toString() {
         return "{" + "\n" +

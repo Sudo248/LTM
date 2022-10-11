@@ -60,7 +60,7 @@ public class MqttManager {
             List<Subscriber> subscribers = new ArrayList<>();
             subscribers.add(new Subscriber(
                     subscription.getClientId(),
-                    false
+                    null
             ));
             publisher = new Publisher(subscription.getTopic(), subscribers);
             publishers.put(subscription.getTopic(), publisher);
@@ -68,7 +68,7 @@ public class MqttManager {
             publisher.getSubscribers().add(
                     new Subscriber(
                             subscription.getClientId(),
-                            false
+                            null
                     )
             );
         }

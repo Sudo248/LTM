@@ -33,37 +33,76 @@ class DemoClient {
         WebSocketClient socket = new WebSocketClient(new URI("ws://localhost:6026")) {
             @Override
             public void onMqttPublish(MqttMessage message) {
-                System.out.println(message);
-                if (message.getType() == MqttMessageType.SUBSCRIBE) {
-                    publish("Duong", "Hello everyone");
-                }
+                System.out.println("DemoClient: " + message);
             }
 
             @Override
             public void onMqttSubscribe(MqttMessage message) {
                 System.out.println(message);
-                if (message.getType() == MqttMessageType.SUBSCRIBE) {
-                    publish("Duong", "Hello everyone");
-                }
+            }
+
+            @Override
+            public void onMqttConnect(MqttMessage message) {
+                System.out.println("onMqttConnect: " + message);
             }
 
             @Override
             public void onOpen(ServerHandshake handshake) {
-                System.out.println("onOpen");
+                System.out.println("onOpen DemoClient");
                 setClientId(123);
-                // http://loclhost:8080/api/v1/user?123
-//                send(new Request<String>(
-//                        "/demo",
-//                        RequestMethod.GET,
-//                        new HashMap<>(),
-//                        new HashMap<>(
-//                                Map.of(
-//                                        "id", "123"
-//                                )
-//                        ),
-//                        null
-//                ));
-                subscribe("Duong");
+                connectMqtt();
+            }
+
+            @Override
+            public void onMessage(String message) {
+                System.out.println("onMessage");
+            }
+
+            @Override
+            public void onMessage(Object object) {
+                System.out.println(object);
+                Response<User> res = (Response<User>) object;
+                System.out.println(res.getPayload());
+            }
+
+            @Override
+            public void onClose(int code, String reason, boolean remote) {
+                System.out.println("onClose: " + code + " -> " + reason);
+            }
+
+            @Override
+            public void onError(Exception ex) {
+                System.out.println("onMqttError: " + ex);
+            }
+        };
+        socket.connect();
+    }
+}
+
+class DemoClient2 {
+    public static void main(String[] args) throws URISyntaxException {
+        WebSocketClient socket = new WebSocketClient(new URI("ws://localhost:6026")) {
+            @Override
+            public void onMqttPublish(MqttMessage message) {
+                System.out.println(message);
+            }
+
+            @Override
+            public void onMqttSubscribe(MqttMessage message) {
+                System.out.println(message);
+            }
+
+            @Override
+            public void onMqttConnect(MqttMessage message) {
+                System.out.println("onMqttConnect: " + message);
+                publish("Duong", "DemoClient2: Hello everyone ");
+            }
+
+            @Override
+            public void onOpen(ServerHandshake handshake) {
+                System.out.println("onOpen DemoClient2");
+                setClientId(1234);
+                connectMqtt();
             }
 
             @Override

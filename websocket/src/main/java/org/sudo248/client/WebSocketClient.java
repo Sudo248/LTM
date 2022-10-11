@@ -576,6 +576,10 @@ public abstract class WebSocketClient extends AbstractWebSocket implements Runna
         this.socketFactory = socketFactory;
     }
 
+    public void connectMqtt() {
+        connectMqtt(clientId);
+    }
+
     private void onMqttMessage(MqttMessage message) {
         MqttMessageType messageType = message.getType();
         switch (messageType) {
@@ -586,10 +590,14 @@ public abstract class WebSocketClient extends AbstractWebSocket implements Runna
                 onMqttPublish(message);
                 break;
             case SUBSCRIBE:
-                onMqttSubscribe(message);
+                if (message.getClientId() != clientId) {
+                    onMqttSubscribe(message);
+                }
                 break;
             case UNSUBSCRIBE:
-                onMqttUnSubscribe(message);
+                if (message.getClientId() != clientId) {
+                    onMqttUnSubscribe(message);
+                }
                 break;
             case DISCONNECT:
                 onMqttDisconnect(message);
@@ -679,7 +687,6 @@ public abstract class WebSocketClient extends AbstractWebSocket implements Runna
 
     @Override
     public void onWebSocketMessage(WebSocket ws, Object object) {
-        System.out.println("onWebSocketMessage: message " + object);
         if (object instanceof MqttMessage) {
             onMqttMessage((MqttMessage) object);
         } else {
@@ -891,7 +898,18 @@ public abstract class WebSocketClient extends AbstractWebSocket implements Runna
                 clientId,
                 topic,
                 MqttMessageType.SUBSCRIBE,
-                "null"
+                null
+        );
+        send(mqttMessage);
+    }
+
+    @Override
+    public void connectMqtt(Long clientId) {
+        MqttMessage mqttMessage = new MqttMessage(
+                clientId,
+                "Connect",
+                MqttMessageType.CONNECT,
+                null
         );
         send(mqttMessage);
     }

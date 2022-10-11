@@ -54,7 +54,7 @@ public class Publisher implements Publishable{
     @Override
     public void publish(MqttMessage message) {
         for (Subscriber subscriber : this.subscribers) {
-            if (subscriber.isValid()) {
+            if (subscriber.isOpen()) {
                 subscriber.getWebSocket().send(message);
             }
         }
