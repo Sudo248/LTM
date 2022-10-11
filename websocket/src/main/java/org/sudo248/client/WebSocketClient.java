@@ -1,5 +1,7 @@
 package org.sudo248.client;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sudo248.AbstractWebSocket;
 import org.sudo248.WebSocket;
 import org.sudo248.WebSocketImpl;
@@ -13,6 +15,10 @@ import org.sudo248.frames.Frame;
 import org.sudo248.handshake.Handshake;
 import org.sudo248.handshake.client.ClientHandshakeBuilderImpl;
 import org.sudo248.handshake.server.ServerHandshake;
+import org.sudo248.mqtt.Mqtt;
+import org.sudo248.mqtt.MqttListener;
+import org.sudo248.mqtt.model.MqttMessage;
+import org.sudo248.mqtt.model.MqttMessageType;
 import org.sudo248.protocols.Protocol;
 
 import javax.net.SocketFactory;
@@ -38,7 +44,7 @@ import java.util.concurrent.TimeUnit;
  * {@link #connect()}, then receive events like {@link #onMessage(String)} via the overloaded
  * methods and to {@link #send(String)} data to the server.
  */
-public abstract class WebSocketClient extends AbstractWebSocket implements Runnable, WebSocket {
+public abstract class WebSocketClient extends AbstractWebSocket implements Runnable, WebSocket, Mqtt, MqttListener {
 
     /**
      * The URI this channel is supposed to connect to.
@@ -112,6 +118,8 @@ public abstract class WebSocketClient extends AbstractWebSocket implements Runna
      * @see InetAddress
      */
     private DnsResolver dnsResolver;
+
+    private long clientId;
 
     /**
      * Constructs a WebSocketClient instance and sets it to the connect to the specified URI. The
@@ -568,6 +576,38 @@ public abstract class WebSocketClient extends AbstractWebSocket implements Runna
         this.socketFactory = socketFactory;
     }
 
+    public void connectMqtt() {
+        connectMqtt(clientId);
+    }
+
+    private void onMqttMessage(MqttMessage message) {
+        MqttMessageType messageType = message.getType();
+        switch (messageType) {
+            case CONNECT:
+                onMqttConnect(message);
+                break;
+            case PUBLISH:
+                onMqttPublish(message);
+                break;
+            case SUBSCRIBE:
+                if (message.getClientId() != clientId) {
+                    onMqttSubscribe(message);
+                }
+                break;
+            case UNSUBSCRIBE:
+                if (message.getClientId() != clientId) {
+                    onMqttUnSubscribe(message);
+                }
+                break;
+            case DISCONNECT:
+                onMqttDisconnect(message);
+                break;
+            default:
+                String error = "Unknown MessageType: " + messageType;
+                onMqttError(message, error);
+                break;
+        }
+    }
 
     /**
      * Initiates the websocket close handshake. This method does not block<br> In oder to make sure
@@ -647,7 +687,11 @@ public abstract class WebSocketClient extends AbstractWebSocket implements Runna
 
     @Override
     public void onWebSocketMessage(WebSocket ws, Object object) {
-        onMessage(object);
+        if (object instanceof MqttMessage) {
+            onMqttMessage((MqttMessage) object);
+        } else {
+            onMessage(object);
+        }
     }
 
     /**
@@ -827,6 +871,72 @@ public abstract class WebSocketClient extends AbstractWebSocket implements Runna
     @Override
     public Protocol getProtocol() {
         return engine.getProtocol();
+    }
+
+    public long getClientId() {
+        return clientId;
+    }
+
+    public void setClientId(long clientId) {
+        this.clientId = clientId;
+    }
+
+    @Override
+    public void publish(String topic, Object message) {
+        MqttMessage mqttMessage = new MqttMessage(
+                clientId,
+                topic,
+                MqttMessageType.PUBLISH,
+                message
+        );
+        send(mqttMessage);
+    }
+
+    @Override
+    public void subscribe(String topic) {
+        MqttMessage mqttMessage = new MqttMessage(
+                clientId,
+                topic,
+                MqttMessageType.SUBSCRIBE,
+                null
+        );
+        send(mqttMessage);
+    }
+
+    @Override
+    public void connectMqtt(Long clientId) {
+        MqttMessage mqttMessage = new MqttMessage(
+                clientId,
+                "Connect",
+                MqttMessageType.CONNECT,
+                null
+        );
+        send(mqttMessage);
+    }
+
+    @Override
+    public void onMqttConnect(MqttMessage message) {
+
+    }
+
+    @Override
+    public void onMqttSubscribe(MqttMessage message) {
+
+    }
+
+    @Override
+    public void onMqttUnSubscribe(MqttMessage message) {
+
+    }
+
+    @Override
+    public void onMqttDisconnect(MqttMessage message) {
+
+    }
+
+    @Override
+    public void onMqttError(MqttMessage message, String reason) {
+        onError(new Exception(reason));
     }
 
     @Override

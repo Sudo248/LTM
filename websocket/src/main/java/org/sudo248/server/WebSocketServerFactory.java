@@ -4,6 +4,7 @@ import org.sudo248.AbstractWebSocketListenerImpl;
 import org.sudo248.WebSocketImpl;
 import org.sudo248.drafts.Draft;
 import org.sudo248.WebSocketFactory;
+import org.sudo248.mqtt.MqttListener;
 
 import java.io.IOException;
 import java.nio.channels.ByteChannel;

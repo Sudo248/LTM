@@ -1065,7 +1065,7 @@ public class Draft_6455 extends Draft {
     }
 
     @Override
-    public List<Frame> translateFrame(ByteBuffer buffer) throws InvalidDataException {
+    public List<Frame>  translateFrame(ByteBuffer buffer) throws InvalidDataException {
         while (true) {
             List<Frame> frames = new LinkedList<>();
             Frame current;

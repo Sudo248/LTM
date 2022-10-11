@@ -1,6 +1,7 @@
 package org.sudo248;
 
 import org.sudo248.drafts.Draft;
+import org.sudo248.mqtt.MqttListener;
 
 import java.util.List;
 
@@ -15,7 +16,7 @@ public interface WebSocketFactory {
      * @param draft The draft which should be used
      * @return A WebsocketImpl
      */
-    WebSocket createWebSocket(AbstractWebSocketListenerImpl webSocketListener, Draft draft);
+    WebSocket createWebSocket(AbstractWebSocketListenerImpl webSocketListener , Draft draft);
 
     /**
      * Create a new Websocket with the provided listener, drafts and socket
