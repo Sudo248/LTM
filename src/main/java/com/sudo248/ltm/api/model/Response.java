@@ -8,7 +8,6 @@ public class Response<T extends Serializable> implements Serializable {
 
     private int code;
     private String message;
-
     private T payload;
 
     public Response() {

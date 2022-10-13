@@ -904,6 +904,17 @@ public abstract class WebSocketClient extends AbstractWebSocket implements Runna
     }
 
     @Override
+    public void unsubscribe(String topic) {
+        MqttMessage mqttMessage = new MqttMessage(
+                clientId,
+                topic,
+                MqttMessageType.UNSUBSCRIBE,
+                null
+        );
+        send(mqttMessage);
+    }
+
+    @Override
     public void connectMqtt(Long clientId) {
         MqttMessage mqttMessage = new MqttMessage(
                 clientId,

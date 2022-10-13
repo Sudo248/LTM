@@ -44,6 +44,7 @@ class DemoClient {
             @Override
             public void onMqttConnect(MqttMessage message) {
                 System.out.println("onMqttConnect: " + message);
+                //unsubscribe("Duong");
             }
 
             @Override
