@@ -33,6 +33,6 @@ public class DemoWsController implements WebSocketController<Request<String>, Re
 
     @Override
     public void onDelete(Request<String> request, Response<User> response) {
-
     }
+
 }
