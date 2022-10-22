@@ -33,7 +33,7 @@ public class H2Builder {
             throw new IllegalArgumentException("H2 store path can't be null or empty");
         }
         mvStore = new MVStore.Builder()
-                .fileName(storePath)
+                .fileName(storePath+"/Mqtt-database.db")
                 .autoCommitDisabled()
                 .open();
 
