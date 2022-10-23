@@ -1,3 +1,20 @@
 <resources>
     <string name="app_name">LTM</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="welcome_back">Welcome back</string>
+    <string name="sign_up">Sign up</string>
+    <string name="confirm_password">Confirm password</string>
+    <string name="new_user">New user?</string>
+    <string name="sign_in">Sign in</string>
+    <string name="waiting">Waiting...</string>
+    <string name="passwords_mismatch">Please make sure your passwords match</string>
+    <string name="welcome">Welcome\nto\nMesejing</string>
+    <string name="lets_go">Let\'s go</string>
+    <string name="recent_chat">Recent Chats</string>
+    <string name="video_call">Video Calls</string>
+    <string name="profile">Profile</string>
+    <string name="recent_chats">Recent Chats</string>
 </resources>

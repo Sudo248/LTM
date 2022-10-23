@@ -11,9 +11,9 @@ import kotlin.coroutines.EmptyCoroutineContext
  * @since 23:21 - 21/08/2022
  */
 
-fun <T> CoroutineScope.asyncHandler (
+fun <T> CoroutineScope.asyncHandler(
     context: CoroutineContext = EmptyCoroutineContext,
-    handleException: ((coroutineContext: CoroutineContext, throwable: Throwable) -> Unit)? =  null,
+    handleException: ((coroutineContext: CoroutineContext, throwable: Throwable) -> Unit)? = null,
     block: suspend CoroutineScope.() -> T
 ): Deferred<T> {
     var result: Deferred<T>? = null
@@ -30,9 +30,9 @@ fun <T> CoroutineScope.asyncHandler (
  *
  */
 
-fun CoroutineScope.launchHandler (
+fun CoroutineScope.launchHandler(
     context: CoroutineContext = EmptyCoroutineContext,
-    handleException: ((coroutineContext: CoroutineContext, throwable: Throwable) -> Unit)? =  null,
+    handleException: ((coroutineContext: CoroutineContext, throwable: Throwable) -> Unit)? = null,
     block: suspend CoroutineScope.() -> Unit
 ): Job {
     var result: Job? = null
@@ -43,3 +43,5 @@ fun CoroutineScope.launchHandler (
     result = launch(context + coroutineExceptionHandler, block = block)
     return result
 }
+
+

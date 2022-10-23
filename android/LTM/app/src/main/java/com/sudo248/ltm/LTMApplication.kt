@@ -1,6 +1,7 @@
 package com.sudo248.ltm
 
 import android.app.Application
+import com.sudo248.ltm.utils.SharedPreferenceUtils
 import dagger.hilt.android.HiltAndroidApp
 
 
@@ -13,5 +14,8 @@ import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
 class LTMApplication : Application() {
-
+    override fun onCreate() {
+        super.onCreate()
+        SharedPreferenceUtils.createApplicationSharePreference(this)
+    }
 }
