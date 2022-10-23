@@ -20,4 +20,7 @@ public class ProfileEntity implements Serializable {
 
     @Column(name = "is_active")
     private String isActive;
+
+    @Column(name = "user_id")
+    private Integer userId;
 }
