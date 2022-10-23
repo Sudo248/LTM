@@ -3,12 +3,13 @@ package com.sudo248.ltm.api.model.entities;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDate;
 
 @Entity
 @Data
 @Table(name = "message")
-public class MessageEntity {
+public class MessageEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -16,12 +17,19 @@ public class MessageEntity {
     private String content;
 
     @Column(name = "content_type")
-    private Enum contentType;
+    private ContentType contentType;
 
     @Column(name = "sender_id")
-    private int senderId;
+    private Integer senderId;
 
     @Column(name = "sent_at")
     private LocalDate sentAt;
 
+}
+
+enum ContentType {
+    TEXT,
+    VOICE,
+    IMAGE,
+    VIDEO
 }

@@ -3,12 +3,13 @@ package com.sudo248.ltm.api.model.entities;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDate;
 
 @Entity
 @Data
 @Table(name = "conversation")
-public class ConversationEntity {
+public class ConversationEntity  implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

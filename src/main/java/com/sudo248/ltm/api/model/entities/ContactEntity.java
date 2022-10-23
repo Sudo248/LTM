@@ -3,20 +3,27 @@ package com.sudo248.ltm.api.model.entities;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Data
 @Table(name = "contact")
-public class ContactEntity {
+public class ContactEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private Enum status;
+
+    private StatusContact status;
 
     @Column(name = "user_id")
-    private int userId;
+    private Integer userId;
 
     @Column(name = "friend_id")
-    private int friendId;
+    private Integer friendId;
+}
+
+enum StatusContact {
+    FRIEND,
+    NON_FRIEND
 }
