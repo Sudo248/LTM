@@ -1,22 +1,34 @@
 package com.sudo248.ltm.api.model;
 
-import com.sudo248.ltm.api.utils.GsonUtils;
-
 import java.io.Serializable;
 
+/**
+ * **Created by**
+ *
+ * @author *Sudo248*
+ * @since 00:23 - 23/10/2022
+ */
 public class Response<T extends Serializable> implements Serializable {
 
+    private static final long serialVersionUID = -5957071120338937220L;
+    private final long requestId;
     private int code;
     private String message;
     private T payload;
 
-    public Response() {
+    public Response(long requestId) {
+        this.requestId = requestId;
     }
 
-    public Response(int code, String message, T payload) {
+    public Response(long requestId, int code, String message, T payload) {
+        this.requestId = requestId;
         this.code = code;
         this.message = message;
         this.payload = payload;
+    }
+
+    public long getRequestId() {
+        return requestId;
     }
 
     public int getCode() {
@@ -50,9 +62,5 @@ public class Response<T extends Serializable> implements Serializable {
                 "message: " + message + "\n" +
                 "payload: " + payload + "\n" +
                 "}";
-    }
-
-    public String toJson() {
-        return GsonUtils.toJson(this);
     }
 }
