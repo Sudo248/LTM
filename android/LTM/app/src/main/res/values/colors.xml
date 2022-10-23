@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <color name="orange_ED">#ED4E13</color>
+<!--    main_light-->
+    <color name="purple_73">#739CFF</color>
+<!--    main_medium-->
+    <color name="purple_5D">#5D8BFB</color>
+<!--    main_light_plus-->
+    <color name="blue_E6">#E65EC7DD</color>
+
+    <color name="gray_dark">#373737</color>
+
+    <color name="gray_light">#80DADADA</color>
+
+<!--    game_corner-->
+    <color name="blue_2B">#2BB0CC</color>
+<!--    game_background-->
+    <color name="blue_5E">#5EC7DD</color>
+<!--    correct-->
+    <color name="green">#04C200</color>
+<!--    wrong-->
+    <color name="red">#F10000</color>
+    <color name="grey_4F">#4F5E7B</color>
+    <color name="blue_1B">#1B1A57</color>
+    <color name="grey_33">#333333</color>
+</resources>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_navigation"
+    app:startDestination="@id/recentChatsFragment">
+
+    <fragment
+        android:id="@+id/recentChatsFragment"
+        android:name="com.sudo248.ltm.RecentChatsFragment"
+        android:label="fragment_recent_chats"
+        tools:layout="@layout/fragment_recent_chats" />
+    <fragment
+        android:id="@+id/videoCallsFragment"
+        android:name="com.sudo248.ltm.VideoCallsFragment"
+        android:label="fragment_video_calls"
+        tools:layout="@layout/fragment_video_calls" />
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.sudo248.ltm.ProfileFragment"
+        android:label="fragment_profile"
+        tools:layout="@layout/fragment_profile" />
+</navigation>
