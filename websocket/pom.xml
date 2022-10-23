@@ -31,5 +31,5 @@
             <version>2.1.212</version>
         </dependency>
     </dependencies>
-    <packaging>pom</packaging>
+    <packaging>jar</packaging>
 </project>
