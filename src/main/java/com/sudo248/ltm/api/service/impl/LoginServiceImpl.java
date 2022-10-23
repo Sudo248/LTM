@@ -6,6 +6,7 @@ import com.sudo248.ltm.api.security.payload.LoginRequest;
 import com.sudo248.ltm.api.security.payload.Status;
 import com.sudo248.ltm.api.service.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -16,6 +17,7 @@ public class LoginServiceImpl implements LoginService {
     @Autowired
     private UserRepository userRepository;
 
+    BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     @Override
     public Status signUp(UserEntity user) {
         Status message = new Status();
@@ -31,6 +33,7 @@ public class LoginServiceImpl implements LoginService {
         } else {
             LocalDate now = LocalDate.now();
             user.setCreatedAt(now);
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
         }
         userRepository.save(user);
         return message;
@@ -40,10 +43,7 @@ public class LoginServiceImpl implements LoginService {
     public Boolean checkAccount(LoginRequest loginRequest) {
         String username = loginRequest.getUsername();
         UserEntity user = userRepository.findByUsername(username);
-        if (user.getPassword() == loginRequest.getPassword()) {
-            return true;
-        }
-        return false;
+        return user.getPassword().equals(loginRequest.getPassword());
     }
 
     @Override

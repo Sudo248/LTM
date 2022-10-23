@@ -13,14 +13,25 @@ import com.sudo248.ltm.websocket.controller.WebSocketController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@WsController (path = "/users")
-public class UserController implements WebSocketController<Request<String>, Response<String>> {
+@WsController (path = "/user/login")
+public class UserLoginController implements WebSocketController<Request<LoginRequest>, Response<String>> {
 
     @Autowired
     LoginService loginService;
 
-    @Autowired
-    private UserService userService;
+    @Override
+    public void onPost(Request<LoginRequest> request, Response<String> response) {
+        String message = "";
+        try {
+            if (loginService.checkAccount((LoginRequest) request.getParams())) {
+                message = "Đăng nhập thành công.";
+            }
+        }
+        catch (Exception e) {
+            message = loginService.checkLogin(request.getParams().get("username"));
+        }
+        response.setPayload(message);
+    }
 
     @WsPost(path = "/login")
     public String login(@RequestBody LoginRequest loginRequest) {
@@ -36,28 +47,20 @@ public class UserController implements WebSocketController<Request<String>, Resp
         return message;
     }
 
-    @WsPost(path = "/signup")
-    public Status signUp(@RequestBody UserEntity user) {
-        return loginService.signUp(user);
-    }
-
     @Override
-    public void onGet(Request<String> request, Response<String> response) {
+    public void onGet(Request<LoginRequest> request, Response<String> response) {
 
     }
 
-    @Override
-    public void onPost(Request<String> request, Response<String> response) {
-        WebSocketController.super.onPost(request, response);
-    }
+
 
     @Override
-    public void onPut(Request<String> request, Response<String> response) {
+    public void onPut(Request<LoginRequest> request, Response<String> response) {
         WebSocketController.super.onPut(request, response);
     }
 
     @Override
-    public void onDelete(Request<String> request, Response<String> response) {
+    public void onDelete(Request<LoginRequest> request, Response<String> response) {
         WebSocketController.super.onDelete(request, response);
     }
 }
