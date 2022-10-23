@@ -25,5 +25,5 @@ public class ContactEntity implements Serializable {
 
 enum StatusContact {
     FRIEND,
-    NON_FRIEND
+    STRANGER
 }
