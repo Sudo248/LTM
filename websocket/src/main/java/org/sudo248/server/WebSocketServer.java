@@ -44,7 +44,7 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
      */
     private static final int AVAILABLE_PROCESSORS = Runtime.getRuntime().availableProcessors();
 
-    private static final String pathStore = "websocket/H2DB/Mqtt-database.db";
+    private final String pathStore;
 
     /**
      * Logger instance
@@ -122,40 +122,50 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
     /**
      * Creates a WebSocketServer that will attempt to listen on port <var>WebSocketImpl.DEFAULT_PORT</var>.
      *
-     * @see #WebSocketServer(InetSocketAddress, int, List, Collection) more details here
+     * @see #WebSocketServer(String, InetSocketAddress, int, List, Collection) more details here
      */
-    public WebSocketServer() {
-        this(new InetSocketAddress(WebSocketImpl.DEFAULT_WSS_PORT), AVAILABLE_PROCESSORS, null);
+    public WebSocketServer(String pathStore) {
+        this(pathStore, new InetSocketAddress(WebSocketImpl.DEFAULT_WSS_PORT), AVAILABLE_PROCESSORS, null);
     }
 
     /**
      * Creates a WebSocketServer that will attempt to bind/listen on the given <var>address</var>.
      *
      * @param address The address to listen to
-     * @see #WebSocketServer(InetSocketAddress, int, List, Collection) more details here
+     * @see #WebSocketServer(String, InetSocketAddress, int, List, Collection) more details here
+     */
+    public WebSocketServer(String pathStore, InetSocketAddress address) {
+        this(pathStore, address, AVAILABLE_PROCESSORS, null);
+    }
+
+    /**
+     * Creates a WebSocketServer that will attempt to bind/listen on the given <var>address</var>.
+     *
+     * @param address The address to listen to
+     * @see #WebSocketServer(String, InetSocketAddress, int, List, Collection) more details here
      */
     public WebSocketServer(InetSocketAddress address) {
-        this(address, AVAILABLE_PROCESSORS, null);
+        this("", address, AVAILABLE_PROCESSORS, null);
     }
 
     /**
      * @param address      The address (host:port) this server should listen on.
      * @param decoderCount The number of {@link WebSocketServerWorker}s that will be used to process the
      *                     incoming network data. By default this will be <code>Runtime.getRuntime().availableProcessors()</code>
-     * @see #WebSocketServer(InetSocketAddress, int, List, Collection) more details here
+     * @see #WebSocketServer(String, InetSocketAddress, int, List, Collection) more details here
      */
-    public WebSocketServer(InetSocketAddress address, int decoderCount) {
-        this(address, decoderCount, null);
+    public WebSocketServer(String pathStore, InetSocketAddress address, int decoderCount) {
+        this(pathStore, address, decoderCount, null);
     }
 
     /**
      * @param address The address (host:port) this server should listen on.
      * @param drafts  The versions of the WebSocket protocol that this server instance should comply
      *                to. Clients that use an other protocol version will be rejected.
-     * @see #WebSocketServer(InetSocketAddress, int, List, Collection) more details here
+     * @see #WebSocketServer(String, InetSocketAddress, int, List, Collection) more details here
      */
-    public WebSocketServer(InetSocketAddress address, List<Draft> drafts) {
-        this(address, AVAILABLE_PROCESSORS, drafts);
+    public WebSocketServer(String pathStore, InetSocketAddress address, List<Draft> drafts) {
+        this(pathStore, address, AVAILABLE_PROCESSORS, drafts);
     }
 
     /**
@@ -164,10 +174,10 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
      *                     incoming network data. By default this will be <code>Runtime.getRuntime().availableProcessors()</code>
      * @param drafts       The versions of the WebSocket protocol that this server instance should
      *                     comply to. Clients that use an other protocol version will be rejected.
-     * @see #WebSocketServer(InetSocketAddress, int, List, Collection) more details here
+     * @see #WebSocketServer(String, InetSocketAddress, int, List, Collection) more details here
      */
-    public WebSocketServer(InetSocketAddress address, int decoderCount, List<Draft> drafts) {
-        this(address, decoderCount, drafts, new HashSet<>());
+    public WebSocketServer(String pathStore, InetSocketAddress address, int decoderCount, List<Draft> drafts) {
+        this(pathStore, address, decoderCount, drafts, new HashSet<>());
     }
 
     /**
@@ -193,13 +203,14 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
      * @see <a href="https://github.com/TooTallNate/Java-WebSocket/wiki/Drafts" > more about
      * drafts</a>
      */
-    public WebSocketServer(InetSocketAddress address, int decoderCount, List<Draft> drafts,
+    public WebSocketServer(String pathStore, InetSocketAddress address, int decoderCount, List<Draft> drafts,
                            Collection<WebSocket> connectionsContainer) {
         if (address == null || decoderCount < 1 || connectionsContainer == null) {
             throw new IllegalArgumentException(
                     "address and connections container must not be null and you need at least 1 decoder");
         }
 
+        this.pathStore = pathStore;
         if (drafts == null) {
             this.drafts = Collections.emptyList();
         } else {
@@ -628,7 +639,7 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
      * This method performs remove operations on the connection and therefore also gives control over
      * whether the operation shall be synchronized
      * <p>
-     * {@link #WebSocketServer(InetSocketAddress, int, List, Collection)} allows to specify a
+     * {@link #WebSocketServer(String,InetSocketAddress, int, List, Collection)} allows to specify a
      * collection which will be used to store current connections in.<br> Depending on the type on the
      * connection, modifications of that collection may have to be synchronized.
      *

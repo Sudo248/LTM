@@ -19,7 +19,7 @@ public class WebSocketServerImpl extends WebSocketServer {
     private final Logger log = LoggerFactory.getLogger(WebSocketServerImpl.class);
 
     public WebSocketServerImpl() {
-        super(new InetSocketAddress(Const.WS_HOST, Const.WS_PORT));
+        super(Const.PATH_STORE, new InetSocketAddress(Const.WS_HOST, Const.WS_PORT));
     }
 
     @Override
@@ -61,7 +61,7 @@ public class WebSocketServerImpl extends WebSocketServer {
         WebSocketController<Request<?>, Response<?>> controller =
                 WsControllerProvider.getInstance().getController(path);
 
-        Response<?> response = new Response<>();
+        Response<?> response = new Response<>(request.getId());
         switch (method) {
             case GET:
                 controller.onGet(request, response);
