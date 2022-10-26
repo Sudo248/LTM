@@ -14,7 +14,6 @@ public class Account implements Serializable {
     private static final long serialVersionUID = -2541856992654826281L;
 
     private Long id;
-    private String username;
     private String password;
     private String email;
     private LocalDate createdAt;
@@ -27,9 +26,8 @@ public class Account implements Serializable {
         this.email = email;
     }
 
-    public Account(Long id, String username, String password, String email, LocalDate createdAt) {
+    public Account(Long id, String password, String email, LocalDate createdAt) {
         this.id = id;
-        this.username = username;
         this.password = password;
         this.email = email;
         this.createdAt = createdAt;
@@ -41,14 +39,6 @@ public class Account implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     public String getPassword() {

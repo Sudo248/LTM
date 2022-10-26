@@ -3,16 +3,17 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'com.google.dagger.hilt.android'
     id 'kotlin-kapt'
+    id 'androidx.navigation.safeargs'
 }
 
 android {
     namespace 'com.sudo248.ltm'
-    compileSdk 32
+    compileSdk 33
 
     defaultConfig {
         applicationId "com.sudo248.ltm"
-        minSdk 24
-        targetSdk 32
+        minSdk 26
+        targetSdk 33
         versionCode 1
         versionName "1.0"
 
@@ -60,6 +61,18 @@ dependencies {
     implementation("androidx.navigation:navigation-ui-ktx:2.5.2")
 
     implementation 'com.github.bumptech.glide:glide:4.14.2'
+
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.5.1"
+
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+
+    implementation("androidx.camera:camera-core:1.2.0-rc01")
+    implementation("androidx.camera:camera-camera2:1.2.0-rc01")
+    implementation("androidx.camera:camera-video:1.2.0-rc01")
+
+    implementation "androidx.navigation:navigation-fragment-ktx:2.5.3"
+    implementation "androidx.navigation:navigation-ui-ktx:2.5.3"
+
 }
 
 kapt {

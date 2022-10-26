@@ -3,11 +3,17 @@ package com.sudo248.ltm.api.model.auth;
 import java.io.Serializable;
 import java.time.LocalDate;
 
+/**
+ * **Created by**
+ *
+ * @author *Sudo248*
+ * @since 09:53 - 23/10/2022
+ */
 public class Account implements Serializable {
+
     private static final long serialVersionUID = -2541856992654826281L;
 
     private Long id;
-    private String username;
     private String password;
     private String email;
     private LocalDate createdAt;
@@ -15,15 +21,13 @@ public class Account implements Serializable {
     public Account() {
     }
 
-    public Account(String username, String password, String email) {
-        this.username = username;
+    public Account(String email, String password) {
         this.password = password;
         this.email = email;
     }
 
-    public Account(Long id, String username, String password, String email, LocalDate createdAt) {
+    public Account(Long id, String password, String email, LocalDate createdAt) {
         this.id = id;
-        this.username = username;
         this.password = password;
         this.email = email;
         this.createdAt = createdAt;
@@ -35,14 +39,6 @@ public class Account implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     public String getPassword() {

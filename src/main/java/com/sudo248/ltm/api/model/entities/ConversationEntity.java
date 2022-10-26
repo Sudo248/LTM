@@ -16,7 +16,7 @@ public class ConversationEntity  implements Serializable {
     private Integer id;
     private String name;
     private Type type;
-
+    private String avtUrl;
     @Column(name = "created_at")
     private LocalDate createdAt;
 }
