@@ -2,12 +2,9 @@ package com.sudo248.ltm.data.repository.recent_chat
 
 import com.sudo248.ltm.api.model.Request
 import com.sudo248.ltm.api.model.RequestMethod
-import com.sudo248.ltm.api.model.Response
 import com.sudo248.ltm.common.Constant
-import com.sudo248.ltm.common.PrefKey
 import com.sudo248.ltm.common.Resource
-import com.sudo248.ltm.ui.uimodel.RecentChat
-import com.sudo248.ltm.utils.SharedPreferenceUtils
+import com.sudo248.ltm.domain.model.RecentChat
 import com.sudo248.ltm.websocket.WebSocketService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*

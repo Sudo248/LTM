@@ -1,6 +1,6 @@
-package com.sudo248.ltm.ui.uimodel
+package com.sudo248.ltm.domain.model
 
-import java.time.LocalDateTime
+import java.time.LocalDate
 
 
 /**
@@ -14,5 +14,5 @@ data class RecentChat(
         val avtUrl: String,
         val name: String,
         val description: String,
-        val time: LocalDateTime
+        val time: LocalDate
 )

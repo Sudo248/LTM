@@ -1,6 +1,6 @@
 package com.sudo248.ltm.utils
 
-import java.time.LocalDateTime
+import java.time.LocalDate
 
 
 /**
@@ -10,7 +10,7 @@ import java.time.LocalDateTime
  * @since 20:19 - 23/10/2022
  */
 object DateUtils {
-    fun convertToString(time: LocalDateTime): String {
+    fun convertToString(time: LocalDate): String {
         return "20:30"
     }
 }

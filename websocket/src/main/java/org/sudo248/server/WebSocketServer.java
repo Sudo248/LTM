@@ -15,6 +15,7 @@ import org.sudo248.mqtt.MqttListener;
 import org.sudo248.mqtt.MqttManager;
 import org.sudo248.mqtt.database.H2Builder;
 import org.sudo248.mqtt.model.MqttMessage;
+import org.sudo248.mqtt.model.MqttMessageType;
 import org.sudo248.mqtt.model.Subscription;
 import org.sudo248.mqtt.repository.SubscriptionRepository;
 import org.sudo248.utils.SocketChannelIOUtils;
@@ -1103,7 +1104,7 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
                 message.getTopic()
         );
         mqttManager.addSubscription(subscription);
-        publish(message);
+        publish(message.copy("New person join conversation"));
     }
 
     @Override

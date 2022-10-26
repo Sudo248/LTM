@@ -7,17 +7,30 @@
 
     <fragment
         android:id="@+id/recentChatsFragment"
-        android:name="com.sudo248.ltm.RecentChatsFragment"
+        android:name="com.sudo248.ltm.ui.activity.main.fragment.recent_chat.RecentChatsFragment"
         android:label="fragment_recent_chats"
-        tools:layout="@layout/fragment_recent_chats" />
+        tools:layout="@layout/fragment_recent_chats" >
+        <action
+            android:id="@+id/action_recentChatsFragment_to_chatFragment"
+            app:destination="@id/chatFragment" />
+    </fragment>
     <fragment
         android:id="@+id/videoCallsFragment"
-        android:name="com.sudo248.ltm.VideoCallsFragment"
+        android:name="com.sudo248.ltm.ui.activity.main.fragment.video_call.VideoCallsFragment"
         android:label="fragment_video_calls"
         tools:layout="@layout/fragment_video_calls" />
     <fragment
         android:id="@+id/profileFragment"
-        android:name="com.sudo248.ltm.ProfileFragment"
+        android:name="com.sudo248.ltm.ui.activity.main.fragment.profile.ProfileFragment"
         android:label="fragment_profile"
         tools:layout="@layout/fragment_profile" />
+    <fragment
+        android:id="@+id/chatFragment"
+        android:name="com.sudo248.ltm.ui.activity.main.fragment.chat.ChatFragment"
+        android:label="fragment_chat"
+        tools:layout="@layout/fragment_chat" >
+        <argument
+            android:name="conversation"
+            app:argType="com.sudo248.ltm.api.model.conversation.Conversation"/>
+    </fragment>
 </navigation>
