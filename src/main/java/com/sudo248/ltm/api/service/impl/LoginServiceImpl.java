@@ -5,6 +5,8 @@ import com.sudo248.ltm.api.repository.UserRepository;
 import com.sudo248.ltm.api.security.payload.LoginRequest;
 import com.sudo248.ltm.api.security.payload.Status;
 import com.sudo248.ltm.api.service.LoginService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,38 +19,40 @@ public class LoginServiceImpl implements LoginService {
     @Autowired
     private UserRepository userRepository;
 
+    private Logger logger = LoggerFactory.getLogger(LoginServiceImpl.class);
+
     BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     @Override
     public Status signUp(UserEntity user) {
         Status message = new Status();
         message.setSuccess(false);
-
-        UserEntity userByName = userRepository.findByUsername(user.getUsername());
         UserEntity userByEmail = userRepository.findByEmail(user.getEmail());
-
-        if (userByName != null) {
-            message.setMessage("Username da ton tai.");
-        } else if (userByEmail != null) {
-            message.setMessage("Email da ton tai.");
+        if (userByEmail != null) {
+            message.setMessage("Email đã tồn tại.");
+            return message;
         } else {
-            LocalDate now = LocalDate.now();
-            user.setCreatedAt(now);
+            user.setCreatedAt(LocalDate.now());
             user.setPassword(passwordEncoder.encode(user.getPassword()));
         }
         userRepository.save(user);
+        message.setSuccess(true);
+        message.setMessage("Tạo tài khoảnh thành công.");
         return message;
     }
 
     @Override
-    public Boolean checkAccount(LoginRequest loginRequest) {
-        String username = loginRequest.getUsername();
-        UserEntity user = userRepository.findByUsername(username);
-        return user.getPassword().equals(loginRequest.getPassword());
+    public Integer checkAccount(LoginRequest loginRequest) {
+        String email = loginRequest.getEmail();
+        UserEntity user = userRepository.findByEmail(email);
+        if (passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())){
+            return user.getId();
+        }
+        return null;
     }
 
     @Override
-    public String checkLogin(String username) {
-        UserEntity user = userRepository.findByUsername(username);
+    public String checkLogin(String email) {
+        UserEntity user = userRepository.findByEmail(email);
         if (user == null) {
             return "Tài khoản không hợp lệ, vui lòng kiểm tra lại.";
         }
@@ -56,6 +60,4 @@ public class LoginServiceImpl implements LoginService {
             return "Mật khẩu chưa chính xác, vui lòng kiểm tra lại.";
         }
     }
-
-
 }

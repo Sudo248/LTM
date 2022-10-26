@@ -14,7 +14,6 @@ public class UserEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private String username;
     private String password;
     private String email;
 
@@ -22,4 +21,15 @@ public class UserEntity implements Serializable {
     private LocalDate createdAt;
 
     private boolean status = true;
+
+    public UserEntity() {
+    }
+
+    public UserEntity(Integer id, String email, String password, LocalDate createdAt, boolean status) {
+        this.id = id;
+        this.email = email;
+        this.password = password;
+        this.createdAt = createdAt;
+        this.status = status;
+    }
 }

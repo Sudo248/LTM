@@ -27,7 +27,10 @@ class SplashActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
-        socketService.connect()
+
+        if (!socketService.isOpen) {
+            socketService.connect()
+        }
 
         findViewById<LinearLayout>(R.id.ln_let_go).setOnClickListener {
             nextActivity()

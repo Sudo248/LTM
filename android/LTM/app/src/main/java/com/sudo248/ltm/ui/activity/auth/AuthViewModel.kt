@@ -28,14 +28,15 @@ class AuthViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val TAG = "AuthViewModel"
-    private var _email: MutableLiveData<String> = MutableLiveData()
-    val email: LiveData<String> = _email
+    var email: String = ""
 
-    private var _password: MutableLiveData<String> = MutableLiveData()
-    val password: LiveData<String> = _password
+    var password: String  = ""
 
-    private var _confirmPassword: MutableLiveData<String> = MutableLiveData()
-    val confirmPassword: LiveData<String> = _confirmPassword
+    var confirmPassword: String = ""
+        set(value) {
+            field = value
+            comparePassword()
+        }
 
     private var _passwordsIsEqual: MutableLiveData<Boolean> = MutableLiveData(true)
     val passwordsIsEqual: LiveData<Boolean> = _passwordsIsEqual
@@ -43,28 +44,13 @@ class AuthViewModel @Inject constructor(
     private var _result: MutableLiveData<Resource<Boolean>> = MutableLiveData()
     val result: LiveData<Resource<Boolean>> = _result
 
-    fun setEmail(email: String) {
-//        Log.d(TAG, "setEmail: $email")
-        _email.postValue(email)
-    }
-
-    fun setPassword(password: String) {
-//        Log.d(TAG, "setPassword: $password")
-        _password.postValue(password)
-    }
-
-    fun setConfirmPassword(confirmPassword: String) {
-//        Log.e(TAG, "comparePassword: ${this.confirmPassword.value}, ${password.value}")
-        _confirmPassword.postValue(confirmPassword)
-    }
-
-    fun comparePassword() {
-        _passwordsIsEqual.postValue(confirmPassword.value == password.value)
+    private fun comparePassword() {
+        _passwordsIsEqual.postValue(confirmPassword == password)
     }
 
     fun login() {
-        Log.e(TAG, "signIn:${password.value}, ${email.value}")
-        if (email.value.isNullOrBlank() || password.value.isNullOrBlank()) {
+        Log.e(TAG, "signIn: ${password}, $email")
+        if (email.isBlank() || password.isBlank()) {
             Log.e(TAG, "Not empty email or password")
             _result.postValue(Resource.Error("Not empty email or password"))
         } else {
@@ -75,8 +61,8 @@ class AuthViewModel @Inject constructor(
             ) {
                 authRepo.login(
                     Account(
-                        email.value,
-                        Utils.hash(password.value.toString())
+                        email,
+                        Utils.hash(password)
                     )
                 ).collect(_result::postValue)
             }
@@ -84,7 +70,7 @@ class AuthViewModel @Inject constructor(
     }
 
     fun signUp() {
-        Log.d(TAG, "signUp: ${password.value} {${email.value}")
+        Log.d(TAG, "signUp: $password $email")
         viewModelScope.launchHandler(
             handleException = { _, throwable ->
                 _result.postValue(Resource.Error("${throwable.message}"))
@@ -92,8 +78,8 @@ class AuthViewModel @Inject constructor(
         ) {
             authRepo.signup(
                 Account(
-                   email.value,
-                   Utils.hash(password.value.toString())
+                   email,
+                   Utils.hash(password)
                 )
             ).collect(_result::postValue)
         }

@@ -32,15 +32,15 @@ class AuthRepositoryImpl @Inject constructor(
         emit(Resource.Loading)
         val request = Request<Account>()
         request.path = Constant.PATH_LOGIN
-        request.method = RequestMethod.GET
+        request.method = RequestMethod.POST
         request.payload = account
         socketService.send(request)
         socketService.responseFlow
             .filter { it.requestId == request.id }
             .collect {
                 val response = it as Response<Account>
-                Log.d("sudoo", "login: $response")
                 if (response.code == 200) {
+                    Log.d("sudoo", "login: ${request.payload.id}")
                     saveId(response.payload.id)
                     socketService.clientId = response.payload.id
                     emit(Resource.Success(true))
@@ -61,7 +61,7 @@ class AuthRepositoryImpl @Inject constructor(
             .filter { it.requestId == request.id }
             .collect {
             val response = it as Response<Account>
-            if (response.code == 200) {
+            if (response.code == 201) {
                 saveId(response.payload.id)
                 socketService.clientId = response.payload.id
                 emit(Resource.Success(true))

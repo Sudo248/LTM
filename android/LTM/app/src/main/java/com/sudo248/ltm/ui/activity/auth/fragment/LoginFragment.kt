@@ -35,14 +35,14 @@ class LoginFragment : Fragment() {
         binding.apply {
             edtEmail.doOnTextChanged { text, _, _, _ ->
                 if (!text.isNullOrBlank()){
-                    viewModel.setEmail(text.toString())
+                    viewModel.email = text.toString()
                 }
                 tilPassword.error = null
             }
 
             edtPassword.doOnTextChanged { text, _, _, _ ->
                 if (!text.isNullOrBlank()){
-                    viewModel.setPassword(text.toString())
+                    viewModel.password = text.toString()
                 }
                 tilPassword.error = null
             }

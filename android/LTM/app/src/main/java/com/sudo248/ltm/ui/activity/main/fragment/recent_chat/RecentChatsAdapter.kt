@@ -1,11 +1,12 @@
 package com.sudo248.ltm.ui.activity.main.fragment.recent_chat
 
+import android.annotation.SuppressLint
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
+import com.sudo248.ltm.api.model.conversation.Conversation
 import com.sudo248.ltm.databinding.ItemRecentChatBinding
-import com.sudo248.ltm.ui.uimodel.RecentChat
 import com.sudo248.ltm.utils.DateUtils
 
 
@@ -16,20 +17,27 @@ import com.sudo248.ltm.utils.DateUtils
  * @since 19:56 - 23/10/2022
  */
 class RecentChatsAdapter(
-    private val onClickItem: (RecentChat, Int) -> Unit
+    private val onClickItem: (Conversation, Int) -> Unit
 ) : RecyclerView.Adapter<RecentChatsAdapter.RecentChatsViewHolder>() {
 
-    private var listChats: MutableList<RecentChat> = mutableListOf()
+    private var listChats: MutableList<Conversation> = mutableListOf()
 
-    fun submitList(list: MutableList<RecentChat>) {
-        listChats = list
+    @SuppressLint("NotifyDataSetChanged")
+    fun submitList(list: List<Conversation>) {
+        listChats.clear()
+        listChats.addAll(list)
         notifyDataSetChanged()
     }
 
-    fun updateItem(position: Int, chat: RecentChat) {
+    fun updateItem(position: Int, conversation: Conversation) {
         notifyItemRemoved(position)
         listChats.removeAt(position)
-        listChats.add(0, chat)
+        listChats.add(0, conversation)
+        notifyItemInserted(0)
+    }
+
+    fun newItem(conversation: Conversation) {
+        listChats.add(0, conversation)
         notifyItemInserted(0)
     }
 
@@ -50,15 +58,16 @@ class RecentChatsAdapter(
     override fun getItemCount(): Int = listChats.size
 
     inner class RecentChatsViewHolder(private val binding: ItemRecentChatBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun onBind(chat: RecentChat, position: Int) {
+        fun onBind(conversation: Conversation, position: Int) {
+            Log.d("sudoo", "onBind: $position")
             binding.apply {
                 root.setOnClickListener {
-                    onClickItem(chat, position)
+                    onClickItem(conversation, position)
                 }
-                txtTitle.text = chat.name
-                txtDescription.text = chat.description
-                Glide.with(itemView).load(chat.avtUrl).into(imgAvatar)
-                txtTime.text = DateUtils.convertToString(chat.time)
+                txtTitle.text = conversation.name
+                txtDescription.text = conversation.description
+//                Glide.with(itemView).load(conversation.avtUrl).into(imgAvatar)
+                txtTime.text = DateUtils.convertToString(conversation.createAt)
             }
         }
     }

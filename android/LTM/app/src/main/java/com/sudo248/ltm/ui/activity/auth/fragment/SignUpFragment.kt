@@ -36,21 +36,21 @@ class SignUpFragment : Fragment() {
             tilConfirmPassword.error = null
             edtEmail.doOnTextChanged { text, _, _, _ ->
                 if (!text.isNullOrBlank()){
-                    viewModel.setEmail(text.toString())
+                    viewModel.email = text.toString()
                 }
                 tilConfirmPassword.error = null
             }
 
             edtPassword.doOnTextChanged { text, _, _, _ ->
                 if (!text.isNullOrBlank()){
-                    viewModel.setPassword(text.toString())
+                    viewModel.password = text.toString()
                 }
                 tilConfirmPassword.error = null
             }
 
             edtConfirmPassword.doOnTextChanged { text, _, _, _ ->
                 if (!text.isNullOrBlank()){
-                    viewModel.setConfirmPassword(text.toString())
+                    viewModel.confirmPassword = text.toString()
                 }
                 tilConfirmPassword.error = null
             }
@@ -58,9 +58,6 @@ class SignUpFragment : Fragment() {
     }
 
     private fun observer() {
-        viewModel.confirmPassword.observe(viewLifecycleOwner) {
-            viewModel.comparePassword()
-        }
 
         viewModel.passwordsIsEqual.observe(viewLifecycleOwner) {
             if (!it) {
