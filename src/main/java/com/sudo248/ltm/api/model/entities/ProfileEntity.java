@@ -19,7 +19,7 @@ public class ProfileEntity implements Serializable {
     private String image;
 
     @Column(name = "is_active")
-    private String isActive;
+    private Boolean isActive;
 
     @Column(name = "user_id")
     private Integer userId;

@@ -14,7 +14,8 @@ public class ContactEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private StatusContact status;
+    @Column(name = "contact_type")
+    private ContactType contactType;
 
     @Column(name = "user_id")
     private Integer userId;
@@ -23,7 +24,7 @@ public class ContactEntity implements Serializable {
     private Integer friendId;
 }
 
-enum StatusContact {
+enum ContactType {
     FRIEND,
     STRANGER
 }
