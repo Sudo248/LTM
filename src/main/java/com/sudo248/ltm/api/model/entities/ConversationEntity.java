@@ -15,13 +15,13 @@ public class ConversationEntity  implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;
-    private Type type;
+    private ConversationType type;
     private String avtUrl;
     @Column(name = "created_at")
     private LocalDate createdAt;
 }
 
-enum Type {
+enum ConversationType {
     GROUP,
     P2P
 }

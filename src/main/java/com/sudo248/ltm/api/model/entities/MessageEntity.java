@@ -25,6 +25,9 @@ public class MessageEntity implements Serializable {
     @Column(name = "sent_at")
     private LocalDate sentAt;
 
+    @Column(name = "conversation_id")
+    private Integer conversationId;
+
 }
 
 enum ContentType {
