@@ -16,6 +16,7 @@ public class UserConversationController implements WebSocketController<Request<I
 
     @Autowired
     private UserConversationService userConversationService;
+    // lay cac phong dang chat cua user
     @Override
     public void onGet(Request<Integer> request, Response<UserConversationEntity> response) {
         String userId = request.getParams().get("userId");
