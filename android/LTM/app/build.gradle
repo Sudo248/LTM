@@ -4,7 +4,6 @@ plugins {
     id 'com.google.dagger.hilt.android'
     id 'kotlin-kapt'
 }
-
 android {
     namespace 'com.sudo248.ltm'
     compileSdk 32
