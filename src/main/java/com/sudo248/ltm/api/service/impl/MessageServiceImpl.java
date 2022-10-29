@@ -14,7 +14,7 @@ public class MessageServiceImpl implements MessageService {
     @Autowired
     private MessageRepository messageRepository;
     @Override
-    public List<MessageEntity> getAllMessage(Integer conversationId, Integer userId) {
-        return messageRepository.getAllByConversationIdAndSenderId(conversationId, userId);
+    public List<MessageEntity> getAllMessage(Integer conversationId) {
+        return messageRepository.getAllByConversationId(conversationId);
     }
 }

@@ -21,7 +21,6 @@ public class ConversationController implements WebSocketController<Request<Conve
         response.setCode(200);
         response.setMessage("success");
         response.setPayload(conversationService.getConversationById(Integer.parseInt(conversationId)));
-
     }
 
     @Override
@@ -39,7 +38,10 @@ public class ConversationController implements WebSocketController<Request<Conve
 
     @Override
     public void onDelete(Request<ConversationEntity> request, Response<ConversationEntity> response) {
-//        String conversationId = request.getParams().get("conversationId");
-//        response.setPayload(conversationService.delete(Integer.parseInt(conversationId)));
+        String conversationId = request.getParams().get("conversationId");
+        conversationService.delete(Integer.parseInt(conversationId));
+        response.setPayload(null);
+        response.setCode(200);
+        response.setMessage("success");
     }
 }

@@ -16,4 +16,11 @@ public class ContactServiceImpl implements ContactService {
     public List<ContactEntity> getAllContact(Integer userId) {
         return contactRepository.getAllByUserId(userId);
     }
+
+    @Override
+    public List<ContactEntity> getAllFriend(Integer userId) {
+        return contactRepository.getAllFriendByUserId(userId);
+    }
+
+
 }

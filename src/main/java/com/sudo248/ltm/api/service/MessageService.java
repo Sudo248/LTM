@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface MessageService {
 
-    List<MessageEntity> getAllMessage(Integer conversationId, Integer userId);
+    List<MessageEntity> getAllMessage(Integer conversationId);
 }

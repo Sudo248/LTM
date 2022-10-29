@@ -5,26 +5,32 @@ import com.sudo248.ltm.api.model.Response;
 import com.sudo248.ltm.api.model.entities.ContactEntity;
 import com.sudo248.ltm.websocket.annotation.WsController;
 import com.sudo248.ltm.websocket.controller.WebSocketController;
+import org.hibernate.mapping.Array;
+
+import java.util.ArrayList;
 
 @WsController(path = "/contact")
-public class ContactController implements WebSocketController<Request<ContactEntity>, Response<String>>{
+public class ContactController implements WebSocketController<Request<ContactEntity>, Response<ArrayList<ContactEntity>>>{
     @Override
-    public void onGet(Request request, Response response) {
+    public void onGet(Request<ContactEntity> request, Response<ArrayList<ContactEntity>> response) {
 
     }
 
     @Override
-    public void onPost(Request request, Response response) {
+    public void onPost(Request<ContactEntity> request, Response<ArrayList<ContactEntity>> response) {
         WebSocketController.super.onPost(request, response);
     }
 
     @Override
-    public void onPut(Request request, Response response) {
+    public void onPut(Request<ContactEntity> request, Response<ArrayList<ContactEntity>> response) {
         WebSocketController.super.onPut(request, response);
     }
 
     @Override
-    public void onDelete(Request request, Response response) {
+    public void onDelete(Request<ContactEntity> request, Response<ArrayList<ContactEntity>> response) {
         WebSocketController.super.onDelete(request, response);
     }
+    // get all contact
+
+
 }

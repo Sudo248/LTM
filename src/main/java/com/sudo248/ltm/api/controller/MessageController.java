@@ -18,9 +18,8 @@ public class MessageController implements WebSocketController<Request<MessageEnt
     @Override
     public void onGet(Request<MessageEntity> request, Response<MessageEntity> response) {
         String conversationId = request.getParams().get("conversationId");
-        String userId = request.getParams().get("userId");
 
-        request.setPayload((MessageEntity) messageService.getAllMessage(Integer.parseInt(conversationId), Integer.parseInt(userId)));
+        request.setPayload((MessageEntity) messageService.getAllMessage(Integer.parseInt(conversationId)));
     }
 
     @Override
