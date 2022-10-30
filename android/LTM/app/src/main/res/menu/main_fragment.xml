@@ -9,7 +9,6 @@
         android:id="@+id/videoCallsFragment"
         android:icon="@drawable/ic_video"
         android:title="@string/video_call"/>
-
     <item
         android:id="@+id/profileFragment"
         android:icon="@drawable/ic_profile"

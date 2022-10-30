@@ -5,7 +5,6 @@ plugins {
     id 'kotlin-kapt'
     id 'androidx.navigation.safeargs'
 }
-
 android {
     namespace 'com.sudo248.ltm'
     compileSdk 33
