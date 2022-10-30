@@ -17,14 +17,14 @@ public class ConversationServiceImpl implements ConversationService {
         return conversationRepository.getById(conversationId);
     }
 
-    @Override
-    public ConversationEntity update(ConversationEntity conversationEntity) {
-        ConversationEntity conversation = conversationRepository.findById(conversationEntity.getId()).get();
-        conversation.setName(conversationEntity.getName());
-        conversation.setType(conversationEntity.getType());
-        conversation.setAvtUrl(conversationEntity.getAvtUrl());
-        return conversationRepository.save(conversation);
-    }
+//    @Override
+//    public ConversationEntity update(ConversationEntity conversationEntity) {
+//        ConversationEntity conversation = conversationRepository.findById(conversationEntity.getId()).get();
+//        conversation.setName(conversationEntity.getName());
+//        conversation.setType(conversationEntity.getType());
+//        conversation.setAvtUrl(conversationEntity.getAvtUrl());
+//        return conversationRepository.save(conversation);
+//    }
 
     @Override
     public void delete(Integer conversationId) {

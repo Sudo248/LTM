@@ -1,7 +1,5 @@
 package com.sudo248.ltm.api.model.entities;
 
-import lombok.Data;
-
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -46,10 +44,6 @@ public class ConversationEntity  implements Serializable {
         this.name = name;
     }
 
-    public ConversationType getType() {
-        return type;
-    }
-
     public void setType(ConversationType type) {
         this.type = type;
     }
@@ -68,6 +62,10 @@ public class ConversationEntity  implements Serializable {
 
     public void setCreatedAt(LocalDate createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public com.sudo248.ltm.api.model.conversation.ConversationType getType() {
+        return com.sudo248.ltm.api.model.conversation.ConversationType.valueOf("type");
     }
 }
 

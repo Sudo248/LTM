@@ -9,5 +9,4 @@ public interface ContactService {
     List<ContactEntity> getAllContact(Integer userId);
     List<ContactEntity> getAllFriend(Integer userId);
 
-
 }

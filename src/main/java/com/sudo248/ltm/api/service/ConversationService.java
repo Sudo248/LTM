@@ -6,7 +6,7 @@ public interface ConversationService {
 
     ConversationEntity getConversationById(Integer conversationId);
 
-    ConversationEntity update(ConversationEntity conversationEntity);
+   // ConversationEntity update(ConversationEntity conversationEntity);
 
     void delete(Integer conversationId);
 }

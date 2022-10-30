@@ -9,4 +9,6 @@ import java.util.List;
 public interface MessageService {
 
     List<MessageEntity> getAllMessage(Integer conversationId);
+
+    String getNewMessage(Integer conversationId);
 }
