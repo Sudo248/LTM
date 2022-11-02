@@ -1,16 +1,24 @@
 package com.sudo248.ltm.ui.activity.main.fragment.chat
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.google.android.material.progressindicator.CircularProgressIndicator
+import com.sudo248.ltm.R
+import com.sudo248.ltm.api.model.message.ContentMessageType
 import com.sudo248.ltm.common.Constant
 import com.sudo248.ltm.databinding.ItemChatMeBinding
 import com.sudo248.ltm.databinding.ItemChatOtherBinding
 import com.sudo248.ltm.domain.model.Message
+import com.sudo248.ltm.ktx.gone
 import com.sudo248.ltm.ktx.invisible
+import com.sudo248.ltm.ktx.visible
+import kotlinx.coroutines.coroutineScope
 
 
 /**
@@ -37,9 +45,12 @@ class ChatAdapter(
         notifyDataSetChanged()
     }
 
-    fun addMessage(message: Message) {
-        this.messages.add(message)
-        notifyItemInserted(this.messages.size - 1)
+    suspend fun addMessage(message: Message) = coroutineScope {
+        messages.add(message)
+        if (messages.size > 1) {
+            notifyItemChanged(messages.size - 2)
+        }
+        notifyItemInserted(messages.size - 1)
     }
 
     override fun getItemViewType(position: Int): Int =
@@ -69,13 +80,16 @@ class ChatAdapter(
         holder.onBind(
             messages[position],
             position,
-            isSameNext = (position < messages.size - 2 && messages[position].sendId == messages[position + 1].sendId)
+            isSameNext = (position < messages.size - 1 && messages[position].sendId == messages[position + 1].sendId)
         )
+        Log.d("sudoo", "onBindViewHolder: messages: ${messages.size} ")
+        if (position < messages.size - 1) {
+            Log.d("sudoo", "onBindViewHolder: position: $position")
+            Log.d("sudoo", "onBindViewHolder: ${position < messages.size - 1} && ${messages[position].sendId == messages[position + 1].sendId}")
+        }
     }
 
     override fun getItemCount(): Int = messages.size
-
-
 }
 
 abstract class ChatViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -89,7 +103,28 @@ class ChatMeViewHolder(private val binding: ItemChatMeBinding) :
             if (isSameNext) {
                 root.setPadding(root.paddingLeft, root.paddingTop, root.paddingRight, 0)
             }
-            txtContent.text = message.content
+            when (message.contentType) {
+                ContentMessageType.MESSAGE -> {
+                    txtContent.visible()
+                    cardContent.gone()
+                    txtContent.text = message.content
+                }
+                ContentMessageType.IMAGE -> {
+                    txtContent.gone()
+                    cardContent.visible()
+                    Log.d("sudoo", "onBind: $txtContent")
+                    Glide
+                        .with(itemView.context)
+                        .load(message.content)
+                        .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                        .placeholder(R.drawable.placeholder)
+                        .error(R.drawable.ic_error)
+                        .into(imgContent)
+                }
+                else -> {
+                    Log.e("ChatMeViewHolder", "onBind: Error type message")
+                }
+            }
         }
     }
 
@@ -100,12 +135,39 @@ class ChatOtherViewHolder(private val binding: ItemChatOtherBinding) :
     override fun onBind(message: Message, position: Int, isSameNext: Boolean) {
         binding.apply {
             if (isSameNext) {
-                imgAvatar.invisible()
+                cardAvatar.invisible()
                 root.setPadding(root.paddingLeft, root.paddingTop, root.paddingRight, 0)
             } else {
-                Glide.with(itemView.context).load(message.avtUrl).into(imgAvatar)
+                cardAvatar.visible()
+                Glide
+                    .with(itemView.context)
+                    .load(message.avtUrl)
+                    .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                    .placeholder(R.drawable.placeholder)
+                    .error(R.drawable.ic_error)
+                    .into(imgAvatar)
             }
-            txtContent.text = message.content
+            when (message.contentType) {
+                ContentMessageType.MESSAGE -> {
+                    txtContent.visible()
+                    cardContent.gone()
+                    txtContent.text = message.content
+                }
+                ContentMessageType.IMAGE -> {
+                    txtContent.gone()
+                    cardContent.visible()
+                    Glide
+                        .with(itemView.context)
+                        .load(message.content)
+                        .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                        .placeholder(R.drawable.placeholder)
+                        .error(R.drawable.ic_error)
+                        .into(imgContent)
+                }
+                else -> {
+                    Log.e("ChatOtherViewHolder", "onBind: Error type message")
+                }
+            }
         }
     }
 }

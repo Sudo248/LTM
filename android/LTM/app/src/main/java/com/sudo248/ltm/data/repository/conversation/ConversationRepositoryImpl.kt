@@ -7,6 +7,7 @@ import com.sudo248.ltm.api.model.conversation.Conversation
 import com.sudo248.ltm.api.model.conversation.ConversationType
 import com.sudo248.ltm.common.Constant
 import com.sudo248.ltm.common.Resource
+import com.sudo248.ltm.domain.model.Message
 import com.sudo248.ltm.websocket.WebSocketService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -39,24 +40,21 @@ class ConversationRepositoryImpl @Inject constructor(
             conversations.addAll(getSampleConversation())
             emit(Resource.Success(conversations))
 
-            /*val request = Request<String>()
+            val request = Request<String>()
             request.path = Constant.PATH_CONVERSATION
             request.method = RequestMethod.GET
             request.payload = ""
             socketService.send(request)
-            socketService.responseFlow
-                .filter { it.requestId == request.id }
-                .collect {
-                    val response = it as Response<ArrayList<Conversation>>
-                    if (response.code == 200) {
-                        conversations.clear()
-                        conversations.addAll(response.payload)
-                        emit(Resource.Success(response.payload))
-                    } else {
-                        emit(Resource.Error(response.message))
-                    }
-                    return@collect
-                }*/
+
+            val response = socketService.responseFlow.first { it.requestId == request.id }
+            if (response.code == 200) {
+                val conversationResponse = response.payload as ArrayList<Conversation>
+                conversations.clear()
+                conversations.addAll(conversationResponse)
+                emit(Resource.Success(conversationResponse))
+            } else {
+                emit(Resource.Error(response.message))
+            }
         } else {
             emit(Resource.Success(conversations))
         }
@@ -71,17 +69,13 @@ class ConversationRepositoryImpl @Inject constructor(
         request.params = mapOf(Constant.CONVERSATION_ID to "$id")
         request.payload = ""
         socketService.send(request)
-        socketService.responseFlow
-            .filter { it.requestId == request.id }
-            .collect {
-                val response = it as Response<Conversation>
-                if (response.code == 200) {
-                    emit(Resource.Success(response.payload))
-                } else {
-                    emit(Resource.Error(response.message))
-                }
-                return@collect
-            }
+
+        val response = socketService.responseFlow.first { it.requestId == request.id }
+        if (response.code == 200) {
+            emit(Resource.Success(response.payload as Conversation))
+        } else {
+            emit(Resource.Error(response.message))
+        }
     }.flowOn(Dispatchers.IO)
 
     override suspend fun getUpdateConversations(): Flow<Pair<Int, Conversation?>> = flow {
@@ -91,7 +85,6 @@ class ConversationRepositoryImpl @Inject constructor(
         conversations.add(0, conversation)
         emit(Pair(2, conversation))
 
-
         /*socketService.messageFlow.collect { message ->
             val topic = message.topic.toInt()
             val index = conversations.indexOfFirst { it.id == topic }
@@ -99,7 +92,7 @@ class ConversationRepositoryImpl @Inject constructor(
                 val conversation = conversations.removeAt(index)
                 conversation.description = message.payload.toString()
                 conversations.add(0, conversation)
-                emit(index)
+                emit(Pair(index, conversation))
             } else if (message.type == MqttMessageType.SUBSCRIBE) {
                 val request = Request<String>()
                 request.path = Constant.PATH_CONVERSATION
@@ -107,17 +100,14 @@ class ConversationRepositoryImpl @Inject constructor(
                 request.params = mapOf(Constant.CONVERSATION_ID to message.topic)
                 request.payload = ""
                 socketService.send(request)
-                socketService.responseFlow
-                    .filter { it.requestId == request.id }
-                    .collect {
-                        val response = it as Response<Conversation>
-                        if (response.code == 200) {
-                            conversations.add(0, response.payload)
-                            emit(Constant.NEW_SUBSCRIPTION)
-                        } else {
-                            emit(Constant.UNKNOWN)
-                        }
-                    }
+                val response = socketService.responseFlow.first { it.requestId == request.id }
+                if (response.code == 200) {
+                    val conversation = response.payload as Conversation
+                    conversations.add(0, conversation)
+                    emit(Pair(Constant.NEW_SUBSCRIPTION, conversation))
+                } else {
+                    emit(Pair(Constant.UNKNOWN, null))
+                }
             }
         }*/
     }.flowOn(Dispatchers.IO)

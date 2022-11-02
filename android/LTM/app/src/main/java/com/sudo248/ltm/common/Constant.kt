@@ -19,6 +19,12 @@ object Constant {
     const val PATH_SIGN_UP = "/user/signup"
     const val PATH_CONVERSATION = "/conversations"
     const val PATH_CHATS = "/chats"
+    const val PATH_UPLOAD_IMAGE = "/upload/images"
+
+    const val URL_REGEX = "[(http(s)?):\\/\\/(www\\.)?a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)"
+    const val URL_IMAGE_REGEX = "(http(s?):)([/|.|\\w|\\s|-])*\\.(?:jpg|gif|png)"
+    const val TEST_CONVERSATION_ID = 24080309
+    const val TEST_CLIENT_ID = 7480201
 }
 
 object PrefKey {

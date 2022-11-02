@@ -59,7 +59,6 @@ class RecentChatsAdapter(
 
     inner class RecentChatsViewHolder(private val binding: ItemRecentChatBinding) : RecyclerView.ViewHolder(binding.root) {
         fun onBind(conversation: Conversation, position: Int) {
-            Log.d("sudoo", "onBind: $position")
             binding.apply {
                 root.setOnClickListener {
                     onClickItem(conversation, position)

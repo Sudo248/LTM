@@ -6,16 +6,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.sudo248.ltm.api.model.conversation.Conversation
 import com.sudo248.ltm.databinding.FragmentRecentChatsBinding
+import com.sudo248.ltm.ui.activity.main.MainViewModel
 import com.sudo248.ltm.ui.activity.main.fragment.chat.ChatFragmentArgs
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class RecentChatsFragment : Fragment() {
 
+    private val mainViewModel: MainViewModel by activityViewModels()
     private val viewModel: RecentChatsViewModel by viewModels()
 
     private lateinit var binding: FragmentRecentChatsBinding
@@ -53,11 +56,11 @@ class RecentChatsFragment : Fragment() {
             binding.swipeRefresh.isRefreshing = false
         }
 
-        viewModel.newConversation.observe(viewLifecycleOwner) {
+        mainViewModel.newConversation.observe(viewLifecycleOwner) {
             adapter.newItem(it.second)
         }
 
-        viewModel.updateConversation.observe(viewLifecycleOwner) {
+        mainViewModel.updateConversation.observe(viewLifecycleOwner) {
             adapter.updateItem(it.first, it.second)
         }
 

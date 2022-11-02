@@ -11,11 +11,11 @@ import java.time.LocalDate
  * @since 07:19 - 26/10/2022
  */
 data class Message(
-    val id: Int,
     val topic: Int,
     val content: String,
     val contentType: ContentMessageType,
     val sendId: Int,
+    val id: Int = 0,
     val avtUrl: String? = null,
-    val sendAt: LocalDate,
+    val sendAt: LocalDate = LocalDate.now(),
 )
