@@ -22,7 +22,8 @@ object Constant {
 
     const val PATH_LOGIN = "/user/login"
     const val PATH_SIGN_UP = "/user/signup"
-    const val PATH_CONVERSATION = "/conversations"
+    const val PATH_CONVERSATION = "/conversation"
+    const val PATH_USER_CONVERSATION = "/user_conversation"
     const val PATH_CHATS = "/chats"
     const val PATH_UPLOAD_IMAGE = "/upload/images"
 

@@ -32,11 +32,11 @@ class ConversationRepositoryImpl @Inject constructor(
     override suspend fun getAllConversation(refresh: Boolean): Flow<Resource<MutableList<Conversation>>> = flow {
         emit(Resource.Loading)
         if (cacheConversations.isEmpty() || refresh) {
-            /*cacheConversations.clear()
+            cacheConversations.clear()
             cacheConversations.addAll(getSampleConversation())
-            emit(Resource.Success(cacheConversations))*/
+            emit(Resource.Success(cacheConversations))
 
-            val request = Request<String>()
+           /* val request = Request<String>()
             request.path = Constant.PATH_CONVERSATION
             request.method = RequestMethod.GET
             request.payload = ""
@@ -50,11 +50,11 @@ class ConversationRepositoryImpl @Inject constructor(
                 emit(Resource.Success(conversationResponse))
             } else {
                 emit(Resource.Error(response.message))
-            }
+            }*/
         } else {
             emit(Resource.Success(cacheConversations))
         }
-        
+
     }.flowOn(Dispatchers.IO)
 
     override suspend fun getConversationById(id: Int): Flow<Resource<Conversation>> = flow {
@@ -75,13 +75,13 @@ class ConversationRepositoryImpl @Inject constructor(
     }.flowOn(Dispatchers.IO)
 
     override suspend fun getUpdateConversations(): Flow<Pair<Int, Conversation?>> = flow {
-        /*delay(5000)
+        delay(5000)
         val conversation = cacheConversations.removeAt(2)
         conversation.description = "Update message now"
         cacheConversations.add(0, conversation)
-        emit(Pair(2, conversation))*/
+        emit(Pair(2, conversation))
 
-        socketService.messageFlow.collect { message ->
+        /*socketService.messageFlow.collect { message ->
             val topic = message.topic.toInt()
             val index = cacheConversations.indexOfFirst { it.id == topic }
             if (index != -1) {
@@ -105,7 +105,7 @@ class ConversationRepositoryImpl @Inject constructor(
                     emit(Pair(Constant.UNKNOWN, null))
                 }
             }
-        }
+        }*/
     }.flowOn(Dispatchers.IO)
 
     private fun getSampleConversation(): List<Conversation> {

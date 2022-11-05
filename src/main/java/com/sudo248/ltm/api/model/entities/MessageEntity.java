@@ -35,7 +35,7 @@ public class MessageEntity implements Serializable {
 
     }
 
-    public MessageEntity(String content, ContentMessageType contentType, Integer senderId, LocalDate sentAt) {
+    public MessageEntity(String content, ContentMessageType contentType, Integer senderId, LocalDateTime sentAt) {
         this.content = content;
         this.contentType = contentType;
         this.senderId = senderId;

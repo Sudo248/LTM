@@ -1,13 +1,17 @@
 package com.sudo248.ltm.ui.activity.main.fragment.chat
 
 import android.annotation.SuppressLint
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.target.CustomTarget
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.sudo248.ltm.R
 import com.sudo248.ltm.api.model.message.ContentMessageType
@@ -18,6 +22,7 @@ import com.sudo248.ltm.domain.model.Message
 import com.sudo248.ltm.ktx.gone
 import com.sudo248.ltm.ktx.invisible
 import com.sudo248.ltm.ktx.visible
+import com.sudo248.ltm.utils.ImageTarget
 import kotlinx.coroutines.coroutineScope
 
 
@@ -116,10 +121,10 @@ class ChatMeViewHolder(private val binding: ItemChatMeBinding) :
                     Glide
                         .with(itemView.context)
                         .load(message.content)
-                        .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                         .placeholder(R.drawable.placeholder)
                         .error(R.drawable.ic_error)
-                        .into(imgContent)
+                        .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                        .into(ImageTarget(imgContent))
                 }
                 else -> {
                     Log.e("ChatMeViewHolder", "onBind: Error type message")
