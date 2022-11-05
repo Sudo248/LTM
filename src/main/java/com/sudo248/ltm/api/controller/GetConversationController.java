@@ -46,11 +46,11 @@ public class GetConversationController implements WebSocketController<Request<Co
             conversation.setDescription(messageService.getNewMessage(ce.get(i).getId()));
 
             if (conversation.getType().equals("P2P")) {
-                String[] name = "+".split(ce.get(i).getName());
-                String nameUser = profileService.getProfileByUserId(Integer.parseInt(userId)).getName();
-                if (nameUser.equals(name[0])) {
-                    conversation.setName(name[1]);
-                } else conversation.setName(name[0]);
+                String[] id = "+".split(ce.get(i).getName());
+
+                if (userId.equals(id[0])) {
+                    conversation.setName(profileService.getProfileByUserId(Integer.parseInt(id[1])).getName());
+                } else conversation.setName(profileService.getProfileByUserId(Integer.parseInt(id[0])).getName());
             }
 
             arr.add(conversation);
