@@ -8,11 +8,9 @@ import com.sudo248.ltm.api.model.auth.Account
 import com.sudo248.ltm.common.Constant
 import com.sudo248.ltm.common.PrefKey
 import com.sudo248.ltm.common.Resource
-import com.sudo248.ltm.ktx.launchHandler
 import com.sudo248.ltm.utils.SharedPreferenceUtils
 import com.sudo248.ltm.websocket.WebSocketService
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -35,19 +33,18 @@ class AuthRepositoryImpl @Inject constructor(
         request.method = RequestMethod.POST
         request.payload = account
         socketService.send(request)
-        socketService.responseFlow
-            .filter { it.requestId == request.id }
-            .collect {
-                val response = it as Response<Account>
-                if (response.code == 200) {
-                    Log.d("sudoo", "login: ${request.payload.id}")
-                    saveId(response.payload.id)
-                    socketService.clientId = response.payload.id
-                    emit(Resource.Success(true))
-                } else {
-                    emit(Resource.Error(response.message))
-                }
-            }
+        Log.d("sudoo", "login: start send request")
+        val response = socketService.responseFlow.first { it.requestId == request.id }
+        if (response.code == 200) {
+            val accountResponse = response.payload as Account
+            Log.d("sudoo", "login: userId -> ${accountResponse.id}")
+            saveUserId(accountResponse.id.toInt())
+            socketService.clientId = accountResponse.id
+            emit(Resource.Success(true))
+        } else {
+            emit(Resource.Error(response.message))
+        }
+        Log.d("sudoo", "login: finish send request")
     }.flowOn(Dispatchers.IO)
 
     override suspend fun signup(account: Account): Flow<Resource<Boolean>> = flow {
@@ -57,22 +54,21 @@ class AuthRepositoryImpl @Inject constructor(
         request.method = RequestMethod.POST
         request.payload = account
         socketService.send(request)
-        socketService.responseFlow
-            .filter { it.requestId == request.id }
-            .collect {
-            val response = it as Response<Account>
-            if (response.code == 201) {
-                saveId(response.payload.id)
-                socketService.clientId = response.payload.id
-                emit(Resource.Success(true))
-            } else {
-                emit(Resource.Error(response.message))
-            }
+
+        val response = socketService.responseFlow.first { it.requestId == request.id }
+        if (response.code == 201) {
+            val accountResponse = response.payload as Account
+            saveUserId(accountResponse.id.toInt())
+            socketService.clientId = accountResponse.id
+            emit(Resource.Success(true))
+        } else {
+            emit(Resource.Error(response.message))
         }
 
     }.flowOn(Dispatchers.IO)
 
-    override suspend fun saveId(userId: Long) {
-        SharedPreferenceUtils.putLongAsync(PrefKey.KEY_USER_ID, userId)
+    override fun saveUserId(userId: Int) {
+        SharedPreferenceUtils.putInt(PrefKey.KEY_USER_ID, userId)
+        Log.d("sudoo", "saveUserId:$userId ${SharedPreferenceUtils.getInt(PrefKey.KEY_USER_ID)}")
     }
 }

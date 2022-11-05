@@ -8,6 +8,8 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import com.sudo248.ltm.R
 import com.sudo248.ltm.databinding.ActivityMainBinding
+import com.sudo248.ltm.ktx.gone
+import com.sudo248.ltm.ktx.visible
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -23,7 +25,11 @@ class MainActivity : AppCompatActivity() {
         NavigationUI.setupWithNavController(binding.navMain, navHost.navController)
     }
 
-    fun actionBottomNavigation() {
-        binding.navMain.visibility = if (binding.navMain.isShown) View.GONE else View.VISIBLE
+    fun hideBottomNavigation() {
+        binding.navMain.gone()
+    }
+
+    fun showBottomNavigation() {
+        binding.navMain.visible()
     }
 }

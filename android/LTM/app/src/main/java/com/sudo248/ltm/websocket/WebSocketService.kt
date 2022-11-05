@@ -100,7 +100,7 @@ class WebSocketService @Inject constructor() : WebSocketClient(URI("ws://${Const
         } else {
             Log.e(TAG, "onMqttPublish: $message" )
         }
-
+        Log.d(TAG, "onMqttPublish: ${message.toString()}")
     }
 
     override fun onOpen(handshake: ServerHandshake?) {

@@ -2,6 +2,7 @@ package com.sudo248.ltm.data.repository.conversation
 
 import com.sudo248.ltm.api.model.conversation.Conversation
 import com.sudo248.ltm.common.Resource
+import com.sudo248.ltm.domain.model.Message
 import kotlinx.coroutines.flow.Flow
 
 

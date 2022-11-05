@@ -2,7 +2,9 @@ package com.sudo248.ltm.utils
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 import com.sudo248.ltm.ktx.applicationName
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
@@ -82,16 +84,15 @@ object SharedPreferenceUtils {
      * @param transform [SharedPreferences.Editor.() -> Unit]
      */
     private fun edit(
-        commit: Boolean = false,
         transform: SharedPreferences.Editor.() -> Unit
     ): SharedPreferenceUtils {
-        if (pref == null) {
-            val editor = applicationPref.edit()
-            transform(applicationPref.edit())
-            if(commit) editor.commit() else editor.apply()
+        val editor = if (pref == null) {
+            applicationPref.edit()
         } else {
-            transform(pref!!.edit())
+            pref!!.edit()
         }
+        transform(editor)
+        editor.apply()
         return this
     }
 
@@ -105,7 +106,7 @@ object SharedPreferenceUtils {
      */
     private suspend fun editAsync(
         transform: SharedPreferences.Editor.() -> Unit
-    ): SharedPreferenceUtils {
+    ): SharedPreferenceUtils = coroutineScope {
         prefMutex.withLock {
             if (pref == null) {
                 val editor = applicationPref.edit()
@@ -115,17 +116,7 @@ object SharedPreferenceUtils {
                 transform(pref!!.edit())
             }
         }
-        return this
-    }
-
-    fun commit() {
-        pref?.edit()?.commit()
-        pref = null
-    }
-
-    fun apply() {
-        pref?.edit()?.apply()
-        pref = null
+        this@SharedPreferenceUtils
     }
 
     fun put(key: String, value: Any): SharedPreferenceUtils = when(value) {
@@ -166,10 +157,16 @@ object SharedPreferenceUtils {
     fun getString(key: String, defValue: String = defaultStringValue ?: ""): String =
         (pref ?: applicationPref).getString(key, defValue)!!
 
-    fun putInt(key: String, value: Int) = edit { putInt(key, value) }
+    fun putInt(key: String, value: Int) = edit {
+        Log.d("sudoo", "putInt: $pref $applicationPref")
+        putInt(key, value)
+    }
 
-    fun getInt(key: String, defValue: Int = defaultIntValue ?: -1) =
-        (pref ?: applicationPref).getInt(key, defValue)
+    fun getInt(key: String, defValue: Int = defaultIntValue ?: -1): Int {
+        Log.d("sudoo", "getInt: $pref $applicationPref")
+        return (pref ?: applicationPref).getInt(key, defValue)
+    }
+
 
     fun putLong(key: String, value: Long) = edit { putLong(key, value) }
 

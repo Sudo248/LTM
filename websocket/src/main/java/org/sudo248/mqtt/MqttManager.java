@@ -27,12 +27,19 @@ public class MqttManager {
         return subscriberTopic;
     }
 
-    public void getSubscriptionFromDb() {
+    public Map<Long, Subscriber> getSubscriptionFromDb() {
         Set<Subscription> subscriptions = subscriptionRepository.listAllSubscriptions();
-        for (Subscription sub : subscriptions) {
-            updatePublisher(sub);
-            updateSubscriberTopic(sub);
+        Map<Long, Subscriber> subscribers = new HashMap<>();
+        for (Subscription subscription : subscriptions) {
+            Subscriber subscriber = new Subscriber(
+                    subscription.getClientId(),
+                    null
+            );
+            subscribers.put(subscription.getClientId(), subscriber);
+            updatePublisher(subscription.getTopic(), subscriber);
+            updateSubscriberTopic(subscription);
         }
+        return subscribers;
     }
 
     public void addSubscription(Subscription sub) {
@@ -54,23 +61,15 @@ public class MqttManager {
         }
     }
 
-    private void updatePublisher(Subscription subscription) {
-        Publisher publisher = publishers.get(subscription.getTopic());
+    private void updatePublisher(String topic, Subscriber subscriber) {
+        Publisher publisher = publishers.get(topic);
         if (publisher == null) {
             List<Subscriber> subscribers = new ArrayList<>();
-            subscribers.add(new Subscriber(
-                    subscription.getClientId(),
-                    null
-            ));
-            publisher = new Publisher(subscription.getTopic(), subscribers);
-            publishers.put(subscription.getTopic(), publisher);
+            subscribers.add(subscriber);
+            publisher = new Publisher(topic, subscribers);
+            publishers.put(topic, publisher);
         } else {
-            publisher.getSubscribers().add(
-                    new Subscriber(
-                            subscription.getClientId(),
-                            null
-                    )
-            );
+            publisher.getSubscribers().add(subscriber);
         }
     }
 }

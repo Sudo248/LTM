@@ -3,7 +3,6 @@ package com.sudo248.ltm.api.service;
 import com.sudo248.ltm.api.model.entities.UserEntity;
 import com.sudo248.ltm.api.security.payload.LoginRequest;
 import com.sudo248.ltm.api.security.payload.Status;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 
 @Service

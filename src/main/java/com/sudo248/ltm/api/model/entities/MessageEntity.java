@@ -1,5 +1,7 @@
 package com.sudo248.ltm.api.model.entities;
 
+import com.sudo248.ltm.api.model.message.ContentMessageType;
+import com.sudo248.ltm.api.model.message.Message;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -18,7 +20,7 @@ public class MessageEntity implements Serializable {
     private String content;
 
     @Column(name = "content_type")
-    private ContentType contentType;
+    private ContentMessageType contentType;
 
     @Column(name = "sender_id")
     private Integer senderId;
@@ -29,11 +31,24 @@ public class MessageEntity implements Serializable {
     @Column(name = "conversation_id")
     private Integer conversationId;
 
+    public MessageEntity(){
+
+    }
+
+    public MessageEntity(String content, ContentMessageType contentType, Integer senderId, LocalDate sentAt) {
+        this.content = content;
+        this.contentType = contentType;
+        this.senderId = senderId;
+        this.sentAt = sentAt;
+    }
+
+    public static MessageEntity fromMessage(Message message) {
+        return new MessageEntity(
+                message.getContent(),
+                message.getContentType(),
+                message.getSendId(),
+                message.getSendAt()
+        );
+    }
 }
 
-enum ContentType {
-    TEXT,
-    VOICE,
-    IMAGE,
-    VIDEO
-}

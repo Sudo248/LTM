@@ -4,6 +4,9 @@ import com.sudo248.ltm.api.constants.Const;
 import com.sudo248.ltm.api.model.Request;
 import com.sudo248.ltm.api.model.RequestMethod;
 import com.sudo248.ltm.api.model.Response;
+import com.sudo248.ltm.api.model.entities.MessageEntity;
+import com.sudo248.ltm.api.model.message.Message;
+import com.sudo248.ltm.api.repository.MessageRepository;
 import com.sudo248.ltm.websocket.common.WsControllerProvider;
 import com.sudo248.ltm.websocket.controller.WebSocketController;
 import org.slf4j.Logger;
@@ -16,6 +19,9 @@ import org.sudo248.server.WebSocketServer;
 import java.net.InetSocketAddress;
 
 public class WebSocketServerImpl extends WebSocketServer {
+
+    private MessageRepository messageRepo;
+
     private final Logger log = LoggerFactory.getLogger(WebSocketServerImpl.class);
 
     public WebSocketServerImpl() {
@@ -61,27 +67,50 @@ public class WebSocketServerImpl extends WebSocketServer {
         WebSocketController<Request<?>, Response<?>> controller =
                 WsControllerProvider.getInstance().getController(path);
 
-        Response<?> response = new Response<>(request.getId());
-        switch (method) {
-            case GET:
-                controller.onGet(request, response);
-                break;
-            case POST:
-                controller.onPost(request, response);
-                break;
-            case PUT:
-                controller.onPut(request, response);
-                break;
-            case DELETE:
-                controller.onDelete(request, response);
-                break;
-            default:
+        if (controller != null) {
+            Response<?> response = new Response<>(request.getId());
+            switch (method) {
+                case GET:
+                    controller.onGet(request, response);
+                    break;
+                case POST:
+                    controller.onPost(request, response);
+                    break;
+                case PUT:
+                    controller.onPut(request, response);
+                    break;
+                case DELETE:
+                    controller.onDelete(request, response);
+                    break;
+                default:
+            }
+            ws.send(response);
+        } else {
+            log.error("Controller for path: " + path + " not implement");
         }
-        ws.send(response);
+    }
+
+    public void setMessageRepository(MessageRepository messageRepo) {
+        this.messageRepo = messageRepo;
     }
 
     @Override
     public void onMqttPublish(MqttMessage message) {
+        /*messageRepo.save(
+                MessageEntity.fromMessage(
+                        (Message)message.getPayload()
+                )
+        );*/
+        log.info("onMqttPublish -> " + message.toString());
+    }
 
+    @Override
+    public void onMqttSubscribe(MqttMessage message) {
+        super.onMqttSubscribe(message);
+    }
+
+    @Override
+    public void onMqttUnSubscribe(MqttMessage message) {
+        super.onMqttUnSubscribe(message);
     }
 }
