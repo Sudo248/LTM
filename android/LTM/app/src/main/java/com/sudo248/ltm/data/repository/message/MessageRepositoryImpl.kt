@@ -7,6 +7,7 @@ import android.provider.OpenableColumns
 import com.sudo248.ltm.api.model.Request
 import com.sudo248.ltm.api.model.RequestMethod
 import com.sudo248.ltm.api.model.image.Image
+import com.sudo248.ltm.api.model.message.ContentMessageType
 import com.sudo248.ltm.common.Constant
 import com.sudo248.ltm.common.PrefKey
 import com.sudo248.ltm.common.Resource
@@ -40,7 +41,7 @@ class MessageRepositoryImpl @Inject constructor(
         return SharedPreferenceUtils.getInt(PrefKey.KEY_USER_ID)
     }
 
-    override suspend fun getAllMessage(idConversation: Int): Flow<Resource<List<Message>>> = flow{
+    override suspend fun getAllMessage(idConversation: Int): Flow<Resource<List<Message>>> = flow {
         emit(Resource.Loading)
         val request = Request<String>()
         request.path = Constant.PATH_CONVERSATION
@@ -49,17 +50,18 @@ class MessageRepositoryImpl @Inject constructor(
         socketService.send(request)
         val response = socketService.responseFlow.first { it.requestId == request.id }
         if (response.code == 200) {
-            val messages = (response.payload as ArrayList<com.sudo248.ltm.api.model.message.Message>).map { apiMessage ->
-                Message(
-                    id = apiMessage.id,
-                    topic = idConversation,
-                    content = apiMessage.content,
-                    contentType = apiMessage.contentType,
-                    sendId = apiMessage.sendId,
-                    avtUrl = apiMessage.avtUrl,
-                    sendAt = apiMessage.sendAt
-                )
-            }
+            val messages =
+                (response.payload as ArrayList<com.sudo248.ltm.api.model.message.Message>).map { apiMessage ->
+                    Message(
+                        id = apiMessage.id,
+                        topic = idConversation,
+                        content = apiMessage.content,
+                        contentType = apiMessage.contentType,
+                        sendId = apiMessage.sendId,
+                        avtUrl = apiMessage.avtUrl,
+                        sendAt = apiMessage.sendAt
+                    )
+                }
             emit(Resource.Success(messages))
         } else {
             emit(Resource.Error(response.message))
@@ -72,38 +74,41 @@ class MessageRepositoryImpl @Inject constructor(
 //                Log.d("sudoo", "newMessageInTopic: ${it.topic} ${it.topic == "$topic"} $topic ")
                 it.topic == "$topic"
             }.collect { mqttMessage ->
-            if (mqttMessage.type == MqttMessageType.PUBLISH) {
+                if (mqttMessage.type == MqttMessageType.PUBLISH) {
 //                Log.d("sudoo", "newMessageInTopic: ${mqttMessage.payload}")
-                val apiMessage = mqttMessage.payload as com.sudo248.ltm.api.model.message.Message
-                emit(Message(
-                    id = 0/*apiMessage.id*/,
-                    topic = topic,
-                    content = apiMessage.content,
-                    contentType = apiMessage.contentType,
-                    sendId = apiMessage.sendId,
-                    avtUrl = apiMessage.avtUrl,
-                    sendAt = apiMessage.sendAt
-                ))
+                    val apiMessage = mqttMessage.payload as com.sudo248.ltm.api.model.message.Message
+                    emit(
+                        Message(
+                            id = 0/*apiMessage.id*/,
+                            topic = topic,
+                            content = apiMessage.content,
+                            contentType = apiMessage.contentType,
+                            sendId = apiMessage.sendId,
+                            avtUrl = apiMessage.avtUrl,
+                            sendAt = apiMessage.sendAt
+                        )
+                    )
+                }
             }
-        }
     }.flowOn(Dispatchers.IO)
 
-    override suspend fun sendMessage(topic: Int, message: Message): Boolean = withContext(Dispatchers.IO){
-        try {
-            val apiMessage = com.sudo248.ltm.api.model.message.Message(
-                message.content,
-                message.contentType,
-                message.sendId,
-                message.avtUrl
-            )
-            socketService.publish("$topic", apiMessage)
-        } catch (e: Exception) {
-            false
+    override suspend fun sendMessage(topic: Int, message: Message): Boolean =
+        withContext(Dispatchers.IO) {
+            try {
+                val apiMessage = com.sudo248.ltm.api.model.message.Message(
+                    message.content,
+                    message.contentType,
+                    message.sendId,
+                    message.avtUrl
+                )
+                socketService.publish("$topic", apiMessage)
+            } catch (e: Exception) {
+                false
+            }
+            true
         }
-        true
-    }
 
-    override suspend fun subscribeTopic(topic: Int): Boolean = withContext(Dispatchers.IO){
+    override suspend fun subscribeTopic(topic: Int): Boolean = withContext(Dispatchers.IO) {
         try {
             socketService.subscribe("$topic")
             true
@@ -114,42 +119,43 @@ class MessageRepositoryImpl @Inject constructor(
     }
 
     @SuppressLint("Recycle")
-    override suspend fun sendImage(resolver: ContentResolver, uri: Uri): Resource<String> = withContext(Dispatchers.IO){
-        return@withContext try {
-            var nameImage = "Unknow.png"
-            resolver.query(uri, null, null, null)?.let { cursor ->
-                val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
-                cursor.moveToFirst()
-                nameImage = cursor.getString(nameIndex);
-            }
-
-            resolver.openInputStream(uri)?.let { inputStream ->
-                val imageBytes = getBytes(inputStream)
-                val image = Image(
-                    nameImage,
-                    imageBytes.size,
-                    imageBytes
-                )
-                val request = Request<Image>()
-                request.path = Constant.PATH_UPLOAD_IMAGE
-                request.method = RequestMethod.POST
-                request.payload = image
-                socketService.send(request)
-                val response = socketService.responseFlow.first { it.requestId == request.id }
-                if (response.code == 200) {
-                    val url = response.payload as String
-                    Resource.Success(url)
-                } else {
-                    Resource.Error(response.message)
+    override suspend fun sendImage(resolver: ContentResolver, uri: Uri): Resource<String> =
+        withContext(Dispatchers.IO) {
+            try {
+                var nameImage = "Unknow.png"
+                resolver.query(uri, null, null, null)?.let { cursor ->
+                    val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                    cursor.moveToFirst()
+                    nameImage = cursor.getString(nameIndex);
                 }
-            } ?: Resource.Error("Null when open input stream $uri")
-        } catch (e: IOException) {
-            e.printStackTrace()
-            Resource.Error(e.message.toString())
-        }
-    }
 
-    private suspend fun getBytes(inputStream: InputStream): ByteArray = coroutineScope{
+                resolver.openInputStream(uri)?.let { inputStream ->
+                    val imageBytes = getBytes(inputStream)
+                    val image = Image(
+                        nameImage,
+                        imageBytes.size,
+                        imageBytes
+                    )
+                    val request = Request<Image>()
+                    request.path = Constant.PATH_UPLOAD_IMAGE
+                    request.method = RequestMethod.POST
+                    request.payload = image
+                    socketService.send(request)
+                    val response = socketService.responseFlow.first { it.requestId == request.id }
+                    if (response.code == 200) {
+                        val url = response.payload as String
+                        Resource.Success(url)
+                    } else {
+                        Resource.Error(response.message)
+                    }
+                } ?: Resource.Error("Null when open input stream $uri")
+            } catch (e: IOException) {
+                e.printStackTrace()
+                Resource.Error(e.message.toString())
+            }
+        }
+
+    private suspend fun getBytes(inputStream: InputStream): ByteArray = coroutineScope {
         val byteBuffer = ByteArrayOutputStream()
         val buffer = ByteArray(1024)
         var len = inputStream.read(buffer)

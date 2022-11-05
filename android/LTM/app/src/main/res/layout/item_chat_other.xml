@@ -58,10 +58,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:maxWidth="260dp"
-            android:maxHeight="260dp"
             android:src="@drawable/img_test"
             android:layout_gravity="center"
-            android:scaleType="centerCrop"/>
+            android:scaleType="fitXY"
+            android:adjustViewBounds="true"/>
     </androidx.cardview.widget.CardView>
 
     <TextView

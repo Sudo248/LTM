@@ -8,12 +8,17 @@ package com.sudo248.ltm.common
  * @since 00:39 - 23/10/2022
  */
 object Constant {
-    const val WS_HOST = "192.168.1.11"
+    const val SERVER_HOST = "192.168.1.11"
+    const val SERVER_PORT = 8081
+    const val SERVER_URL = "http://$SERVER_HOST:$SERVER_PORT"
+    const val WS_HOST = SERVER_HOST
     const val WS_PORT = 6026
     const val USER_ID = "userId"
     const val CONVERSATION_ID = "conversationId"
     const val NEW_SUBSCRIPTION = -1
     const val UNKNOWN = -2
+
+    const val URL_IMAGE = "$SERVER_URL/images/"
 
     const val PATH_LOGIN = "/user/login"
     const val PATH_SIGN_UP = "/user/signup"
