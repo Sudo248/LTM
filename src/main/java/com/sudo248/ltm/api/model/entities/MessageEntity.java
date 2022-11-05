@@ -5,6 +5,7 @@ import lombok.Data;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -23,7 +24,10 @@ public class MessageEntity implements Serializable {
     private Integer senderId;
 
     @Column(name = "sent_at")
-    private LocalDate sentAt;
+    private LocalDateTime sentAt;
+
+    @Column(name = "conversation_id")
+    private Integer conversationId;
 
 }
 

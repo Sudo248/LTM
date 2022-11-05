@@ -81,4 +81,5 @@ public class Conversation implements Serializable {
     public void setCreateAt(LocalDate createAt) {
         this.createAt = createAt;
     }
+
 }
