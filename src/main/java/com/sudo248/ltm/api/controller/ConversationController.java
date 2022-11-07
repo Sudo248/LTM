@@ -3,8 +3,6 @@ package com.sudo248.ltm.api.controller;
 import com.sudo248.ltm.api.model.Request;
 import com.sudo248.ltm.api.model.Response;
 import com.sudo248.ltm.api.model.conversation.Conversation;
-import com.sudo248.ltm.api.model.conversation.ConversationType;
-import com.sudo248.ltm.api.model.entities.ContactEntity;
 import com.sudo248.ltm.api.model.entities.ConversationEntity;
 import com.sudo248.ltm.api.service.ConversationService;
 import com.sudo248.ltm.api.service.MessageService;

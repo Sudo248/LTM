@@ -12,7 +12,7 @@ public interface UserConversationRepository extends JpaRepository<UserConversati
 
     List<UserConversationEntity> getAllByUserId(Integer userId);
 
-    UserConversationEntity getByUserIdOrConversationId(Integer userId, Integer conversationId);
+    UserConversationEntity getByConversationId(Integer conversationId);
 
 
 }
