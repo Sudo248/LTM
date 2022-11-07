@@ -22,4 +22,9 @@ public class MessageServiceImpl implements MessageService {
     public String getNewMessage(Integer conversationId) {
         return getNewMessage(conversationId);
     }
+
+    @Override
+    public MessageEntity createMessage(MessageEntity messageEntity) {
+        return messageRepository.save(messageEntity);
+    }
 }

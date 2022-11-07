@@ -33,6 +33,11 @@ public class ConversationServiceImpl implements ConversationService {
     }
 
     @Override
+    public List<ConversationEntity> findAllByName(String name) {
+        return conversationRepository.findAllByName(name);
+    }
+
+    @Override
     public ConversationEntity createGroup(ArrayList<String> userId) {
         ConversationEntity conversation = new ConversationEntity("urgroup", ConversationType.P2P, "", LocalDate.now());
         if (userId.size() > 2) {

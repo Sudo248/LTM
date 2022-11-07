@@ -7,31 +7,38 @@ import com.sudo248.ltm.api.service.ProfileService;
 import com.sudo248.ltm.websocket.annotation.WsController;
 import com.sudo248.ltm.websocket.controller.WebSocketController;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.ArrayList;
+import java.util.List;
+
 @WsController(path = "/profile")
-public class ProfileController implements WebSocketController<Request<ProfileEntity>, Response<ProfileEntity>> {
+public class ProfileController implements WebSocketController<Request<ProfileEntity>, Response<ArrayList<ProfileEntity>>> {
 
     @Autowired
     private ProfileService profileService;
 
     @Override
-    public void onGet(Request<ProfileEntity> request, Response<ProfileEntity> response) {
+    public void onGet(Request<ProfileEntity> request, Response<ArrayList<ProfileEntity>> response) {
         String userId = request.getParams().get("userid");
-        response.setPayload(profileService.getProfileByUserId(Integer.parseInt(userId)));
+        ArrayList<ProfileEntity> profileEntities = new ArrayList<>();
+        profileEntities.add(profileService.getProfileByUserId(Integer.parseInt(userId)));
+        response.setPayload(profileEntities);
     }
 
+    // tim profile theo ten
     @Override
-    public void onPost(Request<ProfileEntity> request, Response<ProfileEntity> response) {
+    public void onPost(Request<ProfileEntity> request, Response<ArrayList<ProfileEntity>> response) {
         String name = request.getParams().get("name");
-        //response.setPayload(profileService.findProfileByName(name).);
+        response.setPayload((ArrayList<ProfileEntity>) profileService.findAllByName(name));
     }
 
     @Override
-    public void onPut(Request<ProfileEntity> request, Response<ProfileEntity> response) {
-        response.setPayload(profileService.update(request.getPayload()));
+    public void onPut(Request<ProfileEntity> request, Response<ArrayList<ProfileEntity>> response) {
+        //response.setPayload(profileService.update(request.getPayload()));
     }
 
     @Override
-    public void onDelete(Request<ProfileEntity> request, Response<ProfileEntity> response) {
+    public void onDelete(Request<ProfileEntity> request, Response<ArrayList<ProfileEntity>> response) {
         WebSocketController.super.onDelete(request, response);
     }
 }

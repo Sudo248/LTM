@@ -35,18 +35,18 @@ public class GetConversationController implements WebSocketController<Request<Co
         List<ConversationEntity> ce = conversationService.getAllByUserId(Integer.parseInt(userId));
         ArrayList<Conversation> arr = new ArrayList<>();
 
-        for (int i = 0; i < ce.size(); i++) {
+        for (ConversationEntity conversationEntity : ce) {
 
-            Conversation conversation = new Conversation(ce.get(i).getId(),
-                    ce.get(i).getName(),
-                    ce.get(i).getAvtUrl(),
-                    ce.get(i).getType(),
-                    ce.get(i).getCreatedAt());
+            Conversation conversation = new Conversation(conversationEntity.getId(),
+                    conversationEntity.getName(),
+                    conversationEntity.getAvtUrl(),
+                    conversationEntity.getType(),
+                    conversationEntity.getCreatedAt());
 
-            conversation.setDescription(messageService.getNewMessage(ce.get(i).getId()));
+            conversation.setDescription(messageService.getNewMessage(conversationEntity.getId()));
 
             if (conversation.getType().equals("P2P")) {
-                String[] id = "+".split(ce.get(i).getName());
+                String[] id = "+".split(conversationEntity.getName());
 
                 if (userId.equals(id[0])) {
                     conversation.setName(profileService.getProfileByUserId(Integer.parseInt(id[1])).getName());
@@ -63,7 +63,26 @@ public class GetConversationController implements WebSocketController<Request<Co
 
     @Override
     public void onPost(Request<Conversation> request, Response<ArrayList<Conversation>> response) {
-        WebSocketController.super.onPost(request, response);
+        String name = request.getParams().get("name");
+        ArrayList<ConversationEntity> conversations = (ArrayList<ConversationEntity>) conversationService.findAllByName(name);
+
+        ArrayList<Conversation> conversation = new ArrayList<>();
+
+        for (ConversationEntity entity : conversations) {
+            Conversation conv = new Conversation(
+                    entity.getId(),
+                    entity.getName(),
+                    entity.getAvtUrl(),
+                    entity.getType(),
+                    entity.getCreatedAt());
+
+            conv.setDescription(messageService.getNewMessage(entity.getId()));
+            conversation.add(conv);
+        }
+
+        response.setPayload(conversation);
+        response.setMessage("success");
+        response.setCode(200);
     }
 
     @Override

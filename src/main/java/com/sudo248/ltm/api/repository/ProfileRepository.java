@@ -13,6 +13,6 @@ public interface ProfileRepository extends JpaRepository<ProfileEntity, Integer>
 
 //    ProfileEntity findByUserId(Integer id);
 
-    List<ProfileEntity> findAllByName(String username);
+    List<ProfileEntity> findAllByName(String name);
 
 }

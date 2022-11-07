@@ -10,6 +10,8 @@ public interface ConversationService {
 
     ConversationEntity getConversationById(Integer conversationId);
 
+    List<ConversationEntity> findAllByName(String name);
+
    // ConversationEntity update(ConversationEntity conversationEntity);
 
     ConversationEntity createGroup(ArrayList<String> userId);
