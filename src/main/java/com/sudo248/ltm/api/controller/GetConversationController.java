@@ -3,6 +3,7 @@ package com.sudo248.ltm.api.controller;
 import com.sudo248.ltm.api.model.Request;
 import com.sudo248.ltm.api.model.Response;
 import com.sudo248.ltm.api.model.conversation.Conversation;
+import com.sudo248.ltm.api.model.conversation.ConversationType;
 import com.sudo248.ltm.api.model.entities.ConversationEntity;
 import com.sudo248.ltm.api.model.entities.UserConversationEntity;
 import com.sudo248.ltm.api.service.ConversationService;
@@ -17,7 +18,7 @@ import org.springframework.stereotype.Controller;
 import java.util.ArrayList;
 import java.util.List;
 
-@WsController(path = "conversation/get")
+@WsController(path = "/conversation/get")
 public class GetConversationController implements WebSocketController<Request<Conversation>, Response<ArrayList<Conversation>>> {
 
     @Autowired
@@ -45,9 +46,8 @@ public class GetConversationController implements WebSocketController<Request<Co
 
             conversation.setDescription(messageService.getNewMessage(ce.get(i).getId()));
 
-            if (conversation.getType().equals("P2P")) {
+            if (conversation.getType() == ConversationType.P2P) {
                 String[] id = "+".split(ce.get(i).getName());
-
                 if (userId.equals(id[0])) {
                     conversation.setName(profileService.getProfileByUserId(Integer.parseInt(id[1])).getName());
                 } else conversation.setName(profileService.getProfileByUserId(Integer.parseInt(id[0])).getName());

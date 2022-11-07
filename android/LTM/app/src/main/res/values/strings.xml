@@ -21,4 +21,8 @@
     <string name="new_group">New group</string>
     <string name="search_conversation_hint">Name conversation</string>
     <string name="search_profile_hint">Name profile</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">Ok</string>
+    <string name="error_create_group">Error when create group</string>
+    <string name="error">Error</string>
 </resources>

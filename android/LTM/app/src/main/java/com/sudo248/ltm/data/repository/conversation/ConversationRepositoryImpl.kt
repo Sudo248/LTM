@@ -33,13 +33,14 @@ class ConversationRepositoryImpl @Inject constructor(
         emit(Resource.Loading)
         if (cacheConversations.isEmpty() || refresh) {
             cacheConversations.clear()
-            cacheConversations.addAll(getSampleConversation())
-            emit(Resource.Success(cacheConversations))
+//            cacheConversations.addAll(getSampleConversation())
+//            emit(Resource.Success(cacheConversations))
 
-           /* val request = Request<String>()
-            request.path = Constant.PATH_CONVERSATION
+            val request = Request<Conversation>()
+            request.path = Constant.PATH_USER_CONVERSATION
             request.method = RequestMethod.GET
-            request.payload = ""
+            request.payload = Conversation()
+            request.params = mapOf(Constant.USER_ID to "${socketService.clientId}")
             socketService.send(request)
 
             val response = socketService.responseFlow.first { it.requestId == request.id }
@@ -50,7 +51,7 @@ class ConversationRepositoryImpl @Inject constructor(
                 emit(Resource.Success(conversationResponse))
             } else {
                 emit(Resource.Error(response.message))
-            }*/
+            }
         } else {
             emit(Resource.Success(cacheConversations))
         }
@@ -75,13 +76,13 @@ class ConversationRepositoryImpl @Inject constructor(
     }.flowOn(Dispatchers.IO)
 
     override suspend fun getUpdateConversations(): Flow<Pair<Int, Conversation?>> = flow {
-        delay(5000)
-        val conversation = cacheConversations.removeAt(2)
-        conversation.description = "Update message now"
-        cacheConversations.add(0, conversation)
-        emit(Pair(2, conversation))
+//        delay(5000)
+//        val conversation = cacheConversations.removeAt(2)
+//        conversation.description = "Update message now"
+//        cacheConversations.add(0, conversation)
+//        emit(Pair(2, conversation))
 
-        /*socketService.messageFlow.collect { message ->
+        socketService.messageFlow.collect { message ->
             val topic = message.topic.toInt()
             val index = cacheConversations.indexOfFirst { it.id == topic }
             if (index != -1) {
@@ -105,7 +106,7 @@ class ConversationRepositoryImpl @Inject constructor(
                     emit(Pair(Constant.UNKNOWN, null))
                 }
             }
-        }*/
+        }
     }.flowOn(Dispatchers.IO)
 
     override suspend fun searchConversationByName(name: String): Flow<Resource<MutableList<Conversation>>> = flow<Resource<MutableList<Conversation>>> {

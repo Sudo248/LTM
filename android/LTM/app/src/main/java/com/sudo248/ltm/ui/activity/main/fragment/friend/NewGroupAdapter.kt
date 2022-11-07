@@ -21,8 +21,8 @@ class NewGroupAdapter(
     private val onItemRemove: (Int) -> Unit
 ) : RecyclerView.Adapter<NewGroupAdapter.ViewHolder>() {
 
-    private val listProfile: MutableList<Profile> = mutableListOf()
-    private val listPosition: MutableList<Int> = mutableListOf()
+    val listProfile: MutableList<Profile> = mutableListOf()
+    val listPosition: MutableList<Int> = mutableListOf()
 
     fun addNewItem(profile: Profile, position: Int) {
         Log.d("sudoo", "addNewItem: $position")

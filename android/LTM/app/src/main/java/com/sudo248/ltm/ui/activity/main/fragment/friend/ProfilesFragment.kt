@@ -8,12 +8,15 @@ import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.sudo248.ltm.R
 import com.sudo248.ltm.api.model.conversation.Conversation
 import com.sudo248.ltm.api.model.profile.Profile
+import com.sudo248.ltm.common.Resource
 import com.sudo248.ltm.databinding.FragmentProfilesBinding
 import com.sudo248.ltm.ktx.gone
 import com.sudo248.ltm.ktx.visible
 import com.sudo248.ltm.ui.activity.main.fragment.recent_chat.RecentChatsFragmentDirections
+import com.sudo248.ltm.utils.DialogUtils
 import com.sudo248.ltm.utils.KeyboardUtils
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -99,6 +102,9 @@ class ProfilesFragment : Fragment() {
             binding.groupAddNewGroup.visible()
             profileAdapter.isAddGroup = true
         }
+        binding.imgActionAddGroup.setOnClickListener {
+            viewModel.createGroup(newGroupAdapter.listProfile)
+        }
     }
 
     private fun observer() {
@@ -112,6 +118,30 @@ class ProfilesFragment : Fragment() {
 
         viewModel.addFriend.observe(viewLifecycleOwner) {
             profileAdapter.addFriendSuccess(it)
+        }
+
+        viewModel.createGroupState.observe(viewLifecycleOwner) {
+            binding.imgActionAddGroup.apply {
+                when (it) {
+                    is Resource.Loading -> {
+                        setImageResource(R.drawable.placeholder)
+                    }
+                    is Resource.Success -> {
+                        navigateToChat(it.requiredData())
+                    }
+                    else -> {
+                        DialogUtils.showDialog(
+                            requireContext(),
+                            title = getString(R.string.error),
+                            description = getString(R.string.error_create_group),
+                            textColorTitle = R.color.red,
+                            onClickConfirm = {
+                                findNavController().popBackStack()
+                            }
+                        )
+                    }
+                }
+            }
         }
     }
 

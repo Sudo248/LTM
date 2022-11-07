@@ -18,9 +18,9 @@ interface ProfileRepository {
 
     suspend fun searchProfileByName(name: String): Flow<Resource<MutableList<Profile>>>
 
-    suspend fun createNewGroup(listProfileId: List<Int>): Flow<Resource<Boolean>>
+    suspend fun createNewGroup(listProfileId: List<Int>): Flow<Resource<Conversation>>
 
     suspend fun getConversationByProfile(profile: Profile): Flow<Resource<Conversation>>
 
-    suspend fun addFriend(profile: Profile): Flow<Resource<Boolean>>
+    suspend fun addFriend(profile: Profile): Flow<Resource<Int>>
 }

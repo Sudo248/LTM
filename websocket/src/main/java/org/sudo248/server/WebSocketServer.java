@@ -1110,6 +1110,11 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
         //publish(message.copy("New person join conversation"));
     }
 
+    public void addSubscription(Subscription subscription) {
+        log.info("addSubscription: " + subscription);
+        mqttManager.addSubscription(subscription);
+    }
+
     @Override
     public void onMqttUnSubscribe(MqttMessage message) {
         Subscription subscription = new Subscription(
