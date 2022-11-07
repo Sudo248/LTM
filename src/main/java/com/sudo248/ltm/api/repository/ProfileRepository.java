@@ -11,7 +11,7 @@ public interface ProfileRepository extends JpaRepository<ProfileEntity, Integer>
 
     ProfileEntity getProfileByUserId(Integer userId);
 
-    ProfileEntity findByUserId(Integer id);
+//    ProfileEntity findByUserId(Integer id);
 
     List<ProfileEntity> findAllByName(String username);
 

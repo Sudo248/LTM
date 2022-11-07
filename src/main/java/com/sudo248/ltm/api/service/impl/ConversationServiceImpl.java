@@ -6,11 +6,18 @@ import com.sudo248.ltm.api.service.ConversationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ConversationServiceImpl implements ConversationService {
 
     @Autowired
     private ConversationRepository conversationRepository;
+
+    @Override
+    public List<ConversationEntity> getAllByUserId(Integer userId) {
+        return conversationRepository.getAllByUserId(userId);
+    }
 
     @Override
     public ConversationEntity getConversationById(Integer conversationId) {
@@ -31,3 +38,4 @@ public class ConversationServiceImpl implements ConversationService {
         conversationRepository.deleteById(conversationId);
     }
 }
+
