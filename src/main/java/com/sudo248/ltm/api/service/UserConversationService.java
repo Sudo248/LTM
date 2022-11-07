@@ -9,4 +9,5 @@ public interface UserConversationService {
 
     List<UserConversationEntity> getAllByUserId(Integer userId);
 
+
 }

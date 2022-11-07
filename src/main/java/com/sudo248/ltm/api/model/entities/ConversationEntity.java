@@ -20,8 +20,7 @@ public class ConversationEntity  implements Serializable {
     public ConversationEntity() {
 
     }
-    public ConversationEntity(Integer id, String name, ConversationType type, String avtUrl, LocalDate createdAt) {
-        this.id = id;
+    public ConversationEntity(String name, ConversationType type, String avtUrl, LocalDate createdAt) {
         this.name = name;
         this.type = type;
         this.avtUrl = avtUrl;
@@ -67,11 +66,6 @@ public class ConversationEntity  implements Serializable {
     public com.sudo248.ltm.api.model.conversation.ConversationType getType() {
         return com.sudo248.ltm.api.model.conversation.ConversationType.valueOf("type");
     }
-}
-
-enum ConversationType {
-    GROUP,
-    P2P
 }
 
 
