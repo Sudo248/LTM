@@ -1,5 +1,6 @@
 package com.sudo248.ltm.utils
 
+import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.widget.ImageView
@@ -16,7 +17,13 @@ import com.bumptech.glide.request.transition.Transition
 class ImageTarget(private val image: ImageView) : CustomTarget<Drawable>() {
 
     override fun onResourceReady(resource: Drawable, transition: Transition<in Drawable>?) {
-        image.layoutParams.width = resource.intrinsicWidth
+        val height = resource.intrinsicHeight
+        val maxHeight = (Resources.getSystem().displayMetrics.heightPixels * 0.4f).toInt()
+        image.layoutParams.height = if (height > maxHeight) {
+            maxHeight
+        } else {
+            height
+        }
         image.setImageDrawable(resource)
     }
 

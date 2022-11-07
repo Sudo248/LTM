@@ -47,17 +47,26 @@ class RecentChatsFragment : Fragment() {
         binding.swipeRefresh.setOnRefreshListener {
             viewModel.getAllConversation(isFresh = true)
         }
+        binding.imgSearch.setOnClickListener {
+            findNavController().navigate(RecentChatsFragmentDirections.actionRecentChatsFragmentToSearchFragment())
+        }
     }
 
     private fun observer() {
         viewModel.conversations.observe(viewLifecycleOwner) {
             Log.d("sudoo", "observer: $it")
-            adapter.submitList(it)
+            if (viewModel.isNewConversation) {
+                adapter.newItem(it[0])
+                viewModel.isNewConversation = false
+            } else {
+                adapter.submitList(it)
+            }
             binding.swipeRefresh.isRefreshing = false
         }
 
         mainViewModel.newConversation.observe(viewLifecycleOwner) {
-            adapter.newItem(it.second)
+//            adapter.newItem(it.second)
+            viewModel.addNewConversation(it.second)
         }
 
         mainViewModel.updateConversation.observe(viewLifecycleOwner) {

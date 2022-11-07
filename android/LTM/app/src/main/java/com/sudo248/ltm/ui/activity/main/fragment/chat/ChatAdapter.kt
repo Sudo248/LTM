@@ -167,7 +167,7 @@ class ChatOtherViewHolder(private val binding: ItemChatOtherBinding) :
                         .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                         .placeholder(R.drawable.placeholder)
                         .error(R.drawable.ic_error)
-                        .into(imgContent)
+                        .into(ImageTarget(imgContent))
                 }
                 else -> {
                     Log.e("ChatOtherViewHolder", "onBind: Error type message")

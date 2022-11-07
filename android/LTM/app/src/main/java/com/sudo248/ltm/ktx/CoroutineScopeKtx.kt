@@ -3,6 +3,7 @@ package com.sudo248.ltm.ktx
 import kotlinx.coroutines.*
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
+import kotlin.time.Duration
 
 
 /**
@@ -42,6 +43,14 @@ fun CoroutineScope.launchHandler(
     }
     result = launch(context + coroutineExceptionHandler, block = block)
     return result
+}
+
+fun <T> CoroutineScope.debounceTime(
+    data: T,
+    time: Duration,
+    action: (T) -> Unit
+) {
+
 }
 
 

@@ -50,8 +50,8 @@ class SplashActivity : AppCompatActivity() {
     }
 
     private fun nextActivity() {
-//        startActivity(Intent(this, MainActivity::class.java))
-        startActivity(Intent(this, AuthActivity::class.java))
+        startActivity(Intent(this, MainActivity::class.java))
+//        startActivity(Intent(this, AuthActivity::class.java))
         finish()
     }
 }

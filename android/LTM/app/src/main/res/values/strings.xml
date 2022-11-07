@@ -15,6 +15,10 @@
     <string name="lets_go">Let\'s go</string>
     <string name="recent_chat">Recent Chats</string>
     <string name="video_call">Video Calls</string>
+    <string name="friend">Friend</string>
     <string name="profile">Profile</string>
     <string name="recent_chats">Recent Chats</string>
+    <string name="new_group">New group</string>
+    <string name="search_conversation_hint">Name conversation</string>
+    <string name="search_profile_hint">Name profile</string>
 </resources>

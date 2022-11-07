@@ -8,6 +8,9 @@ import com.sudo248.ltm.common.Resource
 import com.sudo248.ltm.data.repository.conversation.ConversationRepository
 import com.sudo248.ltm.ktx.launchHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -23,18 +26,42 @@ class RecentChatsViewModel @Inject constructor(
     private val conversationRepo: ConversationRepository
 ) : ViewModel() {
 
-    private val _conversations = MutableLiveData<MutableList<Conversation>>()
-    val conversations: LiveData<MutableList<Conversation>> = _conversations
+    private val listConversation: MutableList<Conversation> = mutableListOf()
 
+    private val _conversations = MutableLiveData<List<Conversation>>()
+    val conversations: LiveData<List<Conversation>> = _conversations
+
+    private var jobSearchRecentChat: Job? = null
+    var isNewConversation = false
 
     fun getAllConversation(isFresh: Boolean = false) = viewModelScope.launchHandler {
         conversationRepo.getAllConversation(isFresh).collect {
             Log.d("sudoo", "getAllConversation: $it")
             if (it is Resource.Success) {
-                _conversations.postValue(it.requiredData())
+                listConversation.clear()
+                listConversation.addAll(it.requiredData())
+                _conversations.postValue(listConversation)
                 Log.d("sudoo", "getAllConversation: success ${it.data.size}")
             }
         }
     }
 
+    fun searchConversationByName(name: String) {
+        jobSearchRecentChat?.cancel()
+        jobSearchRecentChat = viewModelScope.launchHandler {
+            delay(1000)
+            if (name.isEmpty()) {
+                _conversations.postValue(listConversation)
+            } else {
+                val searchList = listConversation.filter { it.name.contains(name, ignoreCase = true) }
+                _conversations.postValue(searchList)
+            }
+        }
+    }
+
+    fun addNewConversation(conversation: Conversation) {
+        isNewConversation = true
+        listConversation.add(0, conversation)
+        _conversations.postValue(listConversation)
+    }
 }

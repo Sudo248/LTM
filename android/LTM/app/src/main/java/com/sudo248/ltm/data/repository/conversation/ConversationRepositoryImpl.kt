@@ -108,13 +108,30 @@ class ConversationRepositoryImpl @Inject constructor(
         }*/
     }.flowOn(Dispatchers.IO)
 
+    override suspend fun searchConversationByName(name: String): Flow<Resource<MutableList<Conversation>>> = flow<Resource<MutableList<Conversation>>> {
+        emit(Resource.Loading)
+        val request = Request<String>()
+        request.path = Constant.PATH_CONVERSATION
+        request.method = RequestMethod.GET
+        request.params = mapOf(Constant.CONVERSATION_NAME to name)
+        request.payload = ""
+        socketService.send(request)
+
+        val response = socketService.responseFlow.first { it.requestId == request.id }
+        if (response.code == 200) {
+            emit(Resource.Success(response.payload as ArrayList<Conversation>))
+        } else {
+            emit(Resource.Error(response.message))
+        }
+    }.flowOn(Dispatchers.IO)
+
     private fun getSampleConversation(): List<Conversation> {
         return List(5) {
             Conversation(
                 it,
                 "Conversation $it",
                 "",
-                "Le Hongg Duong",
+                "Le Hong Duong",
                 ConversationType.GROUP,
                 LocalDate.now()
             )

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.ContentResolver
 import android.net.Uri
 import android.provider.OpenableColumns
+import android.util.Log
 import com.sudo248.ltm.api.model.Request
 import com.sudo248.ltm.api.model.RequestMethod
 import com.sudo248.ltm.api.model.image.Image
@@ -126,11 +127,14 @@ class MessageRepositoryImpl @Inject constructor(
                 resolver.query(uri, null, null, null)?.let { cursor ->
                     val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
                     cursor.moveToFirst()
-                    nameImage = cursor.getString(nameIndex);
+                    nameImage = cursor.getString(nameIndex)
+                    cursor.close()
                 }
 
                 resolver.openInputStream(uri)?.let { inputStream ->
-                    val imageBytes = getBytes(inputStream)
+                    val imageBytes = inputStream.readBytes()
+                    inputStream.close()
+                    Log.d("sudoo", "sendImage: image size: ${imageBytes.size}")
                     val image = Image(
                         nameImage,
                         imageBytes.size,
@@ -154,15 +158,4 @@ class MessageRepositoryImpl @Inject constructor(
                 Resource.Error(e.message.toString())
             }
         }
-
-    private suspend fun getBytes(inputStream: InputStream): ByteArray = coroutineScope {
-        val byteBuffer = ByteArrayOutputStream()
-        val buffer = ByteArray(1024)
-        var len = inputStream.read(buffer)
-        while (len != -1) {
-            byteBuffer.write(buffer, 0, len)
-            len = inputStream.read(buffer)
-        }
-        byteBuffer.toByteArray()
-    }
 }

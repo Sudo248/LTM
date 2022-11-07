@@ -15,6 +15,7 @@ object Constant {
     const val WS_PORT = 6026
     const val USER_ID = "userId"
     const val CONVERSATION_ID = "conversationId"
+    const val CONVERSATION_NAME = "conversationName"
     const val NEW_SUBSCRIPTION = -1
     const val UNKNOWN = -2
 
@@ -26,6 +27,7 @@ object Constant {
     const val PATH_USER_CONVERSATION = "/user_conversation"
     const val PATH_CHATS = "/chats"
     const val PATH_UPLOAD_IMAGE = "/upload/images"
+    const val PATH_PROFILE = "/profile"
 
     const val URL_REGEX = "[(http(s)?):\\/\\/(www\\.)?a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)"
     const val URL_IMAGE_REGEX = "(http(s?):)([/|.|\\w|\\s|-])*\\.(?:jpg|gif|png)"
