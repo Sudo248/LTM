@@ -63,5 +63,6 @@
         android:textSize="14sp"
         android:text="Hello"
         android:textColor="@color/grey_4F"
-        android:maxLines="1"/>
+        android:maxLines="1"
+        android:ellipsize="end"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

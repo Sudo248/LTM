@@ -11,4 +11,6 @@ public interface MessageService {
     List<MessageEntity> getAllMessage(Integer conversationId);
 
     String getNewMessage(Integer conversationId);
+
+    MessageEntity createMessage(MessageEntity messageEntity);
 }

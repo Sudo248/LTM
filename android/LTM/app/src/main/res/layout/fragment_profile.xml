@@ -28,10 +28,13 @@
                 android:id="@+id/view3"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
-                android:background="@color/purple_73" />
+                android:background="@color/purple_73"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
-                android:id="@+id/imageView"
+                android:id="@+id/imgAvatar"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
                 android:src="@drawable/ic_profile"
@@ -41,7 +44,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/view3" />
 
             <EditText
-                android:id="@+id/InputUserName"
+                android:id="@+id/edtName"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -52,48 +55,58 @@
                 android:text="Name"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/imageView" />
+                app:layout_constraintTop_toBottomOf="@+id/imgAvatar" />
 
             <EditText
-                android:id="@+id/InputCity"
+                android:id="@+id/edtBio"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="28dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="50dp"
+                android:layout_marginEnd="16dp"
                 android:ems="10"
-                android:inputType="textPersonName"
-                android:text="City"
-                app:layout_constraintEnd_toEndOf="@+id/InputUserName"
-                app:layout_constraintStart_toStartOf="@+id/InputUserName"
-                app:layout_constraintTop_toBottomOf="@+id/InputUserName" />
+                android:text="Bio"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/edtName"
+                android:maxLines="3" />
 
-            <EditText
-                android:id="@+id/InputNumberphone"
-                android:layout_width="0dp"
+            <TextView
+                android:id="@+id/txtSave"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="28dp"
-                android:ems="10"
-                android:inputType="textPersonName"
-                android:text="Numberphone"
-                app:layout_constraintEnd_toEndOf="@+id/InputCity"
-                app:layout_constraintStart_toStartOf="@+id/InputCity"
-                app:layout_constraintTop_toBottomOf="@+id/InputCity" />
+                app:layout_constraintBottom_toTopOf="@id/txtSignOut"
+                android:layout_marginTop="50dp"
+                android:layout_marginHorizontal="50dp"
+                android:layout_marginBottom="20dp"
+                android:paddingVertical="8dp"
+                android:text="Save"
+                android:gravity="center"
+                android:textSize="18sp"
+                android:background="@drawable/bg_rectangle_conner_20dp"
+                android:backgroundTint="@color/purple_73"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:visibility="gone"/>
 
-            <EditText
-                android:id="@+id/InputEmail"
-                android:layout_width="0dp"
+            <TextView
+                android:id="@+id/txtSignOut"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="28dp"
-                android:ems="10"
-                android:inputType="textPersonName"
-                android:text="Email"
-                app:layout_constraintEnd_toEndOf="@+id/InputNumberphone"
-                app:layout_constraintStart_toStartOf="@+id/InputNumberphone"
-                app:layout_constraintTop_toBottomOf="@+id/InputNumberphone" />
-
+                android:layout_marginHorizontal="50dp"
+                android:layout_marginBottom="20dp"
+                android:background="@drawable/bg_rectangle_conner_20dp"
+                android:backgroundTint="@color/purple_73"
+                android:gravity="center"
+                android:paddingVertical="8dp"
+                android:text="SignOut"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                tools:layout_editor_absoluteX="50dp" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
-
-    <!-- TODO: Update blank fragment layout -->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

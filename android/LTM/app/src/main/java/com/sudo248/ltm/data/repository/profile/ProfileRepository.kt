@@ -14,6 +14,8 @@ import kotlinx.coroutines.flow.Flow
  */
 interface ProfileRepository {
 
+    suspend fun getProfile(): Flow<Resource<Profile>>
+
     suspend fun getAllProfile(): Flow<Resource<MutableList<Profile>>>
 
     suspend fun searchProfileByName(name: String): Flow<Resource<MutableList<Profile>>>
@@ -23,4 +25,6 @@ interface ProfileRepository {
     suspend fun getConversationByProfile(profile: Profile): Flow<Resource<Conversation>>
 
     suspend fun addFriend(profile: Profile): Flow<Resource<Int>>
+
+    suspend fun getProfileImage(): String
 }

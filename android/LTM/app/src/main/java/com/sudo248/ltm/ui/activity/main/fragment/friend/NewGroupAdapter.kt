@@ -8,6 +8,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.sudo248.ltm.R
 import com.sudo248.ltm.api.model.profile.Profile
+import com.sudo248.ltm.common.Constant
 import com.sudo248.ltm.databinding.ItemNewGroupBinding
 
 
@@ -49,10 +50,12 @@ class NewGroupAdapter(
 
     inner class ViewHolder(private val binding: ItemNewGroupBinding) : RecyclerView.ViewHolder(binding.root) {
         fun onBind(profile: Profile, oldPosition: Int, position: Int) {
+            val imageUrl = "${Constant.URL_IMAGE}${profile.image}"
             Glide
                 .with(itemView.context)
-                .load(profile.image)
+                .load(imageUrl)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .placeholder(R.drawable.placeholder)
                 .error(R.drawable.ic_error)
                 .into(binding.imgAvatar)
 

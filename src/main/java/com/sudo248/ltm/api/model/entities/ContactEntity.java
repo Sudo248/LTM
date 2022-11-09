@@ -22,9 +22,14 @@ public class ContactEntity implements Serializable {
 
     @Column(name = "friend_id")
     private Integer friendId;
+
+    public ContactEntity() {
+    }
+
+    public ContactEntity(ContactType contactType, Integer userId, Integer friendId) {
+        this.contactType = contactType;
+        this.userId = userId;
+        this.friendId = friendId;
+    }
 }
 
-enum ContactType {
-    FRIEND,
-    STRANGER
-}

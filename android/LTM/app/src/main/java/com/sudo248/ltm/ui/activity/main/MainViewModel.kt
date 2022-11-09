@@ -1,5 +1,6 @@
 package com.sudo248.ltm.ui.activity.main
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -22,7 +23,8 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val conversationRepo: ConversationRepository
+    private val conversationRepo: ConversationRepository,
+    private val socketService: WebSocketService
 ) : ViewModel() {
 
     private val _newConversation = MutableLiveData<Pair<Int, Conversation>>()
@@ -31,10 +33,11 @@ class MainViewModel @Inject constructor(
     private val _updateConversation = MutableLiveData<Pair<Int, Conversation>>()
     val updateConversation: LiveData<Pair<Int, Conversation>> = _updateConversation
 
-    init {
-        viewModelScope.launchHandler {
+    fun updateConversation() {
+        viewModelScope.launch {
             conversationRepo.getUpdateConversations().collect {
-                when(it.first) {
+                Log.d("sudoo", "updateConversation: MainViewModel")
+                when (it.first) {
                     Constant.NEW_SUBSCRIPTION -> {
                         _newConversation.postValue(Pair(it.first, it.second!!))
                     }
@@ -46,6 +49,12 @@ class MainViewModel @Inject constructor(
                     }
                 }
             }
+        }
+    }
+
+    fun checkConnect() {
+        if (!socketService.isOpen) {
+            socketService.connect()
         }
     }
 

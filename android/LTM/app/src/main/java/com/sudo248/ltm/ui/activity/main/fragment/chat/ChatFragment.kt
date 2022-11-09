@@ -16,10 +16,12 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.sudo248.ltm.R
+import com.sudo248.ltm.common.Constant
 import com.sudo248.ltm.databinding.FragmentChatBinding
 import com.sudo248.ltm.ktx.gone
 import com.sudo248.ltm.ktx.visible
 import com.sudo248.ltm.ui.activity.main.MainActivity
+import com.sudo248.ltm.utils.DialogUtils
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.net.URL
@@ -34,6 +36,16 @@ class ChatFragment : Fragment() {
     private val autoScroll = object : RecyclerView.AdapterDataObserver() {
         override fun onItemRangeChanged(positionStart: Int, itemCount: Int) {
             super.onItemRangeChanged(positionStart, itemCount)
+            binding.rcvChat.scrollToPosition(chatAdapter.itemCount - 1)
+        }
+
+        override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+            super.onItemRangeInserted(positionStart, itemCount)
+            binding.rcvChat.scrollToPosition(chatAdapter.itemCount - 1)
+        }
+
+        override fun onChanged() {
+            super.onChanged()
             binding.rcvChat.scrollToPosition(chatAdapter.itemCount - 1)
         }
     }
@@ -65,12 +77,14 @@ class ChatFragment : Fragment() {
         viewModel.conversation = chatFragmentArgs.conversation
         binding.apply {
             txtTitleChat.text = viewModel.conversation.name
+            val imageUrl = "${Constant.URL_IMAGE}${viewModel.conversation.avtUrl}"
             Glide
                 .with(requireContext())
-                .load(viewModel.conversation.avtUrl)
+                .load(imageUrl)
                 .placeholder(R.drawable.placeholder)
                 .error(R.drawable.ic_error)
                 .into(imgAvatar)
+
             edtInputMessage.setOnFocusChangeListener { _, hasFocus ->
                 if (hasFocus) {
                     imgAddImage.gone()
@@ -111,6 +125,14 @@ class ChatFragment : Fragment() {
                 viewModel.sendMessage(edtInputMessage.text.toString())
                 edtInputMessage.text.clear()
             }
+
+            imgVideo.setOnClickListener {
+                DialogUtils.showDialog(
+                    requireContext(),
+                    title = getString(R.string.developing),
+                    description = getString(R.string.feature_develop)
+                )
+            }
         }
     }
 
@@ -120,6 +142,11 @@ class ChatFragment : Fragment() {
                 chatAdapter.addMessage(it)
             }
         }
+        viewModel.messages.observe(viewLifecycleOwner) {
+            chatAdapter.submitList(it)
+        }
+        viewModel.subscribeTopic()
+        viewModel.getAllMessage()
         viewModel.updateNewMessage()
     }
 

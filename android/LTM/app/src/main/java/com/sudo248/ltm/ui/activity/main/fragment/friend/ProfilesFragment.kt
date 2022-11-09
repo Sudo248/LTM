@@ -1,6 +1,7 @@
 package com.sudo248.ltm.ui.activity.main.fragment.friend
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -64,6 +65,7 @@ class ProfilesFragment : Fragment() {
             }
 
             override fun onOpenMessage(profile: Profile) {
+                Log.d("sudoo", "onOpenMessage: ${profile.userId}")
                 viewModel.getConversationByProfile(profile)
             }
 
@@ -133,7 +135,7 @@ class ProfilesFragment : Fragment() {
                         DialogUtils.showDialog(
                             requireContext(),
                             title = getString(R.string.error),
-                            description = getString(R.string.error_create_group),
+                            description = (it as Resource.Error).message,
                             textColorTitle = R.color.red,
                             onClickConfirm = {
                                 findNavController().popBackStack()
@@ -143,6 +145,7 @@ class ProfilesFragment : Fragment() {
                 }
             }
         }
+        viewModel.getAllProfile()
     }
 
     private fun navigateToChat(conversation: Conversation) {

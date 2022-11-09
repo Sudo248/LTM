@@ -117,6 +117,7 @@ public class MqttConnection {
                 return;
             }
         }
+
         subscribers.add(new Subscriber(
                 message.getClientId(),
                 ws
@@ -183,6 +184,15 @@ public class MqttConnection {
 
     private void resubscribe(Long clientId, WebSocket ws) {
         List<String> topics = subscriberTopic.get(clientId);
+        Subscriber subscriber = subscribers.get(clientId);
+        if (subscriber == null) {
+            subscribers.put(clientId, new Subscriber(
+                    clientId,
+                    ws
+            ));
+        } else {
+            subscribers.get(clientId).setWebSocket(ws);
+        }
         if (topics != null && !topics.isEmpty()) {
             for (String topic : topics) {
                 resubscribeTopic(clientId, ws, topic);
@@ -213,12 +223,15 @@ public class MqttConnection {
         publishers.remove(topic);
     }
 
-    public void publish(String topic, MqttMessage message) {
-        publishers.get(topic).publish(message);
+    public void publish(MqttMessage message) {
+        processPublish(message, null);
+//        publishers.get(topic).publish(message);
     }
     public WebSocket getWsSubscriber(Long subscriberId) {
         Subscriber subscriber = subscribers.get(subscriberId);
+        log.info("getWsSubscriber: "+ subscriberId);
         if (subscriber != null && subscriber.isOpen()) {
+            log.info("getWsSubscriber: "+ subscriberId + "socket: " + subscriber.getWebSocket());
             return subscriber.getWebSocket();
         }
         return null;

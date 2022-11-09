@@ -25,4 +25,6 @@
     <string name="ok">Ok</string>
     <string name="error_create_group">Error when create group</string>
     <string name="error">Error</string>
+    <string name="feature_develop">Feature call video is developing</string>
+    <string name="developing">Feature developing</string>
 </resources>

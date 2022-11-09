@@ -6,7 +6,6 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -35,11 +34,24 @@ public class MessageEntity implements Serializable {
 
     }
 
-    public MessageEntity(String content, ContentMessageType contentType, Integer senderId, LocalDateTime sentAt) {
+    public MessageEntity(String content, ContentMessageType contentType, Integer senderId, LocalDateTime sentAt, Integer conversationId) {
         this.content = content;
         this.contentType = contentType;
         this.senderId = senderId;
         this.sentAt = sentAt;
+        this.conversationId = conversationId;
+    }
+
+    public Message toMessage(String avtUrl) {
+        return new Message(
+                id,
+                content,
+                contentType,
+                senderId,
+                avtUrl,
+                conversationId,
+                sentAt
+        );
     }
 
     public static MessageEntity fromMessage(Message message) {
@@ -47,7 +59,8 @@ public class MessageEntity implements Serializable {
                 message.getContent(),
                 message.getContentType(),
                 message.getSendId(),
-                message.getSendAt()
+                message.getSendAt(),
+                message.getConversationId()
         );
     }
 }

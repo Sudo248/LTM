@@ -1,6 +1,7 @@
 package com.sudo248.ltm.ui.activity.main.fragment.friend
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -8,6 +9,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.sudo248.ltm.R
 import com.sudo248.ltm.api.model.profile.Profile
+import com.sudo248.ltm.common.Constant
 import com.sudo248.ltm.databinding.ItemFriendBinding
 
 
@@ -37,9 +39,7 @@ class ProfileAdapter(
     }
 
     fun addFriendSuccess(position: Int) {
-        listFriend[position].apply {
-            isFriended = true
-        }
+        listFriend[position].isFriended = true
         notifyItemChanged(position)
     }
 
@@ -66,6 +66,7 @@ class ProfileAdapter(
                 txtDescription.text = profile.bio
                 val action = when{
                     isAddGroup -> {
+                        Log.d("sudoo", "onBind: isAddGroup")
                         imgAction.setOnClickListener {
                             profileActionListener.onAddNewGroup(profile, position)
                             imgAction.setImageResource(R.drawable.ic_done)
@@ -73,13 +74,17 @@ class ProfileAdapter(
                         R.drawable.ic_group_add
                     }
                     profile.isFriended -> {
+                        Log.d("sudoo", "onBind: isFriended")
                         imgAction.setOnClickListener {
+                            Log.d("sudoo", "onBind: isFriended")
                             profileActionListener.onOpenMessage(profile)
                         }
                         R.drawable.ic_chat
                     }
                     else -> {
+                        Log.d("sudoo", "onBind: add friend")
                         imgAction.setOnClickListener {
+                            Log.d("sudoo", "onBind: add friend")
                             profileActionListener.onAddFriend(profile, position)
                         }
                         R.drawable.ic_add_friend
@@ -87,9 +92,10 @@ class ProfileAdapter(
                 }
 
                 imgAction.setImageResource(action)
+                val imageUrl = "${Constant.URL_IMAGE}${profile.image}"
                 Glide
                     .with(itemView.context)
-                    .load(profile.image)
+                    .load(imageUrl)
                     .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                     .placeholder(R.drawable.placeholder)
                     .error(R.drawable.ic_error)

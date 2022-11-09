@@ -1,6 +1,8 @@
 package com.sudo248.ltm;
 
+import com.sudo248.ltm.api.repository.MessageRepository;
 import com.sudo248.ltm.websocket.WebSocketServerImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration;
@@ -9,6 +11,7 @@ import org.sudo248.server.WebSocketServer;
 
 @SpringBootApplication
 public class Application {
+
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
         WebSocketServer socket = new WebSocketServerImpl();

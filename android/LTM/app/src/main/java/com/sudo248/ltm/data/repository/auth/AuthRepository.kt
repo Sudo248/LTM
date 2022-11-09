@@ -18,4 +18,6 @@ interface AuthRepository {
     suspend fun signup(account: Account): Flow<Resource<Boolean>>
 
     fun saveUserId(userId: Int)
+
+    fun saveUserImage(userImage: String)
 }

@@ -49,7 +49,9 @@
         tools:layout="@layout/fragment_profiles">
         <action
             android:id="@+id/action_friendFragment_to_chatFragment"
-            app:destination="@id/chatFragment" />
+            app:destination="@id/chatFragment"
+            app:popUpTo="@id/profilesFragment"
+            app:popUpToInclusive="true"/>
     </fragment>
     <fragment
         android:id="@+id/searchFragment"

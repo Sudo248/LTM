@@ -1,5 +1,6 @@
 package com.sudo248.ltm.ui.activity.main.fragment.friend
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -15,6 +16,7 @@ import com.sudo248.ltm.utils.SharedPreferenceUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -48,11 +50,7 @@ class ProfilesViewModel @Inject constructor(
 
     private var jobSearchProfile: Job? = null
 
-    init {
-        getAllConversation()
-    }
-
-    fun getAllConversation() {
+    fun getAllProfile() {
         viewModelScope.launchHandler {
             profileRepo.getAllProfile().collect {
                 if (it is Resource.Success) {
@@ -67,8 +65,9 @@ class ProfilesViewModel @Inject constructor(
     fun getConversationByProfile(profile: Profile) {
         viewModelScope.launchHandler {
             val userId = SharedPreferenceUtils.getInt(PrefKey.KEY_USER_ID)
-            val nameConversation = "$userId+${profile.userId}"
-            conversationRepo.searchConversationByName(nameConversation).collect{
+            val nameInLocal = profile.name
+            val nameInServer = "$userId-${profile.userId}"
+            conversationRepo.searchConversationByName(nameInLocal, nameInServer).collect{
                 if (it is Resource.Success) {
                     _conversation.postValue(it.requiredData()[0])
                 }
@@ -78,9 +77,14 @@ class ProfilesViewModel @Inject constructor(
 
     fun addFriend(profile: Profile, position: Int) {
         viewModelScope.launchHandler {
-            profileRepo.addFriend(profile).collect {
-                if (it is Resource.Success) {
+            profileRepo.addFriend(profile).collect { resAddFriend ->
+                if (resAddFriend is Resource.Success) {
                     _addFriend.postValue(position)
+                    conversationRepo.getConversationById(resAddFriend.requiredData()).collect {
+                        if (it is Resource.Success) {
+//                            _addFriend.postValue(position)
+                        }
+                    }
                 }
             }
         }
@@ -89,7 +93,7 @@ class ProfilesViewModel @Inject constructor(
     fun searchProfileByName(name: String) {
         jobSearchProfile?.cancel()
         jobSearchProfile = viewModelScope.launch {
-            delay(1000)
+            delay(500)
             if (name.isEmpty()) {
                 _listProfile.postValue(listProfiles)
             } else {
@@ -101,9 +105,15 @@ class ProfilesViewModel @Inject constructor(
 
     fun createGroup(listProfile: List<Profile>) {
         viewModelScope.launchHandler {
+            if (listProfile.size <= 1) {
+                _createGroupState.postValue(Resource.Error("Group must be more than 3 members"))
+            }
             _createGroupState.postValue(Resource.Loading)
-            val listUserId = listProfile.map { it.userId }
+            val listUserId: MutableList<Int> = mutableListOf()
+            listUserId.add(SharedPreferenceUtils.getInt(PrefKey.KEY_USER_ID))
+            listUserId.addAll(listProfile.map { it.userId })
             profileRepo.createNewGroup(listUserId).collect {
+                Log.d("sudoo", "createGroup: $it")
                 _createGroupState.postValue(it)
             }
         }

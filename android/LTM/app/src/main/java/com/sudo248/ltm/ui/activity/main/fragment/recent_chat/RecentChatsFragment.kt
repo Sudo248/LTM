@@ -73,6 +73,11 @@ class RecentChatsFragment : Fragment() {
             adapter.updateItem(it.first, it.second)
         }
 
+        mainViewModel.updateConversation()
+    }
+
+    override fun onResume() {
+        super.onResume()
         viewModel.getAllConversation()
     }
 
