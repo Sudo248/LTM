@@ -5,8 +5,13 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.sudo248.ltm.R
 import com.sudo248.ltm.api.model.conversation.Conversation
+import com.sudo248.ltm.common.Constant
 import com.sudo248.ltm.databinding.ItemRecentChatBinding
+import com.sudo248.ltm.ktx.gone
 import com.sudo248.ltm.utils.DateUtils
 
 
@@ -17,6 +22,7 @@ import com.sudo248.ltm.utils.DateUtils
  * @since 19:56 - 23/10/2022
  */
 class RecentChatsAdapter(
+    private val isSearch: Boolean = false,
     private val onClickItem: (Conversation, Int) -> Unit
 ) : RecyclerView.Adapter<RecentChatsAdapter.RecentChatsViewHolder>() {
 
@@ -57,16 +63,29 @@ class RecentChatsAdapter(
 
     override fun getItemCount(): Int = listChats.size
 
-    inner class RecentChatsViewHolder(private val binding: ItemRecentChatBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class RecentChatsViewHolder(private val binding: ItemRecentChatBinding) :
+        RecyclerView.ViewHolder(binding.root) {
         fun onBind(conversation: Conversation, position: Int) {
             binding.apply {
                 root.setOnClickListener {
                     onClickItem(conversation, position)
                 }
                 txtTitle.text = conversation.name
-                txtDescription.text = conversation.description
-//                Glide.with(itemView).load(conversation.avtUrl).into(imgAvatar)
-                txtTime.text = DateUtils.convertToString(conversation.createAt)
+                val imageUrl = "${Constant.URL_IMAGE}${conversation.avtUrl}"
+                Glide
+                    .with(itemView.context)
+                    .load(imageUrl)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .placeholder(R.drawable.placeholder)
+                    .error(R.drawable.ic_error)
+                    .into(imgAvatar)
+                if (!isSearch) {
+                    txtDescription.text = conversation.description
+                    txtTime.text = DateUtils.convertToString(conversation.createAt)
+                } else {
+                    txtDescription.gone()
+                    txtTime.gone()
+                }
             }
         }
     }

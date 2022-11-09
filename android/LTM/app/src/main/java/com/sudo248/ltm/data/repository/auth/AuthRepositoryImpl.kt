@@ -8,9 +8,12 @@ import com.sudo248.ltm.api.model.auth.Account
 import com.sudo248.ltm.common.Constant
 import com.sudo248.ltm.common.PrefKey
 import com.sudo248.ltm.common.Resource
+import com.sudo248.ltm.data.repository.profile.ProfileRepository
 import com.sudo248.ltm.utils.SharedPreferenceUtils
 import com.sudo248.ltm.websocket.WebSocketService
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -24,7 +27,8 @@ import javax.inject.Singleton
  */
 @Singleton
 class AuthRepositoryImpl @Inject constructor(
-    private val socketService: WebSocketService
+    private val socketService: WebSocketService,
+    private val profileRepo: ProfileRepository
 ) : AuthRepository {
     override suspend fun login(account: Account): Flow<Resource<Boolean>> = flow {
         emit(Resource.Loading)
@@ -33,6 +37,7 @@ class AuthRepositoryImpl @Inject constructor(
         request.method = RequestMethod.POST
         request.payload = account
         socketService.send(request)
+
         Log.d("sudoo", "login: start send request")
         val response = socketService.responseFlow.first { it.requestId == request.id }
         if (response.code == 200) {
@@ -40,6 +45,7 @@ class AuthRepositoryImpl @Inject constructor(
             Log.d("sudoo", "login: userId -> ${accountResponse.id}")
             saveUserId(accountResponse.id.toInt())
             socketService.clientId = accountResponse.id
+            saveUserImage(profileRepo.getProfileImage())
             emit(Resource.Success(true))
         } else {
             emit(Resource.Error(response.message))
@@ -70,5 +76,10 @@ class AuthRepositoryImpl @Inject constructor(
     override fun saveUserId(userId: Int) {
         SharedPreferenceUtils.putInt(PrefKey.KEY_USER_ID, userId)
         Log.d("sudoo", "saveUserId:$userId ${SharedPreferenceUtils.getInt(PrefKey.KEY_USER_ID)}")
+    }
+
+    override fun saveUserImage(userImage: String) {
+        SharedPreferenceUtils.putString(PrefKey.KEY_USER_IMAGE, userImage)
+        Log.d("sudoo", "saveUserImage:$userImage ${SharedPreferenceUtils.getString(PrefKey.KEY_USER_IMAGE)}")
     }
 }

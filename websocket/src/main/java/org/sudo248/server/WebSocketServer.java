@@ -46,7 +46,7 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
      */
     private static final int AVAILABLE_PROCESSORS = Runtime.getRuntime().availableProcessors();
 
-    private static final Long serverId = 24080309L;
+    protected static final Long serverId = 24080309L;
 
     private final String pathStore;
 
@@ -507,6 +507,7 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
         SubscriptionRepository subscriptionRepository = h2Builder.subscriptionRepository();
         mqttManager = new MqttManager(subscriptionRepository);
         Map<Long, Subscriber> subscriberMap = mqttManager.getSubscriptionFromDb();
+        log.info("subscriberMap: " + subscriberMap.keySet().size());
         mqttConnection = new MqttConnection(mqttManager.getPublishers(), this, mqttManager.getSubscriberTopic(), subscriberMap);
         return true;
     }
@@ -1110,6 +1111,11 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
         //publish(message.copy("New person join conversation"));
     }
 
+    public void addSubscription(Subscription subscription) {
+        log.info("addSubscription: " + subscription);
+        mqttManager.addSubscription(subscription);
+    }
+
     @Override
     public void onMqttUnSubscribe(MqttMessage message) {
         Subscription subscription = new Subscription(
@@ -1131,7 +1137,7 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
     }
 
     public void publish(MqttMessage message) {
-        mqttConnection.publish(message.getTopic(), message);
+        mqttConnection.publish(message);
     }
 
     public void publishAsServer(MqttMessage message) {
@@ -1145,24 +1151,18 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
     }
 
     public void createPublisher(String topic, List<Long> subscriberIds) {
+        log.info("createPublisher: topic -> " + topic + " members: " + subscriberIds.size());
         List<Subscriber> subscribers = new ArrayList<>();
         for (Long subscriberId : subscriberIds) {
+            WebSocket ws = mqttConnection.getWsSubscriber(subscriberId);
             subscribers.add(
                     new Subscriber(
                             subscriberId,
-                            mqttConnection.getWsSubscriber(subscriberId)
+                            ws
                     )
             );
         }
         mqttConnection.createPublisher(topic, subscribers);
-        publish(
-                new MqttMessage(
-                        serverId,
-                        topic,
-                        MqttMessageType.SUBSCRIBE,
-                        "Create new Conversation"
-                )
-        );
     }
 
     /**

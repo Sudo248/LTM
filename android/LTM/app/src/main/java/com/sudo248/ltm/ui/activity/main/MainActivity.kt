@@ -2,7 +2,9 @@ package com.sudo248.ltm.ui.activity.main
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import androidx.activity.viewModels
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
@@ -16,6 +18,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private val viewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,6 +26,13 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         val navHost = supportFragmentManager.findFragmentById(R.id.fcvMain) as NavHostFragment
         NavigationUI.setupWithNavController(binding.navMain, navHost.navController)
+        Log.d("sudoo", "onCreate: MainActibity")
+//        viewModel.updateConversation()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.checkConnect()
     }
 
     fun hideBottomNavigation() {

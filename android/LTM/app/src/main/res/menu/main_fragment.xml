@@ -6,9 +6,9 @@
         android:title="@string/recent_chat"/>
 
     <item
-        android:id="@+id/videoCallsFragment"
-        android:icon="@drawable/ic_video"
-        android:title="@string/video_call"/>
+        android:id="@+id/profilesFragment"
+        android:icon="@drawable/ic_friend"
+        android:title="@string/friend"/>
     <item
         android:id="@+id/profileFragment"
         android:icon="@drawable/ic_profile"

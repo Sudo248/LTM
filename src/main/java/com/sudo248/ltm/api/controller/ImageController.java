@@ -35,7 +35,8 @@ public class ImageController implements WebSocketController<Request<Image>, Resp
            BufferedImage bufImage = ImageIO.read(new ByteArrayInputStream((image.getContent())));
            File fileImage = new File(uploadFolder+"/"+System.currentTimeMillis()+"_"+image.getName());
            ImageIO.write(bufImage, getExtension(image.getName()), fileImage);
-           String imageUrl = ImageUtils.getUrlImage(fileImage.getName());
+//           String imageUrl = ImageUtils.getUrlImage(fileImage.getName());
+           String imageUrl = fileImage.getName();
            logger.info("Received image url: " + imageUrl);
             response.setCode(200);
             response.setMessage("Upload image: " + fileImage.getName() + " success");

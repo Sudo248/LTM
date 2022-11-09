@@ -4,10 +4,14 @@ import android.util.Log
 import com.sudo248.ltm.api.model.Request
 import com.sudo248.ltm.api.model.Response
 import com.sudo248.ltm.common.Constant
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.launch
 import org.sudo248.client.WebSocketClient
 import org.sudo248.handshake.server.ServerHandshake
 import org.sudo248.mqtt.model.MqttMessage
@@ -26,23 +30,27 @@ import kotlin.collections.LinkedHashMap
  * @since 00:38 - 23/10/2022
  */
 @Singleton
-class WebSocketService @Inject constructor() : WebSocketClient(URI("ws://${Constant.WS_HOST}:${Constant.WS_PORT}")) {
+class WebSocketService @Inject constructor(
+
+) : WebSocketClient(URI("ws://${Constant.WS_HOST}:${Constant.WS_PORT}")) {
 
     companion object {
         private val TAG = WebSocketService::class.java.simpleName
     }
 
+    private val webSocketScope = CoroutineScope(Dispatchers.Main.immediate + SupervisorJob())
+
     private val _messageFlow: MutableSharedFlow<MqttMessage> = MutableSharedFlow(
         extraBufferCapacity = 1,
         onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
-    val messageFlow: SharedFlow<MqttMessage> = _messageFlow.asSharedFlow()
+    val messageFlow: SharedFlow<MqttMessage> = _messageFlow
 
     private val _responseFlow: MutableSharedFlow<Response<*>> = MutableSharedFlow(
         extraBufferCapacity = 1,
         onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
-    val responseFlow: SharedFlow<Response<*>> = _responseFlow.asSharedFlow()
+    val responseFlow: SharedFlow<Response<*>> = _responseFlow
 
     private val response: HashMap<Long, ResponseListener>
 
@@ -87,6 +95,7 @@ class WebSocketService @Inject constructor() : WebSocketClient(URI("ws://${Const
     }
 
     override fun publish(topic: String?, message: Any?) {
+        Log.d(TAG, "publish: $topic, message $message")
         if (!isOpen) {
             startRequest?.add(message)
         } else {
@@ -95,13 +104,26 @@ class WebSocketService @Inject constructor() : WebSocketClient(URI("ws://${Const
     }
 
     override fun onMqttPublish(message: MqttMessage?) {
-        if (message != null) {
-            _messageFlow.tryEmit(message)
-        } else {
-            Log.e(TAG, "onMqttPublish: $message" )
+        webSocketScope.launch {
+            if (message != null) {
+                _messageFlow.emit(message)
+            } else {
+                Log.e(TAG, "onMqttPublish: $message" )
+            }
+            Log.d(TAG, "onMqttPublish: ${message.toString()}")
         }
-        Log.d(TAG, "onMqttPublish: ${message.toString()}")
     }
+
+//    override fun onMqttSubscribe(message: MqttMessage?) {
+//        webSocketScope.launch {
+//            if (message != null) {
+//                _messageFlow.emit(message)
+//            } else {
+//                Log.e(TAG, "onMqttSubscribe: $message" )
+//            }
+//            Log.d(TAG, "onMqttSubscribe: ${message.toString()}")
+//        }
+//    }
 
     override fun onOpen(handshake: ServerHandshake?) {
         Log.d("sudoo", "onOpen")
@@ -127,13 +149,15 @@ class WebSocketService @Inject constructor() : WebSocketClient(URI("ws://${Const
     }
 
     override fun onMessage(data: Any?) {
-        Log.d("sudoo", "onMessage: $data")
-        if (data != null && data is Response<*>) {
-            val res = response.remove(data.requestId)
-            res?.onResponse(data)
-            _responseFlow.tryEmit(data)
-        } else {
-            Log.e(TAG, "onMessage: $data" )
+        webSocketScope.launch {
+            Log.d("sudoo", "onMessage: $data")
+            if (data != null && data is Response<*>) {
+                val res = response.remove(data.requestId)
+                res?.onResponse(data)
+                _responseFlow.emit(data)
+            } else {
+                Log.e(TAG, "onMessage: $data" )
+            }
         }
     }
 
@@ -144,5 +168,4 @@ class WebSocketService @Inject constructor() : WebSocketClient(URI("ws://${Const
     override fun onError(ex: Exception?) {
         Log.d("sudoo", "onError: $ex")
     }
-
 }

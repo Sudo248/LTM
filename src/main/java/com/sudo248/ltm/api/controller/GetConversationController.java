@@ -3,7 +3,9 @@ package com.sudo248.ltm.api.controller;
 import com.sudo248.ltm.api.model.Request;
 import com.sudo248.ltm.api.model.Response;
 import com.sudo248.ltm.api.model.conversation.Conversation;
+import com.sudo248.ltm.api.model.conversation.ConversationType;
 import com.sudo248.ltm.api.model.entities.ConversationEntity;
+import com.sudo248.ltm.api.model.entities.ProfileEntity;
 import com.sudo248.ltm.api.model.entities.UserConversationEntity;
 import com.sudo248.ltm.api.service.ConversationService;
 import com.sudo248.ltm.api.service.MessageService;
@@ -17,7 +19,7 @@ import org.springframework.stereotype.Controller;
 import java.util.ArrayList;
 import java.util.List;
 
-@WsController(path = "conversation/get")
+@WsController(path = "/conversation/get")
 public class GetConversationController implements WebSocketController<Request<Conversation>, Response<ArrayList<Conversation>>> {
 
     @Autowired
@@ -35,22 +37,29 @@ public class GetConversationController implements WebSocketController<Request<Co
         List<ConversationEntity> ce = conversationService.getAllByUserId(Integer.parseInt(userId));
         ArrayList<Conversation> arr = new ArrayList<>();
 
-        for (int i = 0; i < ce.size(); i++) {
+        for (ConversationEntity conversationEntity : ce) {
 
-            Conversation conversation = new Conversation(ce.get(i).getId(),
-                    ce.get(i).getName(),
-                    ce.get(i).getAvtUrl(),
-                    ce.get(i).getType(),
-                    ce.get(i).getCreatedAt());
+            Conversation conversation = new Conversation(
+                    conversationEntity.getId(),
+                    conversationEntity.getName(),
+                    conversationEntity.getAvtUrl(),
+                    conversationEntity.getType(),
+                    conversationEntity.getCreatedAt()
+            );
 
-            conversation.setDescription(messageService.getNewMessage(ce.get(i).getId()));
+            conversation.setDescription(messageService.getNewMessage(conversationEntity.getId()));
 
-            if (conversation.getType().equals("P2P")) {
-                String[] id = "+".split(ce.get(i).getName());
-
+            if (conversation.getType() == ConversationType.P2P) {
+                String[] id = conversationEntity.getName().split("-");
                 if (userId.equals(id[0])) {
-                    conversation.setName(profileService.getProfileByUserId(Integer.parseInt(id[1])).getName());
-                } else conversation.setName(profileService.getProfileByUserId(Integer.parseInt(id[0])).getName());
+                    ProfileEntity profileEntity = profileService.getProfileByUserId(Integer.parseInt(id[1]));
+                    conversation.setName(profileEntity.getName());
+                    conversation.setAvtUrl(profileEntity.getImage());
+                } else {
+                    ProfileEntity profileEntity = profileService.getProfileByUserId(Integer.parseInt(id[0]));
+                    conversation.setName(profileEntity.getName());
+                    conversation.setAvtUrl(profileEntity.getImage());
+                }
             }
 
             arr.add(conversation);

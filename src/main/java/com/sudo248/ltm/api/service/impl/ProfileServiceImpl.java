@@ -1,5 +1,6 @@
 package com.sudo248.ltm.api.service.impl;
 
+import com.sudo248.ltm.api.model.entities.ContactType;
 import com.sudo248.ltm.api.model.entities.ProfileEntity;
 import com.sudo248.ltm.api.repository.ProfileRepository;
 import com.sudo248.ltm.api.service.ProfileService;
@@ -31,11 +32,16 @@ public class ProfileServiceImpl implements ProfileService {
     public List<ProfileEntity> findProfileByName(String name) {
         name = name.trim();
         return profileRepository.findAllByName(name);
-
     }
 
     @Override
     public ProfileEntity update(ProfileEntity profileEntity) {
         return profileRepository.save(profileEntity);
     }
+
+    @Override
+    public String getAvatarUser(Integer userId) {
+        return getProfileByUserId(userId).getImage();
+    }
+
 }

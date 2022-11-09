@@ -2,7 +2,6 @@ package com.sudo248.ltm.data.repository.conversation
 
 import com.sudo248.ltm.api.model.conversation.Conversation
 import com.sudo248.ltm.common.Resource
-import com.sudo248.ltm.domain.model.Message
 import kotlinx.coroutines.flow.Flow
 
 
@@ -13,7 +12,8 @@ import kotlinx.coroutines.flow.Flow
  * @since 00:16 - 25/10/2022
  */
 interface ConversationRepository {
-    suspend fun getAllConversation(refresh: Boolean = false): Flow<Resource<MutableList<Conversation>>>
+    suspend fun getAllConversation(refresh: Boolean = true): Flow<Resource<MutableList<Conversation>>>
     suspend fun getConversationById(id: Int): Flow<Resource<Conversation>>
     suspend fun getUpdateConversations(): Flow<Pair<Int, Conversation?>>
+    suspend fun searchConversationByName(nameInLocal: String, nameInServer: String): Flow<Resource<MutableList<Conversation>>>
 }

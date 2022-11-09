@@ -2,6 +2,7 @@ package com.sudo248.ltm.api.model.message;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * **Created by**
@@ -17,7 +18,8 @@ public class Message implements Serializable {
     private ContentMessageType contentType;
     private Integer sendId;
     private String avtUrl;
-    private LocalDate sendAt;
+    private Integer conversationId;
+    private LocalDateTime sendAt;
 
     public Message() {
     }
@@ -27,24 +29,44 @@ public class Message implements Serializable {
         this.contentType = contentType;
         this.sendId = sendId;
         this.avtUrl = avtUrl;
-        this.sendAt = LocalDate.now();
+        this.sendAt = LocalDateTime.now();
     }
 
-    public Message(Integer id, String content, ContentMessageType contentType, Integer sendId, String avtUrl) {
+    public Message(String content, ContentMessageType contentType, Integer sendId, String avtUrl, Integer conversationId, LocalDateTime sendAt) {
+        this.content = content;
+        this.contentType = contentType;
+        this.sendId = sendId;
+        this.avtUrl = avtUrl;
+        this.conversationId = conversationId;
+        this.sendAt = sendAt;
+    }
+
+    public Message(String content, ContentMessageType contentType, Integer sendId, String avtUrl, Integer conversationId) {
+        this.content = content;
+        this.contentType = contentType;
+        this.sendId = sendId;
+        this.avtUrl = avtUrl;
+        this.conversationId = conversationId;
+        this.sendAt = LocalDateTime.now();
+    }
+
+    public Message(Integer id, String content, ContentMessageType contentType, Integer sendId, String avtUrl, Integer conversationId) {
         this.id = id;
         this.content = content;
         this.contentType = contentType;
         this.sendId = sendId;
         this.avtUrl = avtUrl;
-        this.sendAt = LocalDate.now();
+        this.conversationId = conversationId;
+        this.sendAt = LocalDateTime.now();
     }
 
-    public Message(Integer id, String content, ContentMessageType contentType, Integer sendId, String avtUrl, LocalDate sendAt) {
+    public Message(Integer id, String content, ContentMessageType contentType, Integer sendId, String avtUrl, Integer conversationId, LocalDateTime sendAt) {
         this.id = id;
         this.content = content;
         this.contentType = contentType;
         this.sendId = sendId;
         this.avtUrl = avtUrl;
+        this.conversationId = conversationId;
         this.sendAt = sendAt;
     }
 
@@ -88,11 +110,19 @@ public class Message implements Serializable {
         this.avtUrl = avtUrl;
     }
 
-    public LocalDate getSendAt() {
+    public LocalDateTime getSendAt() {
         return sendAt;
     }
 
-    public void setSendAt(LocalDate sendAt) {
+    public void setSendAt(LocalDateTime sendAt) {
         this.sendAt = sendAt;
+    }
+
+    public Integer getConversationId() {
+        return conversationId;
+    }
+
+    public void setConversationId(Integer conversationId) {
+        this.conversationId = conversationId;
     }
 }

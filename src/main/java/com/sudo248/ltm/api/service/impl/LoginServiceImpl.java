@@ -1,6 +1,9 @@
 package com.sudo248.ltm.api.service.impl;
 
+import com.sudo248.ltm.api.constants.Const;
+import com.sudo248.ltm.api.model.entities.ProfileEntity;
 import com.sudo248.ltm.api.model.entities.UserEntity;
+import com.sudo248.ltm.api.repository.ProfileRepository;
 import com.sudo248.ltm.api.repository.UserRepository;
 import com.sudo248.ltm.api.security.payload.LoginRequest;
 import com.sudo248.ltm.api.security.payload.Status;
@@ -19,6 +22,9 @@ public class LoginServiceImpl implements LoginService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private ProfileRepository profileRepository;
+
     private Logger logger = LoggerFactory.getLogger(LoginServiceImpl.class);
 
     BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -34,7 +40,18 @@ public class LoginServiceImpl implements LoginService {
             user.setCreatedAt(LocalDate.now());
             user.setPassword(passwordEncoder.encode(user.getPassword()));
         }
-        userRepository.save(user);
+        UserEntity userEntity = userRepository.save(user);
+
+        ProfileEntity profileEntity = new ProfileEntity(
+                null,
+                "Description for you",
+                userEntity.getEmail(),
+                Const.IMAGE_USER_DEFAULT,
+                true,
+                userEntity.getId()
+        );
+        profileRepository.save(profileEntity);
+
         message.setSuccess(true);
         message.setMessage("Tạo tài khoảnh thành công.");
         return message;
