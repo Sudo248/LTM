@@ -16,6 +16,7 @@ object Constant {
     const val USER_ID = "userId"
     const val FRIEND_ID = "friendId"
     const val CONVERSATION_ID = "conversationId"
+    const val NAME_GROUP = "nameGroup"
     const val CONVERSATION_NAME = "conversationName"
     const val NEW_SUBSCRIPTION = -1
     const val UNKNOWN = -2

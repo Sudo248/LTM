@@ -31,7 +31,7 @@ import javax.inject.Singleton
  */
 @Singleton
 class MessageRepositoryImpl @Inject constructor(
-    private val socketService: WebSocketService
+    private val socketService: WebSocketService,
 ) : MessageRepository {
 
     override fun getUserId(): Int {

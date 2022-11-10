@@ -24,8 +24,9 @@ public class CreateGroupController implements WebSocketController<Request<ArrayL
 
     @Override
     public void onPost(Request<ArrayList<Integer>> request, Response<Conversation> response) {
-        ArrayList<Integer> id = request.getPayload();
-        ConversationEntity conversationEntity = conversationService.createGroup(id);
+        ArrayList<Integer> memberIds = request.getPayload();
+        String nameGroup = request.getParams().get("nameGroup");
+        ConversationEntity conversationEntity = conversationService.createGroup(nameGroup, memberIds);
         Conversation conversation = conversationEntity.toConversation("Create new Conversation");
         response.setPayload(conversation);
         response.setCode(201);

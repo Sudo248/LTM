@@ -72,13 +72,13 @@ class RecentChatsFragment : Fragment() {
         mainViewModel.updateConversation.observe(viewLifecycleOwner) {
             adapter.updateItem(it.first, it.second)
         }
-
+        viewModel.getAllConversation()
         mainViewModel.updateConversation()
     }
 
     override fun onResume() {
         super.onResume()
-        viewModel.getAllConversation()
+//        viewModel.getAllConversation()
     }
 
     private fun navigateToChat(conversation: Conversation) {

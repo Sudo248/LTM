@@ -49,6 +49,7 @@ class ConversationRepositoryImpl @Inject constructor(
                     val conversationResponse = response.payload as ArrayList<Conversation>
                     cacheConversations.clear()
                     cacheConversations.addAll(conversationResponse)
+                    cacheConversations.sortBy { it.createAt }
                     emit(Resource.Success(conversationResponse))
                 } else {
                     emit(Resource.Error(response.message))
@@ -117,7 +118,7 @@ class ConversationRepositoryImpl @Inject constructor(
                 request.payload = Conversation()
                 socketService.send(request)
                 val response = socketService.responseFlow.first { it.requestId == request.id }
-                if (response.code == 200) {
+                if (response.code == 200 || response.code == 201) {
                     val conversation = response.payload as Conversation
                     cacheConversations.add(0, conversation)
                     emit(Pair(Constant.NEW_SUBSCRIPTION, conversation))

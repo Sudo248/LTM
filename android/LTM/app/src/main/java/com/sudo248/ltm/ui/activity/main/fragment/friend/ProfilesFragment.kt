@@ -99,19 +99,44 @@ class ProfilesFragment : Fragment() {
     }
 
     private fun setOnclickListener() {
+
+        binding.refreshProfiles.setOnRefreshListener {
+            viewModel.getAllProfile()
+        }
+
         binding.txtAddGroup.setOnClickListener {
             binding.txtAddGroup.gone()
             binding.groupAddNewGroup.visible()
             profileAdapter.isAddGroup = true
         }
         binding.imgActionAddGroup.setOnClickListener {
-            viewModel.createGroup(newGroupAdapter.listProfile)
+            if (newGroupAdapter.listProfile.size < 1) {
+                DialogUtils.showDialog(
+                    requireContext(),
+                    title = getString(R.string.error),
+                    description = getString(R.string.error_group),
+                    textColorTitle = R.color.red,
+                    onClickConfirm = {
+                        findNavController().popBackStack()
+                    }
+                )
+            } else {
+                DialogUtils.showInputDialog(
+                    requireContext(),
+                    getString(R.string.conversation),
+                    hint = getString(R.string.user_name),
+                    onSubmit = { nameGroup ->
+                        viewModel.createGroup(nameGroup, newGroupAdapter.listProfile)
+                    }
+                )
+            }
         }
     }
 
     private fun observer() {
         viewModel.listProfile.observe(viewLifecycleOwner) {
             profileAdapter.submitList(it)
+            binding.refreshProfiles.isRefreshing = false
         }
 
         viewModel.conversation.observe(viewLifecycleOwner) {

@@ -41,7 +41,13 @@ public class ProfileController implements WebSocketController<Request<Profile>, 
 
     @Override
     public void onPut(Request<Profile> request, Response<Profile> response) {
-//        response.setPayload(profileService.update(request.getPayload()));
+        Profile profile = request.getPayload();
+        ProfileEntity profileEntity = ProfileEntity.fromProfile(profile);
+        profileService.update(profileEntity);
+
+        response.setPayload(profile);
+        response.setCode(200);
+        response.setMessage("success");
     }
 
     @Override

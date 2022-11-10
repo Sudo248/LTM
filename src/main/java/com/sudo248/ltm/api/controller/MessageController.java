@@ -60,7 +60,7 @@ public class MessageController implements WebSocketController<Request<Message>, 
 
         MessageEntity messageEntity = messageService.createMessage(MessageEntity.fromMessage(message));
         LoggerFactory.getLogger(MessageController.class).info(message.getConversationId() + " " + message.getSendAt());
-//        conversationService.updateTimeConversation(message.getConversationId(), message.getSendAt());
+        conversationService.updateTimeConversation(message.getConversationId(), message.getSendAt());
         message.setId(messageEntity.getId());
         ArrayList<Message> messages = new ArrayList<>();
         messages.add(message);

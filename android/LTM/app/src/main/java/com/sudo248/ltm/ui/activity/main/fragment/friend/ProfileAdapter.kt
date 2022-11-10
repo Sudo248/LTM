@@ -67,9 +67,11 @@ class ProfileAdapter(
                 val action = when{
                     isAddGroup -> {
                         Log.d("sudoo", "onBind: isAddGroup")
+                        imgAction.isEnabled = true
                         imgAction.setOnClickListener {
                             profileActionListener.onAddNewGroup(profile, position)
                             imgAction.setImageResource(R.drawable.ic_done)
+                            imgAction.isEnabled = false
                         }
                         R.drawable.ic_group_add
                     }

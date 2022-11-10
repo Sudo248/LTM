@@ -19,4 +19,5 @@ data class Message(
     val id: Int = 0,
     val avtUrl: String? = null,
     val sendAt: LocalDateTime = LocalDateTime.now(),
+    val nameUser: String = "Unknown"
 )

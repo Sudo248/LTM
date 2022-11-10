@@ -20,11 +20,15 @@ interface ProfileRepository {
 
     suspend fun searchProfileByName(name: String): Flow<Resource<MutableList<Profile>>>
 
-    suspend fun createNewGroup(listProfileId: List<Int>): Flow<Resource<Conversation>>
+    suspend fun createNewGroup(nameGroup: String, listProfileId: List<Int>): Flow<Resource<Conversation>>
 
     suspend fun getConversationByProfile(profile: Profile): Flow<Resource<Conversation>>
 
     suspend fun addFriend(profile: Profile): Flow<Resource<Int>>
 
     suspend fun getProfileImage(): String
+
+    suspend fun updateProfile(profile: Profile): Boolean
+
+    suspend fun getNameUserById(userId: Int): String
 }

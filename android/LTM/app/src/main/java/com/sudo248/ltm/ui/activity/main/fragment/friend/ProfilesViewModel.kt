@@ -82,9 +82,10 @@ class ProfilesViewModel @Inject constructor(
                     _addFriend.postValue(position)
                     conversationRepo.getConversationById(resAddFriend.requiredData()).collect {
                         if (it is Resource.Success) {
-//                            _addFriend.postValue(position)
+                            _addFriend.postValue(position)
                         }
                     }
+//                    conversationRepo.getAllConversation().collect()
                 }
             }
         }
@@ -103,7 +104,7 @@ class ProfilesViewModel @Inject constructor(
         }
     }
 
-    fun createGroup(listProfile: List<Profile>) {
+    fun createGroup(nameGroup: String, listProfile: List<Profile>) {
         viewModelScope.launchHandler {
             if (listProfile.size <= 1) {
                 _createGroupState.postValue(Resource.Error("Group must be more than 3 members"))
@@ -112,7 +113,7 @@ class ProfilesViewModel @Inject constructor(
             val listUserId: MutableList<Int> = mutableListOf()
             listUserId.add(SharedPreferenceUtils.getInt(PrefKey.KEY_USER_ID))
             listUserId.addAll(listProfile.map { it.userId })
-            profileRepo.createNewGroup(listUserId).collect {
+            profileRepo.createNewGroup(nameGroup, listUserId).collect {
                 Log.d("sudoo", "createGroup: $it")
                 _createGroupState.postValue(it)
             }

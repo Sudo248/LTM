@@ -11,6 +11,7 @@ import com.sudo248.ltm.api.service.ConversationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -35,7 +36,7 @@ public class ConversationServiceImpl implements ConversationService {
 
     @Override
     public ConversationEntity getConversationById(Integer conversationId) {
-        return conversationRepository.getById(conversationId);
+        return conversationRepository.getConversationById(conversationId);
     }
 
     @Override
@@ -44,7 +45,7 @@ public class ConversationServiceImpl implements ConversationService {
     }
 
     @Override
-    public ConversationEntity createGroup(ArrayList<Integer> userIds) {
+    public ConversationEntity createGroup(String nameGroup, ArrayList<Integer> userIds) {
         ConversationEntity conversation = new ConversationEntity();
         if (userIds.size() == 2) {
             conversation.setName(userIds.get(0)+"-"+userIds.get(1));
@@ -52,8 +53,11 @@ public class ConversationServiceImpl implements ConversationService {
             conversation.setAvtUrl(Const.IMAGE_DEFAULT_P2P);
             conversation.setCreatedAt(LocalDateTime.now());
         } else {
-            String name = profileRepository.getProfileByUserId(userIds.get(0)).getName();
-            conversation.setName("Conversation of " + name);
+            if (nameGroup == null || nameGroup.isEmpty()) {
+                String firstNameUser = profileRepository.getProfileByUserId(userIds.get(0)).getName();
+                nameGroup = "Conversation of " + firstNameUser;
+            }
+            conversation.setName(nameGroup);
             conversation.setType(ConversationType.GROUP);
             conversation.setAvtUrl(Const.IMAGE_DEFAULT_GROUP);
             conversation.setCreatedAt(LocalDateTime.now());
@@ -89,7 +93,7 @@ public class ConversationServiceImpl implements ConversationService {
 
     @Override
     public void updateTimeConversation(Integer conversationId, LocalDateTime time) {
-        conversationRepository.updateTimeConversation(conversationId, time);
+        conversationRepository.updateTimeConversation(conversationId, Timestamp.valueOf(time));
     }
 }
 

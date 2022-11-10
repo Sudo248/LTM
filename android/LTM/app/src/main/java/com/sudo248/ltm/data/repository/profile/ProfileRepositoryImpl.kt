@@ -25,6 +25,9 @@ import javax.inject.Singleton
 class ProfileRepositoryImpl @Inject constructor(
     private val socketService: WebSocketService
 ) : ProfileRepository {
+
+    private val cacheNameUser: HashMap<Int, String> = HashMap()
+
     override suspend fun getProfile(): Flow<Resource<Profile>> = flow {
         emit(Resource.Loading)
         val request = Request<Profile>()
@@ -56,6 +59,9 @@ class ProfileRepositoryImpl @Inject constructor(
         val response = socketService.responseFlow.first { it.requestId == request.id }
         if (response.code == 200) {
             val profiles = response.payload as ArrayList<Profile>
+            profiles.forEach {
+                cacheNameUser[it.userId] = it.name
+            }
             emit(Resource.Success(profiles))
         } else {
             emit(Resource.Error(response.message))
@@ -66,11 +72,14 @@ class ProfileRepositoryImpl @Inject constructor(
 
     }.flowOn(Dispatchers.IO)
 
-    override suspend fun createNewGroup(listProfileId: List<Int>): Flow<Resource<Conversation>> = flow {
+    override suspend fun createNewGroup(nameGroup: String, listProfileId: List<Int>): Flow<Resource<Conversation>> = flow {
         emit(Resource.Loading)
         val request = Request<ArrayList<Int>>();
         request.path = Constant.PATH_CREATE_GROUP
         request.method = RequestMethod.POST
+        request.params = mapOf(
+            Constant.NAME_GROUP to nameGroup
+        )
         request.payload = ArrayList(listProfileId)
         socketService.send(request)
 
@@ -123,6 +132,28 @@ class ProfileRepositoryImpl @Inject constructor(
         imageUser
     }
 
+    override suspend fun updateProfile(profile: Profile): Boolean = withContext(Dispatchers.IO) {
+        val request = Request<Profile>();
+        request.path = Constant.PATH_PROFILE
+        request.method = RequestMethod.PUT
+        request.payload = profile
+        socketService.send(request)
+
+        val response = socketService.responseFlow.first { it.requestId == request.id }
+        response.code == 200
+    }
+
+    override suspend fun getNameUserById(userId: Int): String = withContext(Dispatchers.IO){
+        val nameUser = cacheNameUser[userId]
+        if (nameUser == null) {
+            getAllProfile().collect {
+
+            }
+            cacheNameUser[userId] ?: "Unknown"
+        } else {
+            nameUser
+        }
+    }
 
     private fun getSampleProfile(): List<Profile> {
         return List(5) {
