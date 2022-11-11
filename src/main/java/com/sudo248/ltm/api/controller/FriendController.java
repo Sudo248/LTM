@@ -1,10 +1,8 @@
 package com.sudo248.ltm.api.controller;
 
-import com.sudo248.ltm.api.constants.Const;
 import com.sudo248.ltm.api.model.Request;
 import com.sudo248.ltm.api.model.Response;
 import com.sudo248.ltm.api.model.conversation.Conversation;
-import com.sudo248.ltm.api.model.conversation.ConversationType;
 import com.sudo248.ltm.api.model.entities.ContactEntity;
 import com.sudo248.ltm.api.model.entities.ContactType;
 import com.sudo248.ltm.api.model.entities.ConversationEntity;
@@ -14,9 +12,7 @@ import com.sudo248.ltm.websocket.annotation.WsController;
 import com.sudo248.ltm.websocket.controller.WebSocketController;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.List;
 
 @WsController(path = "/friend")
 public class FriendController implements WebSocketController<Request<String>, Response<Conversation>> {
@@ -48,7 +44,7 @@ public class FriendController implements WebSocketController<Request<String>, Re
         ArrayList<Integer> listIds = new ArrayList<>();
         listIds.add(userId);
         listIds.add(friendId);
-        ConversationEntity conversationEntity = conversationService.createGroup(listIds);
+        ConversationEntity conversationEntity = conversationService.createGroup("P2P", listIds);
         Conversation conversation = conversationEntity.toConversation("Create new conversation");
         response.setPayload(conversation);
         response.setCode(200);

@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Entity
 @Data
 @Table(name = "conversation")
-public class ConversationEntity implements Serializable {
+public class ConversationEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,53 +26,6 @@ public class ConversationEntity implements Serializable {
     public ConversationEntity() {
 
     }
-
-    public ConversationEntity(String name, ConversationType type, String avtUrl, LocalDateTime createdAt) {
-        this.name = name;
-        this.type = type;
-        this.avtUrl = avtUrl;
-        this.createdAt = createdAt;
-    }
-
-//    public Integer getId() {
-//        return id;
-//    }
-//
-//    public void setId(Integer id) {
-//        this.id = id;
-//    }
-//
-//    public String getName() {
-//        return name;
-//    }
-//
-//    public void setName(String name) {
-//        this.name = name;
-//    }
-//
-//    public void setType(ConversationType type) {
-//        this.type = type;
-//    }
-//
-//    public String getAvtUrl() {
-//        return avtUrl;
-//    }
-//
-//    public void setAvtUrl(String avtUrl) {
-//        this.avtUrl = avtUrl;
-//    }
-//
-//    public LocalDateTime getCreatedAt() {
-//        return createdAt;
-//    }
-//
-//    public void setCreatedAt(LocalDateTime createdAt) {
-//        this.createdAt = createdAt;
-//    }
-//
-//    public ConversationType getType() {
-//        return type;
-//    }
 
     public Conversation toConversation(String description) {
         return new Conversation(

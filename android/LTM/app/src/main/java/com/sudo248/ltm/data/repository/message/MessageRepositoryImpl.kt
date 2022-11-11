@@ -31,15 +31,14 @@ import javax.inject.Singleton
  */
 @Singleton
 class MessageRepositoryImpl @Inject constructor(
-    private val socketService: WebSocketService
+    private val socketService: WebSocketService,
 ) : MessageRepository {
 
     override fun getUserId(): Int {
         return SharedPreferenceUtils.getInt(PrefKey.KEY_USER_ID)
     }
 
-    override suspend fun getAllMessage(idConversation: Int): Flow<Resource<List<Message>>> = flow {
-        emit(Resource.Loading)
+    override suspend fun getAllMessage(idConversation: Int): Resource<List<Message>> = withContext(Dispatchers.IO) {
         val request = Request<String>()
         request.path = Constant.PATH_MESSAGE
         request.method = RequestMethod.GET
@@ -60,11 +59,11 @@ class MessageRepositoryImpl @Inject constructor(
                         sendAt = apiMessage.sendAt
                     )
                 }
-            emit(Resource.Success(messages))
+            Resource.Success(messages)
         } else {
-            emit(Resource.Error(response.message))
+            Resource.Error(response.message)
         }
-    }.flowOn(Dispatchers.IO)
+    }
 
     override suspend fun newMessageInTopic(topic: Int): Flow<Message> = flow {
         socketService.messageFlow

@@ -32,14 +32,12 @@ class RecentChatsViewModel @Inject constructor(
     var isNewConversation = false
 
     fun getAllConversation(isFresh: Boolean = true) = viewModelScope.launchHandler {
-        conversationRepo.getAllConversation(isFresh).collect {
-            Log.d("sudoo", "getAllConversation: $it")
-            if (it is Resource.Success) {
-                listConversation.clear()
-                listConversation.addAll(it.requiredData())
-                _conversations.postValue(listConversation)
-                Log.d("sudoo", "getAllConversation: success ${it.data.size}")
-            }
+        val allConversation = conversationRepo.getAllConversation(isFresh)
+        if (allConversation is Resource.Success) {
+            listConversation.clear()
+            listConversation.addAll(allConversation.requiredData())
+            _conversations.postValue(listConversation)
+            Log.d("sudoo", "getAllConversation: success ${allConversation.data.size}")
         }
     }
 

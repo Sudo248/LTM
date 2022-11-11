@@ -1,5 +1,6 @@
 package com.sudo248.ltm.data.repository.profile
 
+import android.content.res.Resources
 import android.util.Log
 import com.sudo248.ltm.api.model.Request
 import com.sudo248.ltm.api.model.RequestMethod
@@ -25,8 +26,10 @@ import javax.inject.Singleton
 class ProfileRepositoryImpl @Inject constructor(
     private val socketService: WebSocketService
 ) : ProfileRepository {
-    override suspend fun getProfile(): Flow<Resource<Profile>> = flow {
-        emit(Resource.Loading)
+
+    private val cacheNameUser: HashMap<Int, String> = HashMap()
+
+    override suspend fun getProfile(): Resource<Profile> = withContext(Dispatchers.IO) {
         val request = Request<Profile>()
         request.path = Constant.PATH_PROFILE
         request.method = RequestMethod.GET
@@ -37,15 +40,14 @@ class ProfileRepositoryImpl @Inject constructor(
         val response = socketService.responseFlow.first { it.requestId == request.id }
         if (response.code == 200) {
             val profiles = response.payload as Profile
-            emit(Resource.Success(profiles))
+            Resource.Success(profiles)
         } else {
-            emit(Resource.Error(response.message))
+            Resource.Error(response.message)
         }
-    }.flowOn(Dispatchers.IO)
+    }
 
-    override suspend fun getAllProfile(): Flow<Resource<MutableList<Profile>>> = flow {
+    override suspend fun getAllProfile(): Resource<MutableList<Profile>> = withContext(Dispatchers.IO) {
         //emit(Resource.Success(getSampleProfile().toMutableList()))
-        emit(Resource.Loading)
         val request = Request<Profile>()
         request.path = Constant.PATH_GET_PROFILE
         request.method = RequestMethod.GET
@@ -56,43 +58,46 @@ class ProfileRepositoryImpl @Inject constructor(
         val response = socketService.responseFlow.first { it.requestId == request.id }
         if (response.code == 200) {
             val profiles = response.payload as ArrayList<Profile>
-            emit(Resource.Success(profiles))
+            profiles.forEach {
+                cacheNameUser[it.userId] = it.name
+            }
+            Resource.Success(profiles)
         } else {
-            emit(Resource.Error(response.message))
+            Resource.Error(response.message)
         }
     }
 
-    override suspend fun searchProfileByName(name: String): Flow<Resource<MutableList<Profile>>> = flow<Resource<MutableList<Profile>>> {
+    override suspend fun searchProfileByName(name: String): Resource<MutableList<Profile>> = withContext(Dispatchers.IO) {
+        Resource.Loading
+    }
 
-    }.flowOn(Dispatchers.IO)
-
-    override suspend fun createNewGroup(listProfileId: List<Int>): Flow<Resource<Conversation>> = flow {
-        emit(Resource.Loading)
+    override suspend fun createNewGroup(nameGroup: String, listProfileId: List<Int>): Resource<Conversation> = withContext(Dispatchers.IO) {
         val request = Request<ArrayList<Int>>();
         request.path = Constant.PATH_CREATE_GROUP
         request.method = RequestMethod.POST
+        request.params = mapOf(
+            Constant.NAME_GROUP to nameGroup
+        )
         request.payload = ArrayList(listProfileId)
         socketService.send(request)
 
         val response = socketService.responseFlow.first { it.requestId == request.id }
         if (response.code == 201) {
             val conversation = response.payload as Conversation
-            emit(Resource.Success(conversation))
+            Resource.Success(conversation)
         } else {
-            emit(Resource.Error(response.message))
+            Resource.Error(response.message)
         }
-    }.flowOn(Dispatchers.IO)
+    }
 
-    override suspend fun getConversationByProfile(profile: Profile): Flow<Resource<Conversation>> = flow<Resource<Conversation>> {
-        emit(Resource.Loading)
+    override suspend fun getConversationByProfile(profile: Profile): Resource<Conversation> = withContext(Dispatchers.IO) {
         val request = Request<String>();
         request.path = Constant.PATH_FRIEND
         request.method = RequestMethod.POST
+        Resource.Loading
+    }
 
-    }.flowOn(Dispatchers.IO)
-
-    override suspend fun addFriend(profile: Profile): Flow<Resource<Int>> = flow {
-        emit(Resource.Loading)
+    override suspend fun addFriend(profile: Profile): Resource<Int> = withContext(Dispatchers.IO) {
         val request = Request<String>();
         request.path = Constant.PATH_FRIEND
         request.method = RequestMethod.POST
@@ -106,23 +111,42 @@ class ProfileRepositoryImpl @Inject constructor(
         val response = socketService.responseFlow.first { it.requestId == request.id }
         if (response.code == 200) {
             val conversation = response.payload as Conversation
-            emit(Resource.Success(conversation.id))
+            Resource.Success(conversation.id)
         } else {
-            emit(Resource.Error(response.message))
+            Resource.Error(response.message)
         }
-    }.flowOn(Dispatchers.IO)
+    }
 
     override suspend fun getProfileImage(): String = withContext(Dispatchers.IO) {
         var imageUser = Constant.IMAGE_USER_DEFAULT
-        getProfile().collect {
-            if (it is Resource.Success) {
-                imageUser = it.requiredData().image
-            }
+        val profile = getProfile()
+        if (profile is Resource.Success) {
+            imageUser = profile.requiredData().image
         }
         Log.d("sudoo", "getProfileImage: $imageUser")
         imageUser
     }
 
+    override suspend fun updateProfile(profile: Profile): Boolean = withContext(Dispatchers.IO) {
+        val request = Request<Profile>();
+        request.path = Constant.PATH_PROFILE
+        request.method = RequestMethod.PUT
+        request.payload = profile
+        socketService.send(request)
+
+        val response = socketService.responseFlow.first { it.requestId == request.id }
+        response.code == 200
+    }
+
+    override suspend fun getNameUserById(userId: Int): String = withContext(Dispatchers.IO){
+        val nameUser = cacheNameUser[userId]
+        if (nameUser == null) {
+            getAllProfile()
+            cacheNameUser[userId] ?: "Unknown"
+        } else {
+            nameUser
+        }
+    }
 
     private fun getSampleProfile(): List<Profile> {
         return List(5) {

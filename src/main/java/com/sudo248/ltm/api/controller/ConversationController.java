@@ -11,11 +11,14 @@ import com.sudo248.ltm.api.service.MessageService;
 import com.sudo248.ltm.api.service.ProfileService;
 import com.sudo248.ltm.websocket.annotation.WsController;
 import com.sudo248.ltm.websocket.controller.WebSocketController;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @WsController(path = "/conversation")
 public class ConversationController implements WebSocketController<Request<Conversation>, Response<Conversation>> {
+
+    Logger logger = LoggerFactory.getLogger(ConversationController.class);
 
     @Autowired
     private ConversationService conversationService;
@@ -32,7 +35,7 @@ public class ConversationController implements WebSocketController<Request<Conve
         String conversationId = request.getParams().get("conversationId");
         ConversationEntity conversationEntity = conversationService.getConversationById(Integer.parseInt(conversationId));
 
-        LoggerFactory.getLogger(ConversationController.class).info("conversationEntity: " + conversationEntity);
+        logger.info("conversationEntity: " + conversationEntity);
 
         Conversation conversation = new Conversation(
                 conversationEntity.getId(),
@@ -43,7 +46,7 @@ public class ConversationController implements WebSocketController<Request<Conve
         );
         if (conversationEntity.getType() == ConversationType.P2P) {
             String[] id = conversationEntity.getName().split("-");
-            Integer userId = Integer.parseInt(request.getParams().get("userId"));
+            String userId = request.getParams().get("userId");
             if (userId.equals(id[0])) {
                 ProfileEntity profileEntity = profileService.getProfileByUserId(Integer.parseInt(id[1]));
                 conversation.setName(profileEntity.getName());

@@ -40,16 +40,10 @@ class WebSocketService @Inject constructor(
 
     private val webSocketScope = CoroutineScope(Dispatchers.Main.immediate + SupervisorJob())
 
-    private val _messageFlow: MutableSharedFlow<MqttMessage> = MutableSharedFlow(
-        extraBufferCapacity = 1,
-        onBufferOverflow = BufferOverflow.DROP_OLDEST
-    )
+    private val _messageFlow: MutableSharedFlow<MqttMessage> = MutableSharedFlow()
     val messageFlow: SharedFlow<MqttMessage> = _messageFlow
 
-    private val _responseFlow: MutableSharedFlow<Response<*>> = MutableSharedFlow(
-        extraBufferCapacity = 1,
-        onBufferOverflow = BufferOverflow.DROP_OLDEST
-    )
+    private val _responseFlow: MutableSharedFlow<Response<*>> = MutableSharedFlow()
     val responseFlow: SharedFlow<Response<*>> = _responseFlow
 
     private val response: HashMap<Long, ResponseListener>
@@ -152,8 +146,8 @@ class WebSocketService @Inject constructor(
         webSocketScope.launch {
             Log.d("sudoo", "onMessage: $data")
             if (data != null && data is Response<*>) {
-                val res = response.remove(data.requestId)
-                res?.onResponse(data)
+                /*val res = response.remove(data.requestId)
+                res?.onResponse(data)*/
                 _responseFlow.emit(data)
             } else {
                 Log.e(TAG, "onMessage: $data" )

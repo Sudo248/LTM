@@ -15,7 +15,7 @@ public interface ConversationService {
 
    // ConversationEntity update(ConversationEntity conversationEntity);
 
-    ConversationEntity createGroup(ArrayList<Integer> userId);
+    ConversationEntity createGroup(String nameGroup, ArrayList<Integer> userId);
     void delete(Integer conversationId);
 
     void updateTimeConversation(Integer conversationId, LocalDateTime time);
