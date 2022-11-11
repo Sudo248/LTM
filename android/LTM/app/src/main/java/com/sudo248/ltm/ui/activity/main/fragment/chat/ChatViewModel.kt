@@ -50,16 +50,16 @@ class ChatViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            imageUser = SharedPreferenceUtils.getString(PrefKey.KEY_USER_IMAGE, Constant.IMAGE_USER_DEFAULT)
+            imageUser =
+                SharedPreferenceUtils.getString(PrefKey.KEY_USER_IMAGE, Constant.IMAGE_USER_DEFAULT)
         }
     }
 
     fun getAllMessage() {
         viewModelScope.launchHandler {
-            messageRepository.getAllMessage(conversationTopic).collect {
-                if (it is Resource.Success) {
-                    _messages.postValue(it.requiredData())
-                }
+            val allMessage = messageRepository.getAllMessage(conversationTopic)
+            if (allMessage is Resource.Success) {
+                _messages.postValue(allMessage.requiredData())
             }
         }
     }

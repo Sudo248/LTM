@@ -11,8 +11,8 @@ import com.sudo248.ltm.common.Resource
 import com.sudo248.ltm.websocket.WebSocketService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.withContext
 import org.sudo248.mqtt.model.MqttMessageType
-import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -31,12 +31,9 @@ class ConversationRepositoryImpl @Inject constructor(
 
     private val cacheConversations = mutableListOf<Conversation>()
 
-    override suspend fun getAllConversation(refresh: Boolean): Flow<Resource<MutableList<Conversation>>> =
-        flow {
-            emit(Resource.Loading)
+    override suspend fun getAllConversation(refresh: Boolean): Resource<MutableList<Conversation>> = withContext(Dispatchers.IO){
             if (cacheConversations.isEmpty() || refresh) {
                 cacheConversations.clear()
-
                 val request = Request<Conversation>()
                 request.path = Constant.PATH_USER_CONVERSATION
                 request.method = RequestMethod.GET
@@ -50,23 +47,21 @@ class ConversationRepositoryImpl @Inject constructor(
                     cacheConversations.clear()
                     cacheConversations.addAll(conversationResponse)
                     cacheConversations.sortBy { it.createAt }
-                    emit(Resource.Success(conversationResponse))
+                    Resource.Success(conversationResponse)
                 } else {
-                    emit(Resource.Error(response.message))
+                    Resource.Error(response.message)
                 }
             } else {
-                emit(Resource.Success(cacheConversations))
+                Resource.Success(cacheConversations)
             }
+        }
 
-        }.flowOn(Dispatchers.IO)
-
-    override suspend fun getConversationById(id: Int): Flow<Resource<Conversation>> = flow {
-        emit(Resource.Loading)
+    override suspend fun getConversationById(id: Int): Resource<Conversation> = withContext(Dispatchers.IO) {
 
         val conversationLocal = cacheConversations.firstOrNull { it.id == id }
 
         if (conversationLocal != null) {
-            emit(Resource.Success(conversationLocal))
+            Resource.Success(conversationLocal)
         } else {
             val request = Request<String>()
             request.path = Constant.PATH_CONVERSATION
@@ -81,13 +76,14 @@ class ConversationRepositoryImpl @Inject constructor(
             val response = socketService.responseFlow.first { it.requestId == request.id }
             if (response.code == 200) {
                 val conversation = response.payload as Conversation
+                Log.d("sudoo", "getConversationById: $conversation")
                 cacheConversations.add(conversation)
-                emit(Resource.Success(conversation))
+                Resource.Success(conversation)
             } else {
-                emit(Resource.Error(response.message))
+                Resource.Error(response.message)
             }
         }
-    }.flowOn(Dispatchers.IO)
+    }
 
     override suspend fun getUpdateConversations(): Flow<Pair<Int, Conversation?>> = flow {
         Log.d("sudoo", "getUpdateConversations:")
@@ -120,6 +116,7 @@ class ConversationRepositoryImpl @Inject constructor(
                 val response = socketService.responseFlow.first { it.requestId == request.id }
                 if (response.code == 200 || response.code == 201) {
                     val conversation = response.payload as Conversation
+                    Log.d("sudoo", "getUpdateConversations: $conversation")
                     cacheConversations.add(0, conversation)
                     emit(Pair(Constant.NEW_SUBSCRIPTION, conversation))
                 } else {
@@ -129,16 +126,30 @@ class ConversationRepositoryImpl @Inject constructor(
         }
     }.flowOn(Dispatchers.IO)
 
+    override suspend fun getConversationByName(
+        name: String
+    ): Resource<Conversation> = withContext(Dispatchers.IO) {
+        val conversationLocal = cacheConversations.firstOrNull { it.name == name }
+        Log.d("sudoo", "getConversationByName: $name")
+        cacheConversations.forEach {
+            Log.d("sudoo", "getConversationByName: ${it.name}")
+        }
+        Log.d("sudoo", "getConversationByName: $conversationLocal")
+        if (conversationLocal == null) {
+            Resource.Error("Not found")
+        } else {
+            Resource.Success(conversationLocal)
+        }
+    }
+
     override suspend fun searchConversationByName(
         nameInLocal: String,
         nameInServer: String
-    ): Flow<Resource<MutableList<Conversation>>> = flow<Resource<MutableList<Conversation>>> {
-        emit(Resource.Loading)
-
+    ): Resource<MutableList<Conversation>> = withContext(Dispatchers.IO) {
         val conversationLocal = cacheConversations.filter { it.name.contains(nameInLocal) }
 
 //        if (conversationLocal.isNotEmpty()) {
-        emit(Resource.Success(conversationLocal.toMutableList()))
+        Resource.Success(conversationLocal.toMutableList())
 //        } else {
         /*val request = Request<String>()
         request.path = Constant.PATH_CONVERSATION
@@ -158,7 +169,7 @@ class ConversationRepositoryImpl @Inject constructor(
             emit(Resource.Error(response.message))
         }*/
 //        }
-    }.flowOn(Dispatchers.IO)
+    }
 
     private fun getSampleConversation(): List<Conversation> {
         return List(5) {

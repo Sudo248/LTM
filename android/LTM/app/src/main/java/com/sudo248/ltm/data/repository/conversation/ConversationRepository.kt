@@ -12,8 +12,9 @@ import kotlinx.coroutines.flow.Flow
  * @since 00:16 - 25/10/2022
  */
 interface ConversationRepository {
-    suspend fun getAllConversation(refresh: Boolean = true): Flow<Resource<MutableList<Conversation>>>
-    suspend fun getConversationById(id: Int): Flow<Resource<Conversation>>
+    suspend fun getAllConversation(refresh: Boolean = true): Resource<MutableList<Conversation>>
+    suspend fun getConversationById(id: Int): Resource<Conversation>
     suspend fun getUpdateConversations(): Flow<Pair<Int, Conversation?>>
-    suspend fun searchConversationByName(nameInLocal: String, nameInServer: String): Flow<Resource<MutableList<Conversation>>>
+    suspend fun searchConversationByName(nameInLocal: String, nameInServer: String): Resource<MutableList<Conversation>>
+    suspend fun getConversationByName(name: String): Resource<Conversation>
 }

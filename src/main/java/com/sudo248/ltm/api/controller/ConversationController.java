@@ -46,7 +46,7 @@ public class ConversationController implements WebSocketController<Request<Conve
         );
         if (conversationEntity.getType() == ConversationType.P2P) {
             String[] id = conversationEntity.getName().split("-");
-            Integer userId = Integer.parseInt(request.getParams().get("userId"));
+            String userId = request.getParams().get("userId");
             if (userId.equals(id[0])) {
                 ProfileEntity profileEntity = profileService.getProfileByUserId(Integer.parseInt(id[1]));
                 conversation.setName(profileEntity.getName());

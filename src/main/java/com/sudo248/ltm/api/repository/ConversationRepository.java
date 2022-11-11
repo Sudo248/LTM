@@ -17,7 +17,7 @@ import java.util.List;
 @Repository
 public interface ConversationRepository extends JpaRepository<ConversationEntity, Integer> {
 
-    @Query(value = "select * from conversation c join user_conversation uc on c.id = uc.conversation_id where uc.user_id = :userId order by created_at", nativeQuery = true)
+    @Query(value = "select * from conversation c join user_conversation uc on c.id = uc.conversation_id where uc.user_id = :userId order by created_at desc", nativeQuery = true)
     List<ConversationEntity> getAllByUserId(Integer userId);
 
     @Query(value = "SELECT * FROM conversation WHERE id = :conversationId", nativeQuery = true)

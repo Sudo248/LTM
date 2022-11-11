@@ -34,12 +34,11 @@ class ProfileViewModel @Inject constructor(
 
     fun getProfile() {
         viewModelScope.launch {
-            profileRepo.getProfile().collect {
-                if (it is Resource.Success) {
-                    val data = it.requiredData()
-                    profile.postValue(data)
-                    image.postValue(data.image)
-                }
+            val resProfile = profileRepo.getProfile()
+            if (resProfile is Resource.Success) {
+                val data = resProfile.requiredData()
+                profile.postValue(data)
+                image.postValue(data.image)
             }
         }
     }

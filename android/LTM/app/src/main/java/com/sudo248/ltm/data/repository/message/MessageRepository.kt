@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.Flow
  */
 interface MessageRepository {
     fun getUserId(): Int
-    suspend fun getAllMessage(idConversation: Int): Flow<Resource<List<Message>>>
+    suspend fun getAllMessage(idConversation: Int): Resource<List<Message>>
     suspend fun newMessageInTopic(topic: Int): Flow<Message>
     suspend fun sendMessage(topic: Int, message: Message): Boolean
     suspend fun subscribeTopic(topic: Int): Boolean
