@@ -46,7 +46,7 @@ class ConversationRepositoryImpl @Inject constructor(
                     val conversationResponse = response.payload as ArrayList<Conversation>
                     cacheConversations.clear()
                     cacheConversations.addAll(conversationResponse)
-                    cacheConversations.sortBy { it.createAt }
+                    //cacheConversations.sortBy { it.createAt }
                     Resource.Success(conversationResponse)
                 } else {
                     Resource.Error(response.message)

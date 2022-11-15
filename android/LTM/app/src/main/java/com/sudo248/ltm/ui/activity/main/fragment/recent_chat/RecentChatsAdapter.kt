@@ -36,9 +36,11 @@ class RecentChatsAdapter(
     }
 
     fun updateItem(position: Int, conversation: Conversation) {
-        listChats.removeAt(position)
-        listChats.add(0, conversation)
-        notifyItemMoved(position, 0)
+        if (position < listChats.size) {
+            listChats.removeAt(position)
+            listChats.add(0, conversation)
+            notifyItemMoved(position, 0)
+        }
     }
 
     fun newItem(conversation: Conversation) {
