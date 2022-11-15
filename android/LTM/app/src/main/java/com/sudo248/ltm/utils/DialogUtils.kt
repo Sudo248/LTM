@@ -120,6 +120,7 @@ object DialogUtils {
         error: String? = null,
         submit: String = context.getString(R.string.ok),
         cancel: String = context.getString(R.string.cancel),
+        initValue: String? = null,
         onCancel: (() -> Unit)? = null,
     ) {
         val dialog = Dialog(context)
@@ -146,6 +147,9 @@ object DialogUtils {
             txtNegative.setOnClickListener {
                 dialog.dismiss()
                 onCancel?.invoke()
+            }
+            initValue?.let {
+                edtInput.setText(initValue)
             }
             edtInput.addTextChangedListener {
                 if (it.isNullOrEmpty()) {

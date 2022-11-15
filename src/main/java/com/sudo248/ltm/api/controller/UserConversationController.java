@@ -38,14 +38,11 @@ public class UserConversationController implements WebSocketController<Request<S
 
     @Override
     public void onDelete(Request<String> request, Response<ArrayList<UserConversationEntity>> response) {
-        WebSocketController.super.onDelete(request, response);
+        Integer userId = Integer.parseInt(request.getParams().get("userId"));
+        Integer conversationId = Integer.parseInt(request.getParams().get("conversationId"));
+        userConversationService.delete(userId, conversationId);
+        response.setCode(200);
+        response.setMessage("success");
+
     }
-    // lay cac phong dang chat cua user
-//    @Override
-//    public void onGet(Request<Integer> request, Response<UserConversationEntity> response) {
-//        String userId = request.getParams().get("userId");
-//        response.setPayload((UserConversationEntity) userConversationService.getAllByUserId(Integer.parseInt(userId)));
-//    }
-
-
 }

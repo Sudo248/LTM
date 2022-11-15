@@ -40,6 +40,7 @@ class RecentChatsAdapter(
             listChats.removeAt(position)
             listChats.add(0, conversation)
             notifyItemMoved(position, 0)
+            notifyItemChanged(0)
         }
     }
 

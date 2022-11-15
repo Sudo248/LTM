@@ -21,6 +21,18 @@
             tools:src="@drawable/ic_profile" />
     </androidx.cardview.widget.CardView>
 
+    <ImageView
+        android:id="@+id/imgStatus"
+        android:layout_width="15dp"
+        android:layout_height="15dp"
+        android:background="@drawable/bg_circle"
+        android:src="@drawable/bg_circle"
+        android:padding="2dp"
+        app:tint="@color/green"
+        app:layout_constraintBottom_toBottomOf="@+id/cardAvatarFriend"
+        app:layout_constraintEnd_toEndOf="@+id/cardAvatarFriend"
+        android:elevation="10dp"/>
+
     <TextView
         android:id="@+id/txtNameFriend"
         android:layout_width="0dp"
@@ -61,6 +73,6 @@
         android:src="@drawable/ic_chat"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

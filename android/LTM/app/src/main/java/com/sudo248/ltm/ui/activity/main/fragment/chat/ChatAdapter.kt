@@ -43,7 +43,7 @@ class ChatAdapter(
         const val VIEW_CHAT_SERVER = 3
     }
 
-    private val messages: MutableList<Message> = mutableListOf()
+    val messages: MutableList<Message> = mutableListOf()
 
     @SuppressLint("NotifyDataSetChanged")
     fun submitList(messages: List<Message>) {

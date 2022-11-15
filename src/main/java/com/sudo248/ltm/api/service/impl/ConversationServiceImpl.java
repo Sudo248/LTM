@@ -77,14 +77,14 @@ public class ConversationServiceImpl implements ConversationService {
         return storedConversationEntity;
     }
 
-//    @Override
-//    public ConversationEntity update(ConversationEntity conversationEntity) {
-//        ConversationEntity conversation = conversationRepository.findById(conversationEntity.getId()).get();
+    @Override
+    public ConversationEntity update(ConversationEntity conversationEntity) {
+//        ConversationEntity conversation = conversationRepository.getConversationById(conversationEntity.getId());
 //        conversation.setName(conversationEntity.getName());
 //        conversation.setType(conversationEntity.getType());
 //        conversation.setAvtUrl(conversationEntity.getAvtUrl());
-//        return conversationRepository.save(conversation);
-//    }
+        return conversationRepository.save(conversationEntity);
+    }
 
     @Override
     public void delete(Integer conversationId) {

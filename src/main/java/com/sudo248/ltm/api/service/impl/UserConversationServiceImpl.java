@@ -17,4 +17,9 @@ public class UserConversationServiceImpl implements UserConversationService {
     public List<UserConversationEntity> getAllByUserId(Integer userId) {
         return userConversationRepository.getAllByUserId(userId);
     }
+
+    @Override
+    public void delete(Integer userId, Integer conversationId) {
+        userConversationRepository.deleteByUserIdAndConversationId(userId, conversationId);
+    }
 }

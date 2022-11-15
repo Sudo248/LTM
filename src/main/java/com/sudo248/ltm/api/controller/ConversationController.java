@@ -74,11 +74,10 @@ public class ConversationController implements WebSocketController<Request<Conve
     @Override
     public void onPut(Request<Conversation> request, Response<Conversation> response) {
         Conversation conversation = request.getPayload();
-        String conversationId = request.getParams().get("conversationId");
-        ConversationEntity conversationEntity = conversationService.getConversationById(Integer.parseInt(conversationId));
-
+        ConversationEntity conversationEntity = conversationService.getConversationById(conversation.getId());
         conversationEntity.setName(conversation.getName());
         conversationEntity.setAvtUrl(conversation.getAvtUrl());
+        conversationService.update(conversationEntity);
 
         response.setPayload(conversation);
         response.setCode(200);

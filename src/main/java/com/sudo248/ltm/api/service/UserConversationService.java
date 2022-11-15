@@ -9,5 +9,5 @@ public interface UserConversationService {
 
     List<UserConversationEntity> getAllByUserId(Integer userId);
 
-
+    void delete(Integer userId, Integer conversationId);
 }

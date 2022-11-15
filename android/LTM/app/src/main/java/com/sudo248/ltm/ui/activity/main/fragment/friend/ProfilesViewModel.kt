@@ -84,7 +84,7 @@ class ProfilesViewModel @Inject constructor(
 
     fun searchProfileByName(name: String) {
         jobSearchProfile?.cancel()
-        jobSearchProfile = viewModelScope.launch {
+        jobSearchProfile = viewModelScope.launchHandler {
             delay(500)
             if (name.isEmpty()) {
                 _listProfile.postValue(listProfiles)

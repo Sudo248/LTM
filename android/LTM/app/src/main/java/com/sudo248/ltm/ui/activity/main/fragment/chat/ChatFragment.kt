@@ -1,5 +1,6 @@
 package com.sudo248.ltm.ui.activity.main.fragment.chat
 
+import android.media.MediaRecorder
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -16,13 +17,16 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.sudo248.ltm.R
+import com.sudo248.ltm.api.model.conversation.ConversationType
 import com.sudo248.ltm.common.Constant
 import com.sudo248.ltm.databinding.FragmentChatBinding
 import com.sudo248.ltm.ktx.gone
 import com.sudo248.ltm.ktx.visible
 import com.sudo248.ltm.ui.activity.main.MainActivity
+import com.sudo248.ltm.ui.activity.main.fragment.recent_chat.RecentChatsFragmentDirections
 import com.sudo248.ltm.utils.DialogUtils
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.net.URL
 
@@ -33,20 +37,21 @@ class ChatFragment : Fragment() {
     private val viewModel: ChatViewModel by viewModels()
     private val chatFragmentArgs: ChatFragmentArgs by navArgs()
     private lateinit var chatAdapter: ChatAdapter
+
     private val autoScroll = object : RecyclerView.AdapterDataObserver() {
         override fun onItemRangeChanged(positionStart: Int, itemCount: Int) {
             super.onItemRangeChanged(positionStart, itemCount)
-            binding.rcvChat.scrollToPosition(chatAdapter.itemCount - 1)
+            scroll()
         }
 
         override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
             super.onItemRangeInserted(positionStart, itemCount)
-            binding.rcvChat.scrollToPosition(chatAdapter.itemCount - 1)
+            scroll()
         }
 
         override fun onChanged() {
             super.onChanged()
-            binding.rcvChat.scrollToPosition(chatAdapter.itemCount - 1)
+            scroll()
         }
     }
 
@@ -56,6 +61,13 @@ class ChatFragment : Fragment() {
             viewModel.sendImage(requireContext().contentResolver, uri)
         } else {
             Log.e("sudoo", "pickMedia: uri null")
+        }
+    }
+
+    private fun scroll() {
+        lifecycleScope.launch {
+            delay(100)
+            binding.rcvChat.scrollToPosition(chatAdapter.messages.size - 1)
         }
     }
 
@@ -76,6 +88,14 @@ class ChatFragment : Fragment() {
         getMainActivity().hideBottomNavigation()
         viewModel.conversation = chatFragmentArgs.conversation
         binding.apply {
+            if (viewModel.conversation.type == ConversationType.GROUP) {
+                imgInfo.visible()
+                imgInfo.setOnClickListener {
+                    navigateToInfoFragment()
+                }
+            } else {
+                imgInfo.gone()
+            }
             txtTitleChat.text = viewModel.conversation.name
             val imageUrl = "${Constant.URL_IMAGE}${viewModel.conversation.avtUrl}"
             Glide
@@ -115,10 +135,6 @@ class ChatFragment : Fragment() {
         binding.apply {
             imgBack.setOnClickListener {
                 onBackPress()
-            }
-
-            imgVideo.setOnClickListener {
-                navigateToVideoFragment()
             }
 
             imgSend.setOnClickListener {
@@ -164,7 +180,8 @@ class ChatFragment : Fragment() {
         findNavController().popBackStack()
     }
 
-    private fun navigateToVideoFragment() {
-
+    private fun navigateToInfoFragment() {
+        val action = ChatFragmentDirections.actionChatFragmentToInfoConversationFragment(viewModel.conversation)
+        findNavController().navigate(action)
     }
 }

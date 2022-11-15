@@ -6,6 +6,7 @@ import com.sudo248.ltm.api.model.RequestMethod
 import com.sudo248.ltm.api.model.conversation.Conversation
 import com.sudo248.ltm.api.model.conversation.ConversationType
 import com.sudo248.ltm.api.model.message.Message
+import com.sudo248.ltm.api.model.profile.Profile
 import com.sudo248.ltm.common.Constant
 import com.sudo248.ltm.common.Resource
 import com.sudo248.ltm.websocket.WebSocketService
@@ -169,6 +170,71 @@ class ConversationRepositoryImpl @Inject constructor(
             emit(Resource.Error(response.message))
         }*/
 //        }
+    }
+
+    override suspend fun getProfileOfConversation(conversationId: Int): Resource<MutableList<Profile>> = withContext(Dispatchers.IO){
+        val request = Request<String>()
+        request.path = Constant.PATH_CONVERSATION_MEMBER
+        request.method = RequestMethod.GET
+        request.params = mapOf(
+            Constant.CONVERSATION_ID to "$conversationId"
+        )
+        request.payload = ""
+        socketService.send(request)
+
+        val response = socketService.responseFlow.first { it.requestId == request.id }
+        if (response.code == 200) {
+            val profiles = response.payload as ArrayList<Profile>
+            Log.d("sudoo", "getProfileOfConversation: ${profiles.size}")
+//            cacheConversations.add(conversation)
+            Resource.Success(profiles)
+        } else {
+            Resource.Error(response.message)
+        }
+    }
+
+    override suspend fun updateConversation(conversation: Conversation): Resource<Boolean> = withContext(Dispatchers.IO){
+        val request = Request<Conversation>()
+        request.path = Constant.PATH_CONVERSATION
+        request.method = RequestMethod.PUT
+        request.params = mapOf(
+            Constant.CONVERSATION_ID to "${conversation.id}"
+        )
+        request.payload = conversation
+        socketService.send(request)
+
+        val response = socketService.responseFlow.first { it.requestId == request.id }
+        if (response.code == 200) {
+            val conversation = response.payload as Conversation
+            Log.d("sudoo", "updateConversation: $conversation")
+//            cacheConversations.add(conversation)
+            Resource.Success(true)
+        } else {
+            Resource.Error(response.message)
+        }
+
+    }
+
+    override suspend fun removeFromConversation(conversationId: Int): Resource<Boolean> = withContext(Dispatchers.IO){
+        val request = Request<String>()
+        request.path = Constant.PATH_USER_CONVERSATION_2
+        request.method = RequestMethod.DELETE
+        request.params = mapOf(
+            Constant.CONVERSATION_ID to "$conversationId",
+            Constant.USER_ID to "${socketService.clientId}"
+        )
+        request.payload = ""
+        socketService.send(request)
+
+        val response = socketService.responseFlow.first { it.requestId == request.id }
+        if (response.code == 200) {
+            Log.d("sudoo", "removeFromConversation: success")
+//            cacheConversations.add(conversation)
+            socketService.unsubscribe("$conversationId")
+            Resource.Success(true)
+        } else {
+            Resource.Error(response.message)
+        }
     }
 
     private fun getSampleConversation(): List<Conversation> {

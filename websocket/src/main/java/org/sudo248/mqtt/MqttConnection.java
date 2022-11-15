@@ -86,6 +86,7 @@ public class MqttConnection {
 
     private void processConnect(MqttMessage message, WebSocket ws) {
         Long clientId = message.getClientId();
+        log.info(clientId + " connect " + ws);
         resubscribe(clientId, ws);
         listener.onMqttConnect(message);
         ws.send(message.copy("connected"));
@@ -190,8 +191,10 @@ public class MqttConnection {
                     clientId,
                     ws
             ));
+            log.info(clientId + " ws: " + subscribers.get(clientId).getWebSocket());
         } else {
             subscribers.get(clientId).setWebSocket(ws);
+            log.info(clientId + " ws: " + subscribers.get(clientId).getWebSocket());
         }
         if (topics != null && !topics.isEmpty()) {
             for (String topic : topics) {
@@ -235,5 +238,11 @@ public class MqttConnection {
             return subscriber.getWebSocket();
         }
         return null;
+    }
+
+    public boolean isOnline(Long clientId) {
+        log.info("subscribers: " + subscribers.keySet().size() + " " + clientId + ": " + subscribers.containsKey(clientId));
+        Subscriber subscriber = subscribers.get(clientId);
+        return subscriber != null && subscriber.isOpen();
     }
 }

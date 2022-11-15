@@ -11,6 +11,7 @@ import com.sudo248.ltm.common.Resource
 import com.sudo248.ltm.data.repository.message.MessageRepository
 import com.sudo248.ltm.data.repository.profile.ProfileRepository
 import com.sudo248.ltm.domain.model.Message
+import com.sudo248.ltm.ktx.launchHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -33,7 +34,7 @@ class ProfileViewModel @Inject constructor(
     val image = MutableLiveData<String>()
 
     fun getProfile() {
-        viewModelScope.launch {
+        viewModelScope.launchHandler {
             val resProfile = profileRepo.getProfile()
             if (resProfile is Resource.Success) {
                 val data = resProfile.requiredData()
@@ -44,7 +45,7 @@ class ProfileViewModel @Inject constructor(
     }
 
     fun sendImage(resolver: ContentResolver, uri: Uri) {
-        viewModelScope.launch {
+        viewModelScope.launchHandler {
             val responseImage = messageRepository.sendImage(resolver, uri)
             if (responseImage is Resource.Success) {
                 image.postValue(responseImage.requiredData())
@@ -55,7 +56,7 @@ class ProfileViewModel @Inject constructor(
     }
 
     fun updateProfile(name: String, bio: String) {
-        viewModelScope.launch {
+        viewModelScope.launchHandler {
             val updateProfile = profile.value!!
             updateProfile.image = image.value
             updateProfile.name = name

@@ -11,11 +11,11 @@ import org.sudo248.server.WebSocketServer;
 
 @SpringBootApplication
 public class Application {
-
+	public static WebSocketServer serverSocket;
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
-        WebSocketServer socket = new WebSocketServerImpl();
-        socket.start();
+		serverSocket = new WebSocketServerImpl();
+		serverSocket.start();
 	}
 }
 //class DemoClient {

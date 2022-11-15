@@ -45,6 +45,7 @@ class AuthRepositoryImpl @Inject constructor(
             Log.d("sudoo", "login: userId -> ${accountResponse.id}")
             saveUserId(accountResponse.id.toInt())
             socketService.clientId = accountResponse.id
+            socketService.connectMqtt()
             saveUserImage(profileRepo.getProfileImage())
             emit(Resource.Success(true))
         } else {
@@ -66,6 +67,7 @@ class AuthRepositoryImpl @Inject constructor(
             val accountResponse = response.payload as Account
             saveUserId(accountResponse.id.toInt())
             socketService.clientId = accountResponse.id
+//            socketService.connectMqtt()
             emit(Resource.Success(true))
         } else {
             emit(Resource.Error(response.message))

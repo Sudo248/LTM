@@ -41,6 +41,9 @@
         <argument
             android:name="conversation"
             app:argType="com.sudo248.ltm.api.model.conversation.Conversation"/>
+        <action
+            android:id="@+id/action_chatFragment_to_infoConversationFragment"
+            app:destination="@id/infoConversationFragment" />
     </fragment>
     <fragment
         android:id="@+id/profilesFragment"
@@ -61,5 +64,29 @@
         <action
             android:id="@+id/action_searchFragment_to_chatFragment"
             app:destination="@id/chatFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/infoConversationFragment"
+        android:name="com.sudo248.ltm.ui.activity.main.fragment.conversation.InfoConversationFragment"
+        android:label="InfoConversationFragment"
+        tools:layout="@layout/fragment_info_conversation">
+        <argument
+            android:name="conversation"
+            app:argType="com.sudo248.ltm.api.model.conversation.Conversation"/>
+        <action
+            android:id="@+id/action_infoConversationFragment_to_recentChatsFragment"
+            app:destination="@id/recentChatsFragment" />
+        <action
+            android:id="@+id/action_infoConversationFragment_to_listMemberFragment"
+            app:destination="@id/listMemberFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/listMemberFragment"
+        android:name="com.sudo248.ltm.ui.activity.main.fragment.conversation.ListMemberFragment"
+        android:label="ListMemberFragment"
+        tools:layout="@layout/fragment_list_member">
+        <argument
+            android:name="conversation"
+            app:argType="com.sudo248.ltm.api.model.conversation.Conversation"/>
     </fragment>
 </navigation>
