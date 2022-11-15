@@ -13,12 +13,13 @@
         android:layout_height="30dp"
         app:cardCornerRadius="25dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:cardElevation="0dp">
         <ImageView
             android:id="@+id/imgAvatar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/img_test"
+            tools:src="@drawable/img_test"
             android:scaleType="centerCrop"/>
     </androidx.cardview.widget.CardView>
 
@@ -36,7 +37,32 @@
         app:layout_constraintStart_toEndOf="@id/cardAvatar"
         app:layout_constraintBottom_toBottomOf="parent"
         android:backgroundTint="@color/white_F7"
-        android:layout_marginStart="5dp"/>
+        android:layout_marginStart="5dp"
+        android:visibility="visible"/>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardContent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@id/cardAvatar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0"
+        android:layout_marginStart="5dp"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="0dp"
+        android:visibility="gone">
+        <ImageView
+            android:id="@+id/imgContent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxWidth="260dp"
+            tools:src="@drawable/img_test"
+            android:layout_gravity="center"
+            android:scaleType="fitXY"
+            android:adjustViewBounds="true"/>
+    </androidx.cardview.widget.CardView>
 
     <TextView
         android:id="@+id/txtTime"

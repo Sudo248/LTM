@@ -1,11 +1,14 @@
 package com.sudo248.ltm.api.controller;
 
+import com.sudo248.ltm.api.constants.Const;
 import com.sudo248.ltm.api.model.Request;
 import com.sudo248.ltm.api.model.Response;
 import com.sudo248.ltm.api.model.auth.Account;
+import com.sudo248.ltm.api.model.entities.ProfileEntity;
 import com.sudo248.ltm.api.model.entities.UserEntity;
 import com.sudo248.ltm.api.security.payload.Status;
 import com.sudo248.ltm.api.service.LoginService;
+import com.sudo248.ltm.api.service.ProfileService;
 import com.sudo248.ltm.websocket.annotation.WsController;
 import com.sudo248.ltm.websocket.annotation.WsPost;
 import com.sudo248.ltm.websocket.controller.WebSocketController;
@@ -19,6 +22,10 @@ public class UserSignUpController implements WebSocketController<Request<Account
 
     @Autowired
     private LoginService loginService;
+
+    @Autowired
+    private ProfileService profileService;
+
     @Override
     public void onGet(Request<Account> request, Response<Account> response) {
 
@@ -35,6 +42,7 @@ public class UserSignUpController implements WebSocketController<Request<Account
                 true
         );
         Status message = loginService.signUp(user);
+
         if (message.getSuccess()) {
             account.setId(user.getId().longValue());
             account.setCreatedAt(user.getCreatedAt());

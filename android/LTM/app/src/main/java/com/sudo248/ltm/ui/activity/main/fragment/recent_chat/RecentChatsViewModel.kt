@@ -3,11 +3,12 @@ package com.sudo248.ltm.ui.activity.main.fragment.recent_chat
 import android.util.Log
 import androidx.lifecycle.*
 import com.sudo248.ltm.api.model.conversation.Conversation
-import com.sudo248.ltm.common.Constant
 import com.sudo248.ltm.common.Resource
 import com.sudo248.ltm.data.repository.conversation.ConversationRepository
+import com.sudo248.ltm.ktx.launchHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import javax.inject.Inject
 
 
@@ -22,40 +23,40 @@ class RecentChatsViewModel @Inject constructor(
     private val conversationRepo: ConversationRepository
 ) : ViewModel() {
 
-    private val _conversations = MutableLiveData<MutableList<Conversation>>()
-    val conversations: LiveData<MutableList<Conversation>> = _conversations
+    private val listConversation: MutableList<Conversation> = mutableListOf()
 
-    private val _updateConversation = MutableLiveData<Pair<Int, Conversation>>()
-    val updateConversation: LiveData<Pair<Int, Conversation>> = _updateConversation
+    private val _conversations = MutableLiveData<List<Conversation>>()
+    val conversations: LiveData<List<Conversation>> = _conversations
 
-    private val _newConversation = MutableLiveData<Pair<Int, Conversation>>()
-    val newConversation: LiveData<Pair<Int, Conversation>> = _newConversation
+    private var jobSearchRecentChat: Job? = null
+    var isNewConversation = false
 
-    init {
-        viewModelScope.launch {
-            conversationRepo.getUpdateConversations().collect {
-                when(it.first) {
-                    Constant.NEW_SUBSCRIPTION -> {
-                        _newConversation.postValue(Pair(it.first, it.second!!))
-                    }
-                    Constant.UNKNOWN -> {
-
-                    }
-                    else -> {
-                        _updateConversation.postValue(Pair(it.first, it.second!!))
-                    }
-                }
-            }
+    fun getAllConversation(isFresh: Boolean = true) = viewModelScope.launchHandler {
+        val allConversation = conversationRepo.getAllConversation(isFresh)
+        if (allConversation is Resource.Success) {
+            listConversation.clear()
+            listConversation.addAll(allConversation.requiredData())
+            _conversations.postValue(listConversation)
+            Log.d("sudoo", "getAllConversation: success ${allConversation.data.size}")
         }
     }
-    fun getAllConversation(isFresh: Boolean = false) = viewModelScope.launch {
-        conversationRepo.getAllConversation(isFresh).collect {
-            Log.d("sudoo", "getAllConversation: $it")
-            if (it is Resource.Success) {
-                _conversations.postValue(it.requiredData())
-                Log.d("sudoo", "getAllConversation: success ${it.data.size}")
+
+    fun searchConversationByName(name: String) {
+        jobSearchRecentChat?.cancel()
+        jobSearchRecentChat = viewModelScope.launchHandler {
+            delay(500)
+            if (name.isEmpty()) {
+                _conversations.postValue(listConversation)
+            } else {
+                val searchList = listConversation.filter { it.name.contains(name, ignoreCase = true) }
+                _conversations.postValue(searchList)
             }
         }
     }
 
+    fun addNewConversation(conversation: Conversation) {
+        isNewConversation = true
+        listConversation.add(0, conversation)
+        _conversations.postValue(listConversation)
+    }
 }

@@ -56,6 +56,7 @@ public class Publisher implements Publishable{
         for (Subscriber subscriber : this.subscribers) {
             if (subscriber.isOpen()) {
                 subscriber.getWebSocket().send(message);
+                System.out.println("send message to " + subscriber.getWebSocket());
             }
         }
     }

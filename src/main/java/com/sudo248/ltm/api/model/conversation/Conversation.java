@@ -1,7 +1,15 @@
 package com.sudo248.ltm.api.model.conversation;
 
+/**
+ * **Created by**
+ *
+ * @author *Sudo248*
+ * @since 00:18 - 25/10/2022
+ */
+
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Conversation implements Serializable {
 
@@ -12,12 +20,12 @@ public class Conversation implements Serializable {
     private String avtUrl;
     private String description = "";
     private ConversationType type;
-    private LocalDate createAt;
+    private LocalDateTime createAt;
 
     public Conversation() {
     }
 
-    public Conversation(Integer id, String name, String avtUrl, String description, ConversationType type, LocalDate createAt) {
+    public Conversation(Integer id, String name, String avtUrl, String description, ConversationType type, LocalDateTime createAt) {
         this.id = id;
         this.name = name;
         this.avtUrl = avtUrl;
@@ -26,7 +34,7 @@ public class Conversation implements Serializable {
         this.createAt = createAt;
     }
 
-    public Conversation(Integer id, String name, String avtUrl, ConversationType type, LocalDate createAt) {
+    public Conversation(Integer id, String name, String avtUrl, ConversationType type, LocalDateTime createAt) {
         this.id = id;
         this.name = name;
         this.avtUrl = avtUrl;
@@ -74,12 +82,11 @@ public class Conversation implements Serializable {
         this.type = type;
     }
 
-    public LocalDate getCreateAt() {
+    public LocalDateTime getCreateAt() {
         return createAt;
     }
 
-    public void setCreateAt(LocalDate createAt) {
+    public void setCreateAt(LocalDateTime createAt) {
         this.createAt = createAt;
     }
-
 }

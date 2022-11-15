@@ -2,6 +2,7 @@ package com.sudo248.ltm.api.controller;
 
 import com.sudo248.ltm.api.model.Request;
 import com.sudo248.ltm.api.model.Response;
+import com.sudo248.ltm.api.model.conversation.Conversation;
 import com.sudo248.ltm.api.model.entities.ConversationEntity;
 import com.sudo248.ltm.api.service.ConversationService;
 import com.sudo248.ltm.websocket.annotation.WsController;
@@ -10,33 +11,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 
-@WsController(path = "conversation/create_group")
-public class CreateGroupController implements WebSocketController<Request<ArrayList<String>>, Response<ConversationEntity>>
-{
+@WsController(path = "/conversation/create_group")
+public class CreateGroupController implements WebSocketController<Request<ArrayList<Integer>>, Response<Conversation>> {
 
     @Autowired
     private ConversationService conversationService;
 
     @Override
-    public void onGet(Request<ArrayList<String>> request, Response<ConversationEntity> response) {
+    public void onGet(Request<ArrayList<Integer>> request, Response<Conversation> response) {
 
     }
 
     @Override
-    public void onPost(Request<ArrayList<String>> request, Response<ConversationEntity> response) {
-        ArrayList<String> id = request.getPayload();
-        response.setPayload(conversationService.createGroup(id));
+    public void onPost(Request<ArrayList<Integer>> request, Response<Conversation> response) {
+        ArrayList<Integer> memberIds = request.getPayload();
+        String nameGroup = request.getParams().get("nameGroup");
+        ConversationEntity conversationEntity = conversationService.createGroup(nameGroup, memberIds);
+        Conversation conversation = conversationEntity.toConversation("Create new Conversation");
+        response.setPayload(conversation);
         response.setCode(201);
         response.setMessage("success");
-    }
-
-    @Override
-    public void onPut(Request<ArrayList<String>> request, Response<ConversationEntity> response) {
-        WebSocketController.super.onPut(request, response);
-    }
-
-    @Override
-    public void onDelete(Request<ArrayList<String>> request, Response<ConversationEntity> response) {
-        WebSocketController.super.onDelete(request, response);
     }
 }

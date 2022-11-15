@@ -21,7 +21,7 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         app:cardCornerRadius="25dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="10dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toEndOf="@id/imgBack">
     <ImageView
@@ -29,7 +29,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/img_test"
-        android:scaleType="centerCrop"/>
+        android:scaleType="centerCrop"
+        android:layout_gravity="center"/>
     </androidx.cardview.widget.CardView>
 
     <TextView
@@ -63,33 +64,44 @@
         android:id="@+id/rcvChat"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/txtInputMessage"
+        app:layout_constraintBottom_toTopOf="@+id/edtInputMessage"
         app:layout_constraintTop_toBottomOf="@+id/cardAvatar"
         android:padding="10dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         android:orientation="vertical"
+        app:stackFromEnd="true"
         tools:listitem="@layout/item_chat_me"/>
 
+    <ImageView
+        android:id="@+id/imgAddImage"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/edtInputMessage"
+        app:layout_constraintTop_toTopOf="@id/edtInputMessage"
+        android:src="@drawable/ic_image"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:paddingStart="15dp"/>
+
     <EditText
-        android:id="@+id/txtInputMessage"
+        android:id="@+id/edtInputMessage"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="@id/imgSend"
-        app:layout_constraintEnd_toStartOf="@+id/imgSend"
-        app:layout_constraintStart_toStartOf="parent"
-        android:hint="Write a message"
-        android:paddingStart="15dp"
-        android:paddingVertical="10dp"
-        android:paddingEnd="10dp"
+        android:layout_marginHorizontal="10dp"
         android:background="@drawable/bg_rectangle_conner_12dp"
         android:backgroundTint="@color/white_F7"
-        android:layout_marginHorizontal="10dp"/>
+        android:hint="Write a message"
+        android:paddingVertical="10dp"
+        android:paddingStart="15dp"
+        android:paddingEnd="10dp"
+        app:layout_constraintBottom_toBottomOf="@id/imgSend"
+        app:layout_constraintEnd_toStartOf="@+id/imgSend"
+        app:layout_constraintStart_toEndOf="@+id/imgAddImage" />
 
     <ImageView
         android:id="@+id/imgSend"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_send"
+        android:src="@drawable/ic_new_send"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:padding="10dp"

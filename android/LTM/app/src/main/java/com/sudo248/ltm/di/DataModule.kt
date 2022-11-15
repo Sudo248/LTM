@@ -4,6 +4,10 @@ import com.sudo248.ltm.data.repository.auth.AuthRepository
 import com.sudo248.ltm.data.repository.auth.AuthRepositoryImpl
 import com.sudo248.ltm.data.repository.conversation.ConversationRepository
 import com.sudo248.ltm.data.repository.conversation.ConversationRepositoryImpl
+import com.sudo248.ltm.data.repository.message.MessageRepository
+import com.sudo248.ltm.data.repository.message.MessageRepositoryImpl
+import com.sudo248.ltm.data.repository.profile.ProfileRepository
+import com.sudo248.ltm.data.repository.profile.ProfileRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -26,4 +30,9 @@ abstract class DataModule {
     @Binds
     abstract fun bindConversationRepository(conversationRepository: ConversationRepositoryImpl): ConversationRepository
 
+    @Binds
+    abstract fun bindMessageRepository(messageRepository: MessageRepositoryImpl): MessageRepository
+
+    @Binds
+    abstract fun bindProfileRepository(profileRepository: ProfileRepositoryImpl): ProfileRepository
 }

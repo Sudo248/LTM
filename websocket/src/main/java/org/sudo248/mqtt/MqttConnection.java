@@ -17,18 +17,21 @@ public class MqttConnection {
     private final Logger log = LoggerFactory.getLogger(MqttConnection.class);
     private final Map<String, Publisher> publishers;
 
+    private final Map<Long, Subscriber> subscribers;
+
     private final Map<Long, List<String>> subscriberTopic;
 
     private final MqttListener listener;
 
     public MqttConnection(MqttListener listener) {
-        this(new HashMap<>(), listener, new HashMap<>());
+        this(new HashMap<>(), listener, new HashMap<>(), new HashMap<>());
     }
 
-    public MqttConnection(Map<String, Publisher> publishers, MqttListener listener, Map<Long, List<String>> subscriberTopic) {
+    public MqttConnection(Map<String, Publisher> publishers, MqttListener listener, Map<Long, List<String>> subscriberTopic, Map<Long, Subscriber> subscribers) {
         this.publishers = publishers;
         this.listener = listener;
         this.subscriberTopic = subscriberTopic;
+        this.subscribers = subscribers;
     }
 
     public boolean createPublisher(String topic, List<Subscriber> subscribers) {
@@ -110,15 +113,29 @@ public class MqttConnection {
         for (Subscriber sub : subscribers) {
             if (clientId == sub.getClientId()) {
                 sub.setWebSocket(ws);
-                listener.onMqttSubscribe(message);
+                //listener.onMqttSubscribe(message);
                 return;
             }
         }
+
         subscribers.add(new Subscriber(
                 message.getClientId(),
                 ws
         ));
+
+        List<String> topics = subscriberTopic.get(clientId);
+        if (topics == null) {
+            List<String> newTopics = new ArrayList<>();
+            newTopics.add(message.getTopic());
+            subscriberTopic.put(
+                    clientId,
+                    newTopics
+            );
+        } else {
+            subscriberTopic.get(clientId).add(message.getTopic());
+        }
         listener.onMqttSubscribe(message);
+        publisher.publish(message.copy("New person join conversation"));
     }
 
     private void processUnSubscribe(MqttMessage message, WebSocket ws) {
@@ -132,6 +149,7 @@ public class MqttConnection {
                     publisher.removeSubscriber(sub);
                     subscriberTopic.get(clientId).remove(message.getTopic());
                     listener.onMqttUnSubscribe(message);
+                    publisher.publish(message.copy("Remove from conversation"));
                     return;
                 }
             }
@@ -165,8 +183,24 @@ public class MqttConnection {
     }
 
     private void resubscribe(Long clientId, WebSocket ws) {
-        for (String topic : publishers.keySet()) {
-            resubscribeTopic(clientId, ws, topic);
+        List<String> topics = subscriberTopic.get(clientId);
+        Subscriber subscriber = subscribers.get(clientId);
+        if (subscriber == null) {
+            subscribers.put(clientId, new Subscriber(
+                    clientId,
+                    ws
+            ));
+        } else {
+            subscribers.get(clientId).setWebSocket(ws);
+        }
+        if (topics != null && !topics.isEmpty()) {
+            for (String topic : topics) {
+                resubscribeTopic(clientId, ws, topic);
+            }
+        } else {
+            for (String topic : publishers.keySet()) {
+                resubscribeTopic(clientId, ws, topic);
+            }
         }
     }
 
@@ -189,7 +223,17 @@ public class MqttConnection {
         publishers.remove(topic);
     }
 
-    public void publish(String topic, MqttMessage message) {
-        publishers.get(topic).publish(message);
+    public void publish(MqttMessage message) {
+        processPublish(message, null);
+//        publishers.get(topic).publish(message);
+    }
+    public WebSocket getWsSubscriber(Long subscriberId) {
+        Subscriber subscriber = subscribers.get(subscriberId);
+        log.info("getWsSubscriber: "+ subscriberId);
+        if (subscriber != null && subscriber.isOpen()) {
+            log.info("getWsSubscriber: "+ subscriberId + "socket: " + subscriber.getWebSocket());
+            return subscriber.getWebSocket();
+        }
+        return null;
     }
 }

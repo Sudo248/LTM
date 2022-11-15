@@ -37,11 +37,12 @@ public class UserLoginController implements WebSocketController<Request<Account>
 
         try {
             LoginRequest loginRequest = new LoginRequest(
-                    request.getPayload().getEmail(),
-                    request.getPayload().getPassword()
+                    account.getEmail(),
+                    account.getPassword()
             );
             if ((userId = loginService.checkAccount(loginRequest)) != null) {
                 message = "Đăng nhập thành công.";
+                logger.info(message + " userId: " + userId);
                 account.setId(userId.longValue());
                 response.setCode(200);
             } else {

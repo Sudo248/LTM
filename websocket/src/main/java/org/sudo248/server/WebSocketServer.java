@@ -16,6 +16,7 @@ import org.sudo248.mqtt.MqttManager;
 import org.sudo248.mqtt.database.H2Builder;
 import org.sudo248.mqtt.model.MqttMessage;
 import org.sudo248.mqtt.model.MqttMessageType;
+import org.sudo248.mqtt.model.Subscriber;
 import org.sudo248.mqtt.model.Subscription;
 import org.sudo248.mqtt.repository.SubscriptionRepository;
 import org.sudo248.utils.SocketChannelIOUtils;
@@ -44,6 +45,8 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
      * Number of current available process
      */
     private static final int AVAILABLE_PROCESSORS = Runtime.getRuntime().availableProcessors();
+
+    protected static final Long serverId = 24080309L;
 
     private final String pathStore;
 
@@ -503,8 +506,9 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
         h2Builder = new H2Builder(pathStore, scheduler).initStore();
         SubscriptionRepository subscriptionRepository = h2Builder.subscriptionRepository();
         mqttManager = new MqttManager(subscriptionRepository);
-        mqttManager.getSubscriptionFromDb();
-        mqttConnection = new MqttConnection(mqttManager.getPublishers(), this, mqttManager.getSubscriberTopic());
+        Map<Long, Subscriber> subscriberMap = mqttManager.getSubscriptionFromDb();
+        log.info("subscriberMap: " + subscriberMap.keySet().size());
+        mqttConnection = new MqttConnection(mqttManager.getPublishers(), this, mqttManager.getSubscriberTopic(), subscriberMap);
         return true;
     }
 
@@ -1097,14 +1101,19 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
     }
 
     @Override
-    public void onMqttSubscribe(MqttMessage message) {
+    public void  onMqttSubscribe(MqttMessage message) {
         log.info("onMqttSubscribe: message" + message);
         Subscription subscription = new Subscription(
                 message.getClientId(),
                 message.getTopic()
         );
         mqttManager.addSubscription(subscription);
-        publish(message.copy("New person join conversation"));
+        //publish(message.copy("New person join conversation"));
+    }
+
+    public void addSubscription(Subscription subscription) {
+        log.info("addSubscription: " + subscription);
+        mqttManager.addSubscription(subscription);
     }
 
     @Override
@@ -1114,7 +1123,7 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
                 message.getTopic()
         );
         mqttManager.removeSubscription(subscription);
-        publish(message);
+        //publish(message);
     }
 
     @Override
@@ -1128,7 +1137,32 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
     }
 
     public void publish(MqttMessage message) {
-        mqttConnection.publish(message.getTopic(), message);
+        mqttConnection.publish(message);
+    }
+
+    public void publishAsServer(MqttMessage message) {
+        MqttMessage mqttMessageServer = new MqttMessage(
+                serverId,
+                message.getTopic(),
+                message.getType(),
+                message.getPayload()
+        );
+        publish(mqttMessageServer);
+    }
+
+    public void createPublisher(String topic, List<Long> subscriberIds) {
+        log.info("createPublisher: topic -> " + topic + " members: " + subscriberIds.size());
+        List<Subscriber> subscribers = new ArrayList<>();
+        for (Long subscriberId : subscriberIds) {
+            WebSocket ws = mqttConnection.getWsSubscriber(subscriberId);
+            subscribers.add(
+                    new Subscriber(
+                            subscriberId,
+                            ws
+                    )
+            );
+        }
+        mqttConnection.createPublisher(topic, subscribers);
     }
 
     /**

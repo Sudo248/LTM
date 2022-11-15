@@ -20,7 +20,12 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public String getNewMessage(Integer conversationId) {
-        return getNewMessage(conversationId);
+        return messageRepository.getNewMessage(conversationId);
+    }
+
+    @Override
+    public MessageEntity createMessage(MessageEntity messageEntity) {
+        return messageRepository.save(messageEntity);
     }
 
     @Override

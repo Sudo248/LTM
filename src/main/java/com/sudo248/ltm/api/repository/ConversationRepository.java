@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -21,9 +22,12 @@ public interface ConversationRepository extends JpaRepository<ConversationEntity
 
     List<ConversationEntity> findAllByName( String name);
 
-    ConversationEntity getById(Integer conversationId);
+    ConversationEntity getConversationById(Integer conversationId);
 
+    ConversationEntity getByName(String name);
     //ConversationEntity update(ConversationEntity conversationEntity);
+    @Query(value = "update conversation set create_at = :time where id = :conversationId", nativeQuery = true)
+    void updateTimeConversation(@Param("conversationId") Integer conversationId, @Param("time") LocalDateTime time);
 
     void deleteById(@NotNull Integer conversationId);
 }

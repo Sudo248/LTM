@@ -1,15 +1,19 @@
 package com.sudo248.ltm.api.service.impl;
 
+import com.sudo248.ltm.api.constants.Const;
+import com.sudo248.ltm.api.model.conversation.ConversationType;
 import com.sudo248.ltm.api.model.entities.ConversationEntity;
-import com.sudo248.ltm.api.model.entities.ConversationType;
 import com.sudo248.ltm.api.model.entities.UserConversationEntity;
 import com.sudo248.ltm.api.repository.ConversationRepository;
+import com.sudo248.ltm.api.repository.ProfileRepository;
 import com.sudo248.ltm.api.repository.UserConversationRepository;
 import com.sudo248.ltm.api.service.ConversationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +26,9 @@ public class ConversationServiceImpl implements ConversationService {
     @Autowired
     private UserConversationRepository userConversationRepository;
 
+    @Autowired
+    private ProfileRepository profileRepository;
+
     @Override
     public List<ConversationEntity> getAllByUserId(Integer userId) {
         return conversationRepository.getAllByUserId(userId);
@@ -29,33 +36,45 @@ public class ConversationServiceImpl implements ConversationService {
 
     @Override
     public ConversationEntity getConversationById(Integer conversationId) {
-        return conversationRepository.getById(conversationId);
+        return conversationRepository.getConversationById(conversationId);
     }
 
     @Override
-    public List<ConversationEntity> findAllByName(String name) {
-        return conversationRepository.findAllByName(name);
+    public ConversationEntity getConversationByName(String name) {
+        return conversationRepository.getByName(name);
     }
 
     @Override
-    public ConversationEntity createGroup(ArrayList<String> userId) {
-        ConversationEntity conversation = new ConversationEntity("urgroup", ConversationType.P2P, "", LocalDate.now());
-        if (userId.size() > 2) {
+    public ConversationEntity createGroup(String nameGroup, ArrayList<Integer> userIds) {
+        ConversationEntity conversation = new ConversationEntity();
+        if (userIds.size() == 2) {
+            conversation.setName(userIds.get(0)+"-"+userIds.get(1));
+            conversation.setType(ConversationType.P2P);
+            conversation.setAvtUrl(Const.IMAGE_DEFAULT_P2P);
+            conversation.setCreatedAt(LocalDateTime.now());
+        } else {
+            if (nameGroup == null || nameGroup.isEmpty()) {
+                String firstNameUser = profileRepository.getProfileByUserId(userIds.get(0)).getName();
+                nameGroup = "Conversation of " + firstNameUser;
+            }
+            conversation.setName(nameGroup);
             conversation.setType(ConversationType.GROUP);
+            conversation.setAvtUrl(Const.IMAGE_DEFAULT_GROUP);
+            conversation.setCreatedAt(LocalDateTime.now());
         }
 
-        conversationRepository.save(conversation);
+        ConversationEntity storedConversationEntity = conversationRepository.save(conversation);
 
-        for (String id : userId) {
+        for (Integer id : userIds) {
             UserConversationEntity userConversation = new UserConversationEntity(
-                    Integer.parseInt(id),
-                    conversation.getId(),
+                    id,
+                    storedConversationEntity.getId(),
                     LocalDate.now()
             );
             userConversationRepository.save(userConversation);
         }
 
-        return conversationRepository.save(conversation);
+        return storedConversationEntity;
     }
 
 //    @Override
@@ -70,6 +89,11 @@ public class ConversationServiceImpl implements ConversationService {
     @Override
     public void delete(Integer conversationId) {
         conversationRepository.deleteById(conversationId);
+    }
+
+    @Override
+    public void updateTimeConversation(Integer conversationId, LocalDateTime time) {
+        conversationRepository.updateTimeConversation(conversationId, Timestamp.valueOf(time));
     }
 }
 

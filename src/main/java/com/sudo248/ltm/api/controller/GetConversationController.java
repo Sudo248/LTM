@@ -3,7 +3,9 @@ package com.sudo248.ltm.api.controller;
 import com.sudo248.ltm.api.model.Request;
 import com.sudo248.ltm.api.model.Response;
 import com.sudo248.ltm.api.model.conversation.Conversation;
+import com.sudo248.ltm.api.model.conversation.ConversationType;
 import com.sudo248.ltm.api.model.entities.ConversationEntity;
+import com.sudo248.ltm.api.model.entities.ProfileEntity;
 import com.sudo248.ltm.api.model.entities.UserConversationEntity;
 import com.sudo248.ltm.api.service.ConversationService;
 import com.sudo248.ltm.api.service.MessageService;
@@ -17,7 +19,7 @@ import org.springframework.stereotype.Controller;
 import java.util.ArrayList;
 import java.util.List;
 
-@WsController(path = "conversation/get")
+@WsController(path = "/conversation/get")
 public class GetConversationController implements WebSocketController<Request<Conversation>, Response<ArrayList<Conversation>>> {
 
     @Autowired
@@ -37,20 +39,27 @@ public class GetConversationController implements WebSocketController<Request<Co
 
         for (ConversationEntity conversationEntity : ce) {
 
-            Conversation conversation = new Conversation(conversationEntity.getId(),
+            Conversation conversation = new Conversation(
+                    conversationEntity.getId(),
                     conversationEntity.getName(),
                     conversationEntity.getAvtUrl(),
                     conversationEntity.getType(),
-                    conversationEntity.getCreatedAt());
+                    conversationEntity.getCreatedAt()
+            );
 
             conversation.setDescription(messageService.getNewMessage(conversationEntity.getId()));
 
-            if (conversation.getType().equals("P2P")) {
-                String[] id = "+".split(conversationEntity.getName());
-
+            if (conversation.getType() == ConversationType.P2P) {
+                String[] id = conversationEntity.getName().split("-");
                 if (userId.equals(id[0])) {
-                    conversation.setName(profileService.getProfileByUserId(Integer.parseInt(id[1])).getName());
-                } else conversation.setName(profileService.getProfileByUserId(Integer.parseInt(id[0])).getName());
+                    ProfileEntity profileEntity = profileService.getProfileByUserId(Integer.parseInt(id[1]));
+                    conversation.setName(profileEntity.getName());
+                    conversation.setAvtUrl(profileEntity.getImage());
+                } else {
+                    ProfileEntity profileEntity = profileService.getProfileByUserId(Integer.parseInt(id[0]));
+                    conversation.setName(profileEntity.getName());
+                    conversation.setAvtUrl(profileEntity.getImage());
+                }
             }
 
             arr.add(conversation);
@@ -63,26 +72,7 @@ public class GetConversationController implements WebSocketController<Request<Co
 
     @Override
     public void onPost(Request<Conversation> request, Response<ArrayList<Conversation>> response) {
-        String name = request.getParams().get("name");
-        ArrayList<ConversationEntity> conversations = (ArrayList<ConversationEntity>) conversationService.findAllByName(name);
-
-        ArrayList<Conversation> conversation = new ArrayList<>();
-
-        for (ConversationEntity entity : conversations) {
-            Conversation conv = new Conversation(
-                    entity.getId(),
-                    entity.getName(),
-                    entity.getAvtUrl(),
-                    entity.getType(),
-                    entity.getCreatedAt());
-
-            conv.setDescription(messageService.getNewMessage(entity.getId()));
-            conversation.add(conv);
-        }
-
-        response.setPayload(conversation);
-        response.setMessage("success");
-        response.setCode(200);
+        WebSocketController.super.onPost(request, response);
     }
 
     @Override
