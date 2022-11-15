@@ -20,4 +20,6 @@ public interface ConversationService {
 
     void updateTimeConversation(Integer conversationId, LocalDateTime time);
 
+
+
 }

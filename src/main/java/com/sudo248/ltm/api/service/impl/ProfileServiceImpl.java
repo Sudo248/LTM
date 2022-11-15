@@ -28,11 +28,7 @@ public class ProfileServiceImpl implements ProfileService {
         return profileRepository.getProfileByUserId(userId);
     }
 
-    @Override
-    public List<ProfileEntity> findProfileByName(String name) {
-        name = name.trim();
-        return profileRepository.findAllByName(name);
-    }
+
 
     @Override
     public ProfileEntity update(ProfileEntity profileEntity) {

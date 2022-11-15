@@ -16,7 +16,7 @@ public interface ProfileService {
 
     ProfileEntity getProfileByUserId(Integer userId);
 
-    List<ProfileEntity> findProfileByName(String name);
+    //List<ProfileEntity> getProfileOfConversationByConversationId(Integer conversationId);
 
     ProfileEntity update(ProfileEntity profileEntity);
 
