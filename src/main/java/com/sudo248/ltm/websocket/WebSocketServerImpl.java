@@ -9,6 +9,7 @@ import com.sudo248.ltm.api.model.conversation.Conversation;
 import com.sudo248.ltm.api.model.entities.MessageEntity;
 import com.sudo248.ltm.api.model.message.ContentMessageType;
 import com.sudo248.ltm.api.model.message.Message;
+import com.sudo248.ltm.api.model.profile.Profile;
 import com.sudo248.ltm.api.repository.MessageRepository;
 import com.sudo248.ltm.websocket.common.WsControllerProvider;
 import com.sudo248.ltm.websocket.controller.WebSocketController;

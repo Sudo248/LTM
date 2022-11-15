@@ -34,7 +34,7 @@ class MainViewModel @Inject constructor(
     val updateConversation: LiveData<Pair<Int, Conversation>> = _updateConversation
 
     fun updateConversation() {
-        viewModelScope.launch {
+        viewModelScope.launchHandler {
             conversationRepo.getUpdateConversations().collect {
                 Log.d("sudoo", "updateConversation: MainViewModel")
                 when (it.first) {

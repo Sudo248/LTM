@@ -34,6 +34,8 @@ object Constant {
     const val PATH_FRIEND = "/friend"
     const val PATH_CREATE_GROUP = "/conversation/create_group"
     const val PATH_GET_PROFILE = "/profile/get"
+    const val PATH_USER_CONVERSATION_2 = "/user_conversation"
+    const val PATH_CONVERSATION_MEMBER = "/conversation/members"
 
     const val URL_REGEX = "[(http(s)?):\\/\\/(www\\.)?a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)"
     const val URL_IMAGE_REGEX = "(http(s?):)([/|.|\\w|\\s|-])*\\.(?:jpg|gif|png)"

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <View
+        android:id="@+id/view3"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:background="@color/purple_73"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/imgBack"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="10dp"
+        android:src="@drawable/ic_back"
+        app:tint="@color/white"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardAvatar"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        app:cardCornerRadius="100dp"
+        app:layout_constraintBottom_toBottomOf="@+id/view3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/view3">
+
+        <ImageView
+            android:id="@+id/imgAvatar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_profile" />
+    </androidx.cardview.widget.CardView>
+
+    <ImageView
+        android:id="@+id/imgChangeAvatar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_edit"
+        app:layout_constraintBottom_toBottomOf="@+id/cardAvatar"
+        app:layout_constraintEnd_toEndOf="@+id/cardAvatar"
+        app:tint="@color/grey_4F" />
+
+    <TextView
+        android:id="@+id/txtNameGroup"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="15dp"
+        android:text="@string/name_group"
+        android:textColor="@color/black"
+        android:textSize="22sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/imgChangeAvatar" />
+
+    <View
+        android:id="@+id/vDivider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/grey_4F"
+        app:layout_constraintTop_toBottomOf="@id/txtNameGroup" />
+
+    <TextView
+        android:id="@+id/txtMembers"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="center_vertical"
+        android:paddingVertical="15dp"
+        android:text="@string/members"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        app:drawableEndCompat="@drawable/img_group"
+        app:layout_constraintEnd_toEndOf="@+id/txtNameGroup"
+        app:layout_constraintStart_toStartOf="@+id/txtNameGroup"
+        app:layout_constraintTop_toBottomOf="@id/vDivider" />
+
+    <TextView
+        android:id="@+id/txtRemove"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:drawableTint="@color/red"
+        android:gravity="center_vertical"
+        android:paddingVertical="15dp"
+        android:text="@string/remove"
+        android:textColor="@color/red"
+        android:textSize="18sp"
+        app:drawableEndCompat="@drawable/ic_baseline_logout_24"
+        app:layout_constraintEnd_toEndOf="@+id/txtMembers"
+        app:layout_constraintStart_toStartOf="@+id/txtMembers"
+        app:layout_constraintTop_toBottomOf="@id/txtMembers" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

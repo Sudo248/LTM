@@ -13,7 +13,7 @@ public interface ConversationService {
 
     ConversationEntity getConversationByName(String name);
 
-   // ConversationEntity update(ConversationEntity conversationEntity);
+    ConversationEntity update(ConversationEntity conversationEntity);
 
     ConversationEntity createGroup(String nameGroup, ArrayList<Integer> userId);
     void delete(Integer conversationId);

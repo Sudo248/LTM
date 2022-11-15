@@ -49,7 +49,7 @@ class ChatViewModel @Inject constructor(
     var imageUser: String = Constant.IMAGE_USER_DEFAULT
 
     init {
-        viewModelScope.launch {
+        viewModelScope.launchHandler {
             imageUser =
                 SharedPreferenceUtils.getString(PrefKey.KEY_USER_IMAGE, Constant.IMAGE_USER_DEFAULT)
         }
@@ -99,7 +99,7 @@ class ChatViewModel @Inject constructor(
     }
 
     fun sendImage(resolver: ContentResolver, uri: Uri) {
-        viewModelScope.launch {
+        viewModelScope.launchHandler{
             val responseImage = messageRepository.sendImage(resolver, uri)
             if (responseImage is Resource.Success) {
                 val message = Message(

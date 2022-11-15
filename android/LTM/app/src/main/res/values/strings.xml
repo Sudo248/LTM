@@ -32,4 +32,8 @@
     <string name="name_group">Name group</string>
     <string name="error_group">Conversation must be more than 2 members</string>
     <string name="bio">Bio</string>
+    <string name="members">Members</string>
+    <string name="peoples">%d Peoples</string>
+    <string name="save">Save</string>
+    <string name="remove">Remove</string>
 </resources>

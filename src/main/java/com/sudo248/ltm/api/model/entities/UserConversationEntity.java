@@ -32,36 +32,4 @@ public class UserConversationEntity implements Serializable {
         this.conversationId = conversationId;
         this.joinedAt = joinedAt;
     }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Integer getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Integer userId) {
-        this.userId = userId;
-    }
-
-    public Integer getConversationId() {
-        return conversationId;
-    }
-
-    public void setConversationId(Integer conversationId) {
-        this.conversationId = conversationId;
-    }
-
-    public LocalDate getJoinedAt() {
-        return joinedAt;
-    }
-
-    public void setJoinedAt(LocalDate joinedAt) {
-        this.joinedAt = joinedAt;
-    }
 }

@@ -1140,6 +1140,10 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
         mqttConnection.publish(message);
     }
 
+    public boolean isActive(Integer clientId) {
+        return mqttConnection.isOnline(clientId.longValue());
+    }
+
     public void publishAsServer(MqttMessage message) {
         MqttMessage mqttMessageServer = new MqttMessage(
                 serverId,

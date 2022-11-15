@@ -11,6 +11,8 @@ import com.sudo248.ltm.R
 import com.sudo248.ltm.api.model.profile.Profile
 import com.sudo248.ltm.common.Constant
 import com.sudo248.ltm.databinding.ItemFriendBinding
+import com.sudo248.ltm.ktx.visible
+import com.sudo248.ltm.utils.gone
 
 
 /**
@@ -20,7 +22,8 @@ import com.sudo248.ltm.databinding.ItemFriendBinding
  * @since 11:07 - 06/11/2022
  */
 class ProfileAdapter(
-    private val profileActionListener: ProfileActionListener
+    private val profileActionListener: ProfileActionListener,
+    private val isShowIconAction: Boolean = true
 ) : RecyclerView.Adapter<ProfileAdapter.FriendViewHolder>() {
 
     private val listFriend: MutableList<Profile> = mutableListOf()
@@ -64,36 +67,47 @@ class ProfileAdapter(
             binding.apply {
                 txtNameFriend.text = profile.name
                 txtDescription.text = profile.bio
-                val action = when{
-                    isAddGroup -> {
-                        Log.d("sudoo", "onBind: isAddGroup")
-                        imgAction.isEnabled = true
-                        imgAction.setOnClickListener {
-                            profileActionListener.onAddNewGroup(profile, position)
-                            imgAction.setImageResource(R.drawable.ic_done)
-                            imgAction.isEnabled = false
+
+                if (isShowIconAction) {
+                    val action = when{
+                        isAddGroup -> {
+                            Log.d("sudoo", "onBind: isAddGroup")
+                            imgAction.isEnabled = true
+                            imgAction.setOnClickListener {
+                                profileActionListener.onAddNewGroup(profile, position)
+                                imgAction.setImageResource(R.drawable.ic_done)
+                                imgAction.isEnabled = false
+                            }
+                            R.drawable.ic_group_add
                         }
-                        R.drawable.ic_group_add
-                    }
-                    profile.isFriended -> {
-                        Log.d("sudoo", "onBind: isFriended")
-                        imgAction.setOnClickListener {
+                        profile.isFriended -> {
                             Log.d("sudoo", "onBind: isFriended")
-                            profileActionListener.onOpenMessage(profile)
+                            imgAction.setOnClickListener {
+                                Log.d("sudoo", "onBind: isFriended")
+                                profileActionListener.onOpenMessage(profile)
+                            }
+                            R.drawable.ic_chat
                         }
-                        R.drawable.ic_chat
-                    }
-                    else -> {
-                        Log.d("sudoo", "onBind: add friend")
-                        imgAction.setOnClickListener {
+                        else -> {
                             Log.d("sudoo", "onBind: add friend")
-                            profileActionListener.onAddFriend(profile, position)
+                            imgAction.setOnClickListener {
+                                Log.d("sudoo", "onBind: add friend")
+                                profileActionListener.onAddFriend(profile, position)
+                            }
+                            R.drawable.ic_add_friend
                         }
-                        R.drawable.ic_add_friend
                     }
+                    imgAction.setImageResource(action)
+                } else {
+                    imgAction.gone()
                 }
 
-                imgAction.setImageResource(action)
+                if (profile.active) {
+                    imgStatus.visible()
+                } else {
+                    imgStatus.gone()
+                }
+
                 val imageUrl = "${Constant.URL_IMAGE}${profile.image}"
                 Glide
                     .with(itemView.context)

@@ -1,5 +1,6 @@
 package com.sudo248.ltm.api.controller;
 
+import com.sudo248.ltm.Application;
 import com.sudo248.ltm.api.model.Request;
 import com.sudo248.ltm.api.model.Response;
 import com.sudo248.ltm.api.model.entities.ContactType;
@@ -37,8 +38,10 @@ public class GetProfileController implements WebSocketController<Request<Profile
             logger.info("userId: " + userId + " profile: " + profileEntity.getUserId());
             if (!Objects.equals(profileEntity.getUserId(), userId)) {
                 ContactType contactType = contactService.getContactType(userId, profileEntity.getUserId());
+                Boolean isActive = Application.serverSocket.isActive(profileEntity.getUserId());
+                logger.info(profileEntity.getName() + " " + isActive);
                 listProfile.add(
-                        profileEntity.toProfile(contactType == ContactType.FRIEND)
+                        profileEntity.toProfile(contactType == ContactType.FRIEND, isActive)
                 );
             }
         }

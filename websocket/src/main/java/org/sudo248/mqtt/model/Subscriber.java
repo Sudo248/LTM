@@ -1,10 +1,13 @@
 package org.sudo248.mqtt.model;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sudo248.WebSocket;
 
 import java.util.Objects;
 
 public class Subscriber {
+
     private final Long clientId;
     private WebSocket ws;
 

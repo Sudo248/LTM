@@ -58,6 +58,18 @@ public class ProfileEntity implements Serializable {
         );
     }
 
+    public Profile toProfile(Boolean isFriended, Boolean isActive) {
+        return new Profile(
+                id,
+                bio,
+                name,
+                image,
+                isActive,
+                userId,
+                isFriended
+        );
+    }
+
     public static ProfileEntity fromProfile(Profile profile) {
         return new ProfileEntity(
                 profile.getProfileId(),
