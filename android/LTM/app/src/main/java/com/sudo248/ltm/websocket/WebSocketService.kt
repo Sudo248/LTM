@@ -30,9 +30,7 @@ import kotlin.collections.LinkedHashMap
  * @since 00:38 - 23/10/2022
  */
 @Singleton
-class WebSocketService @Inject constructor(
-
-) : WebSocketClient(URI("ws://${Constant.WS_HOST}:${Constant.WS_PORT}")) {
+class WebSocketService @Inject constructor() : WebSocketClient(URI("ws://${Constant.WS_HOST}:${Constant.WS_PORT}")) {
 
     companion object {
         private val TAG = WebSocketService::class.java.simpleName
